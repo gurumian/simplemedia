@@ -37,6 +37,7 @@ SdlAudioRenderer::~SdlAudioRenderer() {
     SDL_CloseAudioDevice(audio_device_);
 
 //  SDL_QuitSubSystem(SDL_INIT_AUDIO);
+  if(log_enabled_) LOG(INFO) << __func__;
 }
 
 int SdlAudioRenderer::Prepare() {

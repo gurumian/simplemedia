@@ -8,8 +8,6 @@ extern "C" {
 namespace gurum {
 
 int AudioDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
-  // int decoded = 0;
-  // int got = 0;
   int err = 0;
   assert(codec_context_);
   assert(frame_);

@@ -7,6 +7,9 @@ module.exports = class AudioPlayer {
     this.source = new Source();
     this.renderer = new AudioRenderer();
     this.count=0;
+
+    this.source.trace=true;
+    this.renderer.trace=true;
   }
 
   async prepare() {
@@ -23,6 +26,7 @@ module.exports = class AudioPlayer {
           this.decoder = new AudioDecoder();
           this.decoder.prepare(source.findStream(pid));
           this.decoder.pidchannel = pidchannel;
+          this.decoder.trace=true;
       
           this.renderer.prepare({
             samplerate: this.decoder.samplerate,
