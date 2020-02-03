@@ -38,7 +38,6 @@ Source::Source(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Source>(info) 
   Napi::HandleScope scope(env);
 
   source_.reset(new gurum::Source);
-  // source_->EnableLog(true);
 }
 
 void Source::SetDataSource(const Napi::CallbackInfo& info, const Napi::Value &value) {

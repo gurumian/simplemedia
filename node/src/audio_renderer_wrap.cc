@@ -31,7 +31,6 @@ AudioRenderer::AudioRenderer(const Napi::CallbackInfo& info) : Napi::ObjectWrap<
   Napi::HandleScope scope(env);
 
   audio_renderer_.reset(new gurum::SdlAudioRenderer);
-  // audio_renderer_->EnableLog(true);
 }
 
 void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {

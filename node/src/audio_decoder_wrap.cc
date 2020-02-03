@@ -45,7 +45,6 @@ AudioDecoder::AudioDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Au
   Napi::HandleScope scope(env);
 
   audio_decoder_.reset(new gurum::AudioDecoder);
-  // audio_decoder_->EnableLog(true);
 }
 
 
