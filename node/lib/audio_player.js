@@ -70,18 +70,19 @@ module.exports = class AudioPlayer {
   }
 
   stop() {
+    this.decoder.stop();
     this.source.stop();
   }
 
   pause() {
-    // this.source.pause();
+    this.source.pause();
+    this.decoder.pause();
   }
 
   resume() {
     this.start();  
   }
 
-  
 
   /**
    * @param {string} datasource
@@ -89,14 +90,6 @@ module.exports = class AudioPlayer {
   set datasource(datasource) {
     this.source.datasource = datasource;
   }
-
-  // async decode() {
-  //   return new Promise((resolve) => {
-  //     this.decoder.decode((arg) => {
-  //       resolve(arg);
-  //     });
-  //   });
-  // }
 }
 
 

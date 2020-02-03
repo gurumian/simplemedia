@@ -22,6 +22,7 @@ Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("prepare", &AudioDecoder::Prepare),
                     InstanceMethod("start", &AudioDecoder::Start),
                     InstanceMethod("stop", &AudioDecoder::Stop),
+                    InstanceMethod("pause", &AudioDecoder::Pause),
                     InstanceMethod("decode", &AudioDecoder::Decode),
                     InstanceAccessor("pidchannel", nullptr, &AudioDecoder::SetPidChannel),
                     InstanceAccessor("onframefound", nullptr, &AudioDecoder::SetOnFrameFound),
@@ -113,7 +114,7 @@ void AudioDecoder::Stop(const Napi::CallbackInfo& info) {
 
   assert(audio_decoder_);
   if(audio_decoder_) {
-    int err; 
+    int err;
     err = audio_decoder_->Stop();
     if(err) {
       LOG(ERROR) << " failed to start the audio decoder";
@@ -122,6 +123,22 @@ void AudioDecoder::Stop(const Napi::CallbackInfo& info) {
     }
   }
 }
+
+void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  assert(audio_decoder_);
+  if(audio_decoder_) {
+    int err;
+    err = audio_decoder_->Pause();
+    if(err) {
+      LOG(ERROR) << " failed to start the audio decoder";
+      Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
+      return;
+    }
+  }
+}
+
 
 void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();

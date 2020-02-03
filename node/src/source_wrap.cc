@@ -15,6 +15,7 @@ Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("prepare", &Source::Prepare),
                     InstanceMethod("start", &Source::Start),
                     InstanceMethod("stop", &Source::Stop),
+                    InstanceMethod("pause", &Source::Pause),
                     InstanceMethod("requestPidChannel", &Source::RequestPidChannel),
                     InstanceMethod("findStream", &Source::FindStream),
                     InstanceAccessor("datasource", &Source::dataSource, &Source::SetDataSource),
@@ -61,7 +62,6 @@ Napi::Value Source::hasAudio(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), source_->HasAudio());
 }
 
-
 void Source::Prepare(const Napi::CallbackInfo& info) {
 
   Napi::Env env = info.Env();
@@ -101,6 +101,11 @@ void Source::Start(const Napi::CallbackInfo& info) {
 void Source::Stop(const Napi::CallbackInfo& info) {
   assert(source_);
   source_->Stop();
+}
+
+void Source::Pause(const Napi::CallbackInfo& info) {
+  assert(source_);
+  source_->Pause();
 }
 
 

@@ -23,6 +23,7 @@ private:
   void Prepare(const Napi::CallbackInfo& info);
   void Start(const Napi::CallbackInfo& info);
   void Stop(const Napi::CallbackInfo& info);
+  void Pause(const Napi::CallbackInfo& info);
 
   void Decode(const Napi::CallbackInfo& info);
 
