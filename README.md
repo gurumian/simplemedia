@@ -22,6 +22,10 @@ npm install
 
 
 ## Examples
+```bash
+./mediaplayer path/to/media
+```
+
 
 ## Tests
 
