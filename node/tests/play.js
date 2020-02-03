@@ -7,10 +7,8 @@ const {Window} = require('bindings')('simplemedia');
 const test_media_uri='/Users/buttonfly/Movies/ace.mp4';
 
 function readAndDispatch() {
-  let event = window.waitEvent();
-  if(event) {
-    setTimeout(readAndDispatch, 1000);
-  }
+  let event = window.pollEvent();
+  setTimeout(readAndDispatch, 100);
 }
 
 let window = new Window();

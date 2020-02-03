@@ -296,7 +296,6 @@ void MediaPlayer::OnSubtitleFound(const AVSubtitle *subtitle) {
     is_first_frame[SUBTITLE]=false;
   }
   else {
-    // int delay_step=kDefaultDelayStep;
     bool synced=true;
     int diff;
     if(source_->HasVideo() || source_->HasAudio()) {

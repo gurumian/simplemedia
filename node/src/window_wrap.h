@@ -15,7 +15,7 @@ private:
   Napi::Value createRenderer(const Napi::CallbackInfo& info);
   void destroyRenderer(const Napi::CallbackInfo& info);
 
-  Napi::Value waitEvent(const Napi::CallbackInfo& info);
+  Napi::Value pollEvent(const Napi::CallbackInfo& info);
 
 private:
   static Napi::FunctionReference constructor;

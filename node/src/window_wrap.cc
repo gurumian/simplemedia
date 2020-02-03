@@ -50,7 +50,7 @@ Napi::Object Window::Init(Napi::Env env, Napi::Object exports) {
                   {
                     InstanceMethod("createRenderer", &Window::createRenderer),
                     InstanceMethod("destroyRenderer", &Window::destroyRenderer),
-                    InstanceMethod("waitEvent", &Window::waitEvent),
+                    InstanceMethod("pollEvent", &Window::pollEvent),
                   });
 
   constructor = Napi::Persistent(func);
@@ -68,17 +68,12 @@ Window::Window(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Window>(info) 
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  // if (info.Length() <= 0 || !info[0].IsExternal()) {
-  //   Napi::TypeError::New(env, "External expected").ThrowAsJavaScriptException();
-  //   return;
-  // }
-
   window_ = CreateWindow();
 }
 
 Window::~Window() {
   SDL_DestroyWindow(window_);
-  // SDL_Quit();
+  SDL_Quit();
 }
 
 Napi::Value Window::createRenderer(const Napi::CallbackInfo& info) {
@@ -99,14 +94,12 @@ void Window::destroyRenderer(const Napi::CallbackInfo& info) {
   SDL_DestroyRenderer(external.Data());
 }
 
-Napi::Value Window::waitEvent(const Napi::CallbackInfo& info) {
+Napi::Value Window::pollEvent(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   SDL_Event event;
-  SDL_WaitEvent(&event);
-  if(event.type == SDL_QUIT) {
-    return env.Null();
+  if(SDL_PollEvent(&event)) {
+    return Napi::Number::New(info.Env(), event.key.keysym.sym);
   }
-
-  return Napi::Number::New(info.Env(), event.key.keysym.sym);
+  return env.Null();
 }
