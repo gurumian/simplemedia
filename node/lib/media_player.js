@@ -20,7 +20,6 @@ module.exports = class MediaPlayer {
     this.audio.renderer.trace = true;
 
     this.isFirstFrame = true;
-    this.pts = 0;
   }
 
   async prepare() {
@@ -80,12 +79,12 @@ module.exports = class MediaPlayer {
       var delay = 0;
       if(frame) {
         if(this.isFirstFrame) {
-          this.pts = frame.pts;
+          this.audio.pts = frame.pts;
           this.isFirstFrame = false;
         }
         else {
-          delay = frame.pts - this.pts;
-          this.pts = frame.pts;
+          delay = frame.pts - this.audio.pts;
+          this.audio.pts = frame.pts;
         }
 
         this.audio.renderer.render(frame.data);
@@ -108,16 +107,61 @@ module.exports = class MediaPlayer {
 
   _decodeVideo() {
     this.video.decoder.decode(frame => {
+      // if(is_first_frame[VIDEO]) {
+      //   last_pts_[VIDEO] = frame->pts;
+      //   timer_[VIDEO].update();
+      //   is_first_frame[VIDEO]=false;
+      // }
+      // else {
+      //   int delay_step=kDefaultDelayStep;
+      //   bool synced=true;
+      //   if(source_->HasVideo() && source_->HasAudio()) {
+      //     int diff = last_pts_[VIDEO] - last_pts_[AUDIO] ;
+      //     if(diff > sync_threshold_) { // 1:1000000
+      //       synced=false;
+      //     }
+      //   }
+    
+      //   const int64_t frame_delay = frame->pts - last_pts_[VIDEO];
+      //   last_pts_[VIDEO] = frame->pts;
+      //   timer_[VIDEO].wait(frame_delay + (synced ? 0 : delay_step));
+      // }
+    
+      // if(width_ != frame->width || height_ != frame->height) {
+      //   width_ = frame->width;
+      //   height_ = frame->height;
+      //   if(video_renderer_) video_renderer_->Resize(width_, height_);
+      // }
+    
+
       var delay = 0;
       if(frame) {
         if(this.isFirstFrame) {
-          this.pts = frame.pts;
+          this.video.pts = frame.pts;
           this.isFirstFrame = false;
         }
         else {
-          delay = frame.pts - this.pts;
-          this.pts = frame.pts;
+          const sync_threshold = 5000;
+          const delay_step = 100;
+          var synced = true;
+          if(this.source.hasAudio && this.source.hasVideo) {
+            let diff = this.video.pts - this.audio.pts;
+            if(diff > sync_threshold)
+              synced = false;
+          }
+
+          delay = frame.pts - this.video.pts;
+          if(synced)
+            delay += delay_step;
+
+          this.video.pts = frame.pts;
         }
+
+        if(this.video.width != frame.width || this.video.height != frame.height) {
+          this.video.width = frame.width;
+          this.video.height = frame.height;
+          this.video.renderer.resize(this.video.width, this.video.height);
+        } 
 
         this.video.renderer.render(frame.data);
         this.count++;
@@ -167,7 +211,7 @@ module.exports = class MediaPlayer {
   resume() {
     this.start();  
   }
-  
+
   /**
    * @param {string} datasource
    */

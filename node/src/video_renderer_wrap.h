@@ -22,6 +22,7 @@ private:
   void Prepare(const Napi::CallbackInfo& info);
   void Hexdump(const uint8_t *data, size_t len);
   void Render(const Napi::CallbackInfo& info);
+  void Resize(const Napi::CallbackInfo& info);
   
   void EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value);
   Napi::Value log_enabled(const Napi::CallbackInfo& info);

@@ -99,9 +99,14 @@ void Window::destroyRenderer(const Napi::CallbackInfo& info) {
   SDL_DestroyRenderer(external.Data());
 }
 
-void Window::waitEvent(const Napi::CallbackInfo& info) {
+Napi::Value Window::waitEvent(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   SDL_Event event;
   SDL_WaitEvent(&event);
+  if(event.type == SDL_QUIT) {
+    return env.Null();
+  }
+
+  return Napi::Number::New(info.Env(), event.key.keysym.sym);
 }

@@ -6,11 +6,11 @@ const {Window} = require('bindings')('simplemedia');
 // const test_media_uri='/Users/buttonfly/Music/Aru_Hareta_Hi_Ni.mp3';
 const test_media_uri='/Users/buttonfly/Movies/ace.mp4';
 
-function waitEvent() {
-  window.waitEvent();
-  setTimeout(()=>{
-    waitEvent();
-  });
+function readAndDispatch() {
+  let event = window.waitEvent();
+  if(event) {
+    setTimeout(readAndDispatch, 1000);
+  }
 }
 
 let window = new Window();
@@ -35,5 +35,5 @@ process.stdin.setRawMode(true);
 process.stdin.resume();
 process.stdin.on('data', process.exit.bind(process, 0));
 
-waitEvent();
+readAndDispatch();
 console.log('end!');

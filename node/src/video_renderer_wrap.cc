@@ -121,6 +121,23 @@ void VideoRenderer::Render(const Napi::CallbackInfo& info) {
   av_frame_free(&frame);
 }
 
+void VideoRenderer::Resize(const Napi::CallbackInfo& info) {
+  if (info.Length() <= 0 || !info[0].IsNumber()) {
+    Napi::TypeError::New(info.Env(), "Number expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+  if (!info[1].IsNumber()) {
+    Napi::TypeError::New(info.Env(), "Number expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+
+  int width = (int) info[0].ToNumber();
+  int height = (int) info[1].ToNumber();
+  renderer_->Resize(width, height);
+}
+
 void VideoRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !value.IsBoolean()) {
