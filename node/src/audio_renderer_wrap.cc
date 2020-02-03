@@ -113,7 +113,6 @@ void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {
 
 
 void AudioRenderer::Render(const Napi::CallbackInfo& info) {
-  // if(log_enabled_) LOG(INFO) << __func__;
   if (info.Length() <= 0 || !info[0].IsExternal()) {
     Napi::TypeError::New(info.Env(), "External expected").ThrowAsJavaScriptException();
     return;

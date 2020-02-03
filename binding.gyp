@@ -22,6 +22,7 @@
         "src/timer.cc",
         "src/video_decoder.cc",
         "node/src/addon.cc",
+        "node/src/frame_wrap.cc",
         "node/src/source_wrap.cc",
         "node/src/audio_decoder_wrap.cc",
         "node/src/audio_renderer_wrap.cc",

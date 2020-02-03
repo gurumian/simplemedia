@@ -1,7 +1,7 @@
 'use strict'
 
 const {Source, AudioDecoder, AudioRenderer} = require('bindings')('simplemedia');
-
+const adjust = 3;
 module.exports = class AudioPlayer {
   constructor() {
     this.source = new Source();
@@ -10,6 +10,9 @@ module.exports = class AudioPlayer {
 
     this.source.trace = true;
     this.renderer.trace = true;
+
+    this.isFirstFrame = true;
+    this.pts = 0;
   }
 
   async prepare() {
@@ -47,31 +50,41 @@ module.exports = class AudioPlayer {
 
   _decode() {
     this.decoder.decode(frame => {
+      var delay = 0;
       if(frame) {
-        this.renderer.render(frame);
+        if(this.isFirstFrame) {
+          this.pts = frame.pts;
+          this.isFirstFrame = false;
+        }
+        else {
+          delay = frame.pts - this.pts;
+          this.pts = frame.pts;
+        }
+
+        this.renderer.render(frame.data);
         this.count++;
        
         setTimeout(()=>{
           this._decode();
-        }, 0 );
+        }, (delay / 1000) - adjust);
       }
       else {
         console.log('null packet');
         console.log('count: ' + this.count);
-        // setTimeout(()=>{
-        //   if(this.onend)
-        //     this.onend();
-        // });
+        setTimeout(()=>{
+          if(this.onend)
+            this.onend();
+        });
       }
     });
   }
 
-  // /**
-  //  * @param {() => void} onend
-  //  */
-  // set onended(onend) {
-  //   this.onend = onend;
-  // }
+  /**
+   * @param {() => void} onend
+   */
+  set onended(onend) {
+    this.onend = onend;
+  }
 
   start() {
     this.source.start();

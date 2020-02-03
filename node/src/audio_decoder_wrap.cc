@@ -3,7 +3,7 @@
 #include <uv.h>
 #include "log_message.h"
 #include <future>
-
+#include "frame_wrap.h"
 
 struct Buffer {
   uint8_t *data;
@@ -159,8 +159,11 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
     return;
   }
 
-  audio_decoder_->Decode([&](const AVFrame *frame){
-    callback.Call(env.Global(), {Napi::External<AVFrame>::New(env, copyFrame(frame))});   
+  audio_decoder_->Decode([&](const AVFrame *arg){
+    auto copied = copyFrame(arg);
+    auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)copied));
+
+    callback.Call(env.Global(), {frame});
   });
 }
 

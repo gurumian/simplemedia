@@ -8,11 +8,13 @@ player.datasource = test_media_uri;
 player.prepare().then(resolve => {
   console.log('prepared');
   player.start();
+}).catch(reject => {
+
 });
 
-// player.onend = (() => {
-//   console.log('end-of-stream!');
-// });
+player.onend = (() => {
+  console.log('end-of-stream!');
+});
 
 console.log('Press any key to exit');
 process.stdin.setRawMode(true);
