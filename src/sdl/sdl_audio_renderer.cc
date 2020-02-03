@@ -40,7 +40,6 @@ SdlAudioRenderer::~SdlAudioRenderer() {
 }
 
 int SdlAudioRenderer::Prepare() {
-  // int err;
   SDL_AudioFormat sdl_fmt = formatDictionary[(AVSampleFormat)fmt_];
   if(log_enabled_) LOG(INFO) << __func__ << " fmt : " << fmt_ << " sdl fmt: " << sdl_fmt;
   SDL_AudioSpec spec;
