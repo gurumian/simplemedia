@@ -26,7 +26,7 @@ module.exports = class AudioPlayer {
           });
       
           this.decoder = new AudioDecoder();
-          this.decoder.prepare(source.findStream(pid));
+          this.decoder.prepare(fmt.streams[pid]['native']);
           this.decoder.pidchannel = pidchannel;
           this.decoder.trace=true;
       

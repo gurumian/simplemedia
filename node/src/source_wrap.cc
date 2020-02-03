@@ -81,6 +81,7 @@ Napi::Value Source::Prepare(const Napi::CallbackInfo& info) {
   for (int i = 0; i < (int)fmt->nb_streams; i++) {
     auto stream = Napi::Object::New(env);
     AVStream *strm = fmt->streams[i];
+    stream["native"] = Napi::External<AVStream>::New(env, strm);
     AVCodecParameters *codec_param = strm->codecpar;
     stream["duration"] = Napi::Number::New(env, strm->duration);
     AVCodecID codec_id = codec_param->codec_id;
