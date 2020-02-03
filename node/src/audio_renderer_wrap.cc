@@ -30,7 +30,7 @@ AudioRenderer::AudioRenderer(const Napi::CallbackInfo& info) : Napi::ObjectWrap<
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  audio_renderer_.reset(new gurum::SdlAudioRenderer);
+  renderer_.reset(new gurum::SdlAudioRenderer);
 }
 
 void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {
@@ -99,10 +99,10 @@ void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {
 
   int64_t channellayout = (int64_t) value.ToNumber();
   
-  assert(audio_renderer_);
-  if(audio_renderer_) {
+  assert(renderer_);
+  if(renderer_) {
     int err; 
-    err = audio_renderer_->Prepare((AVSampleFormat)sampleformat, channels, samplerate, channellayout);
+    err = renderer_->Prepare((AVSampleFormat)sampleformat, channels, samplerate, channellayout);
     if(err) {
       LOG(ERROR) << " failed to prepare the audio renderer";
       Napi::TypeError::New(env, "prepare exception").ThrowAsJavaScriptException();
@@ -121,7 +121,7 @@ void AudioRenderer::Render(const Napi::CallbackInfo& info) {
   Napi::External<AVFrame> external = info[0].As<Napi::External<AVFrame>>();
   AVFrame *frame = external.Data();
   assert(frame);
-  audio_renderer_->Render(frame, [&](uint8_t *data, size_t len)->int {
+  renderer_->Render(frame, [&](uint8_t *data, size_t len)->int {
     // Hexdump((const uint8_t *)data, (size_t)len);
     return 0;
   });
@@ -135,7 +135,7 @@ void AudioRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value 
     return;
   }
   log_enabled_ = value.ToBoolean();
-  if(audio_renderer_) audio_renderer_->EnableLog(log_enabled_);
+  if(renderer_) renderer_->EnableLog(log_enabled_);
 }
 
 Napi::Value AudioRenderer::log_enabled(const Napi::CallbackInfo& info) {

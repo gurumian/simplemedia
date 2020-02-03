@@ -18,7 +18,7 @@
 
 #include <simplemedia/media_player.h>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL2.h>
 
 
 using namespace gurum;

@@ -1,5 +1,5 @@
-#ifndef GURUM_AUDIO_DECODER_WRAP_H
-#define GURUM_AUDIO_DECODER_WRAP_H
+#ifndef GURUM_VIDEO_DECODER_WRAP_H
+#define GURUM_VIDEO_DECODER_WRAP_H
 
 #include <napi.h>
 
@@ -10,13 +10,13 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
-#include "simplemedia/audio_decoder.h"
+#include "simplemedia/video_decoder.h"
 
 
-class AudioDecoder : public Napi::ObjectWrap<AudioDecoder> {
+class VideoDecoder : public Napi::ObjectWrap<VideoDecoder> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
-  AudioDecoder(const Napi::CallbackInfo& info);
+  VideoDecoder(const Napi::CallbackInfo& info);
 
 
 private:
@@ -35,10 +35,10 @@ private:
 
   void Hexdump(const uint8_t *data, size_t len);
 
-  Napi::Value samplerate(const Napi::CallbackInfo& info);
-  Napi::Value sampleformat(const Napi::CallbackInfo& info);
-  Napi::Value channels(const Napi::CallbackInfo& info);
-  Napi::Value channellayout(const Napi::CallbackInfo& info);
+  Napi::Value width(const Napi::CallbackInfo& info);
+  Napi::Value height(const Napi::CallbackInfo& info);
+  Napi::Value pixelFormat(const Napi::CallbackInfo& info);
+
 
   void EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value);
   Napi::Value log_enabled(const Napi::CallbackInfo& info);
@@ -52,10 +52,10 @@ private:
   // Napi::ThreadSafeFunction on_frame_found_;
   // Napi::ThreadSafeFunction on_null_packet_sent_;
 
-  std::unique_ptr<gurum::AudioDecoder> decoder_{};
+  std::unique_ptr<gurum::VideoDecoder> decoder_{};
   bool log_enabled_{false};
 };
 
-#endif // GURUM_AUDIO_DECODER_WRAP_H
+#endif // GURUM_VIDEO_DECODER_WRAP_H
 
 

@@ -21,6 +21,8 @@ Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
                     InstanceAccessor("datasource", &Source::dataSource, &Source::SetDataSource),
                     InstanceAccessor("audioPid", &Source::audioPid, nullptr),
                     InstanceAccessor("hasAudio", &Source::hasAudio, nullptr),
+                    InstanceAccessor("videoPid", &Source::videoPid, nullptr),
+                    InstanceAccessor("hasVideo", &Source::hasVideo, nullptr),
                     InstanceAccessor("trace", &Source::log_enabled, &Source::EnableLog),
                   });
 
@@ -59,6 +61,14 @@ Napi::Value Source::audioPid(const Napi::CallbackInfo& info) {
   
 Napi::Value Source::hasAudio(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), source_->HasAudio());
+}
+
+Napi::Value Source::videoPid(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), source_->videoPid());
+}
+  
+Napi::Value Source::hasVideo(const Napi::CallbackInfo& info) {
+  return Napi::Boolean::New(info.Env(), source_->HasVideo());
 }
 
 Napi::Value Source::Prepare(const Napi::CallbackInfo& info) {
