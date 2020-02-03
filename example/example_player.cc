@@ -25,31 +25,6 @@ using namespace gurum;
 
 static Uint32 MEDIA_EVENT_TYPE=0;
 
-static
-int Resize(SDL_Renderer *renderer, SDL_Texture **texture, int width, int height) {
-  int access;
-  int w, h;
-  int err;
-  Uint32 fmt = SDL_PIXELFORMAT_YV12; // TODO:
-  err = SDL_QueryTexture(*texture, &fmt, &access, &w, &h);
-  if(err < 0 || width != w || height != h) {
-    void *pixels;
-    int pitch;
-    SDL_DestroyTexture(*texture);
-    if (!(*texture = SDL_CreateTexture(renderer, fmt, SDL_TEXTUREACCESS_STREAMING, width, height)))
-      return -1;
-
-    if (SDL_SetTextureBlendMode(*texture, SDL_BLENDMODE_BLEND) < 0)
-      return -1;
-
-    if (SDL_LockTexture(*texture, NULL, &pixels, &pitch) < 0)
-      return -1;
-    memset(pixels, 255, pitch * height);
-    SDL_UnlockTexture(*texture);
-  }
-  return err;
-}
-
 int InitSDL() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -66,14 +41,6 @@ int InitSDL() {
 
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
-  // If you want multisampling, uncomment the below lines and set a sample count
-  static const int kMsaaSampleCount = 0; //4;
-  // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-  // SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, kMsaaSampleCount);
-
-  /*
-   * In a real application you might want to initialize more subsystems
-   */
   int flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS;
   SDL_Init(flags);
 
