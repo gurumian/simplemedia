@@ -19,23 +19,6 @@ extern "C" {
 
 namespace gurum {
 
-AudioEncoder::AudioEncoder() {
-}
-
-AudioEncoder::~AudioEncoder() {
-}
-
-
-// int AudioEncoder::DidPrepare() {
-//   // TODO:
-
-//   AVDictionary *opts = nullptr;
-//   av_dict_set(&opts, "refcounted_frames",  "1", 0);
-//   int err = avcodec_open2(codec_context_, codec_, &opts);
-//   assert(err==0);
-//   return 0;
-// }
-
 int AudioEncoder::Encode(AVFrame *frame, OnPacketFound on_packet_found) {
 #if (LIBAVCODEC_VERSION_MAJOR > 57)
   int ret = avcodec_send_frame(codec_context_, frame);

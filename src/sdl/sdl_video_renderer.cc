@@ -20,22 +20,10 @@ SdlVideoRenderer::~SdlVideoRenderer() {
     SDL_DestroyTexture(texture_);
     texture_ = nullptr;
   }
-
-//  if(renderer_) {
-//    SDL_DestroyRenderer(renderer_);
-//    renderer_ = nullptr;
-//  }
-//
-//  if(created_window_ && window_) {
-//    SDL_DestroyWindow(window_);
-//    window_=nullptr;
-//  }
 }
 
 int SdlVideoRenderer::Prepare() {
-
   Resize(w_, h_);
-  // CHECK_NOTNULL(texture_);
 
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
   SDL_RenderSetLogicalSize(renderer_, w_, h_);
@@ -64,13 +52,6 @@ int SdlVideoRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
   current_pts_ = frame->pts;
 
   Invalidate();
-
-//  Blit((void *)renderer_);
-  // hook here
-  // It is assumed that the master video texture lays on the bottom most.
-  // You have a chance to visit all textures with the renderer instance.
-//  Invalidate(frame.pts);
-//  SDL_RenderPresent(renderer_);
 
   if(on_raw_data) on_raw_data(frame->data[0], frame->linesize[0]); //
 
@@ -122,7 +103,6 @@ int SdlVideoRenderer::Blit(const SDL_Rect *rect) {
 
 void SdlVideoRenderer::Invalidate(const SDL_Rect *rect) {
   std::lock_guard<std::mutex> lk(lck_);
-//  SDL_Renderer *renderer = static_cast<SDL_Renderer *>(this->renderer());
   SDL_RenderClear(renderer_);
   Blit();
   if(on_invalidated_) on_invalidated_(renderer_, rect);

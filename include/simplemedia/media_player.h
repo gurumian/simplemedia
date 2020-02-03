@@ -77,7 +77,6 @@ private:
   static const int kDefaultSyncThreshold;
   static const int kDefaultDelayStep;
 
-  // std::condition_variable cond_;
   std::mutex lck_;
   std::unique_ptr<Source> source_{new Source};
 
@@ -92,7 +91,6 @@ private:
   Timer timer_[NUMOF_STREAM_TYPE];
   int64_t last_pts_[NUMOF_STREAM_TYPE] = {0, 0, 0};
   bool is_first_frame[NUMOF_STREAM_TYPE] = {true, true, true};
-  // void *window_=nullptr;
   State state_=none;
 
   int width_=0;

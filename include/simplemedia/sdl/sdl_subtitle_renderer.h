@@ -27,13 +27,8 @@ public:
 
   int Render(const AVSubtitle *subtitle, OnRawData on_raw_data=nullptr) override;
   int Resize(int width, int height) override;
-  // void Hexdump(uint8_t *data, size_t len);
-
+ 
   void EraseTexture();
-
-  // SDL_Window *window() {
-  //   return window_;
-  // }
 
   SDL_Renderer *renderer() {
     return (SDL_Renderer *) renderer_;
@@ -49,12 +44,8 @@ private:
   void UpdateRect(const AVSubtitleRect &rect);
 
 private:
-  // SDL_Window *window_ = nullptr;
   SDL_Renderer *renderer_ = nullptr;
   SDL_Texture *texture_ = nullptr;
-
-  // bool created_window_=false;
-  // bool created_renderer_=false;
 
   AVPixelFormat pixel_fmt_=(AVPixelFormat)0;
   int w_=0;

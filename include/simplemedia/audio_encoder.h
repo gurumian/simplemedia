@@ -7,8 +7,8 @@ namespace gurum {
 
 class AudioEncoder : public Encoder {
 public:
-  AudioEncoder();
-  virtual ~AudioEncoder();
+  AudioEncoder()=default;
+  virtual ~AudioEncoder()=default;
 
   int Encode(AVFrame *frame, OnPacketFound on_packet_found) override;
 

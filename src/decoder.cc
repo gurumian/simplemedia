@@ -61,17 +61,12 @@ int Decoder::Prepare(AVStream *stream) {
     assert(err==0);
   }
 
-
-  //using namespace std::placeholders;
-  //thread_->PostTask(std::bind(&Decoder::Run, this));
-
   return 0;
 }
 
 int Decoder::Start() {
   assert(pidchannel_);
   state_=started;
-  // lk.unlock();
   if(! thread_)
     thread_= base::SimpleThread::CreateThread();
 
@@ -84,7 +79,6 @@ int Decoder::Start() {
 }
 
 int Decoder::Pause() {
-  // std::lock_guard<std::mutex> lk(lck_, std::adopt_lock);
   state_=paused;
   return 0;
 }

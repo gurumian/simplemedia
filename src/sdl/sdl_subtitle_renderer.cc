@@ -20,43 +20,9 @@ SdlSubtitleRenderer::~SdlSubtitleRenderer() {
     sws_freeContext(sub_convert_ctx_);
     sub_convert_ctx_=nullptr;
   }
-
-//  if(texture_) {
-//    SDL_DestroyTexture(texture_);
-//    texture_ = nullptr;
-//  }
-//
-//  if(created_renderer_ && renderer_) {
-//    SDL_DestroyRenderer(renderer_);
-//    renderer_ = nullptr;
-//  }
 }
 
 int SdlSubtitleRenderer::Prepare() {
-//  if(! window_) {
-//    window_ = SDL_CreateWindow(
-//        title_.c_str(),
-//        SDL_WINDOWPOS_UNDEFINED,
-//        SDL_WINDOWPOS_UNDEFINED,
-//        w_, h_,
-//        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-//    CHECK_NOTNULL(window_);
-//  }
-
-//  if(! renderer_) {
-//    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-//    CHECK_NOTNULL(renderer_);
-//    created_renderer_=true;
-//
-//    CHECK_NOTNULL(texture_);
-//
-//    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-//    SDL_RenderSetLogicalSize(renderer_, w_, h_);
-//    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-//    SDL_RenderClear(renderer_);
-//    SDL_RenderPresent(renderer_);
-//  }
-
   Resize(w_, h_);
   return 0;
 }
@@ -71,7 +37,6 @@ int SdlSubtitleRenderer::Prepare(int width, int height, int fmt) {
 }
 
 int SdlSubtitleRenderer::Render(const AVSubtitle *subtitle, OnRawData on_raw_data) {
-  LOG(INFO) << __func__;
   uint8_t* pixels[4];
   int pitch[4];
 
@@ -110,11 +75,6 @@ int SdlSubtitleRenderer::Render(const AVSubtitle *subtitle, OnRawData on_raw_dat
   end_display_time_ = subtitle->pts + subtitle->end_display_time * INT64_C(1000);
   LOG(INFO) << " " << start_display_time_ << " ~ " << end_display_time_ << " pts: " << subtitle->pts;
 
-
-//  SDL_RenderClear(renderer_);
-//  SDL_RenderCopy(renderer_, texture_, nullptr, nullptr);
-//  SDL_RenderPresent(renderer_);
-
   return 0;
 }
 
@@ -151,18 +111,6 @@ int SdlSubtitleRenderer::Resize(int width, int height) {
   return err;
 }
 
-// void SdlSubtitleRenderer::Hexdump(uint8_t *data, size_t len) {
-//   LOG(INFO) << __func__ << " data-length: " << len;
-
-//   for(int i=0; i < len; i++) {
-//     fprintf(stderr, "%02x ", data[i]);
-
-//     if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-//   }
-
-//   fprintf(stderr, "\n");
-// }
-
 void SdlSubtitleRenderer::Blit(void *renderer_arg, int64_t pts) {
   if(pts > end_display_time_)
     return;
@@ -176,7 +124,6 @@ void SdlSubtitleRenderer::Blit(void *renderer_arg, int64_t pts) {
 }
 
 void SdlSubtitleRenderer::EraseTexture() {
-  LOG(INFO) << __func__ << " width: " << w_;
   uint8_t *pixels;
   int pitch;
   if (!SDL_LockTexture(texture_, (SDL_Rect *) NULL, (void **)&pixels, &pitch)) {

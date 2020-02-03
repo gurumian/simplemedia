@@ -1,10 +1,3 @@
-/*
- * main.cc
- *
- *  Created on: Feb 1, 2017
- *      Author: buttonfly
- */
-
 #include <simplemedia/config.h>
 #include <iostream>
 #include <fcntl.h>

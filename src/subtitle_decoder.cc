@@ -35,7 +35,6 @@ int SubtitleDecoder::decode(AVPacket *pkt, OnSubtitleFound on_subtitle_found) {
   }
 
   decoded = FFMIN(err, pkt->size);
-//  LOG(INFO) << " decoded: " << decoded;
   if(got && subtitle_.format ==0) {
     if(on_subtitle_found) on_subtitle_found(&subtitle_);
   }

@@ -46,11 +46,8 @@ private:
   int Blit(const SDL_Rect *rect=nullptr);
 
 private:
-  // SDL_Window *window_ = nullptr;
   SDL_Renderer *renderer_ = nullptr;
   SDL_Texture *texture_ = nullptr;
-
-  // bool created_window_=false;
 
   AVPixelFormat pixel_fmt_=(AVPixelFormat)0;
   int w_=0;

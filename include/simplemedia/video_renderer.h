@@ -18,8 +18,6 @@ namespace gurum {
 
 class VideoRenderer : public Renderer {
 public:
-//  using OnInvalidated=std::function<void(void *)>;
-
 	void SetWidth(int w) {w_=w;}
 	void SetHeight(int h) {h_=h;}
 	void SetPixelFormat(AVPixelFormat fmt) {pixel_fmt_=fmt;}
@@ -32,16 +30,6 @@ public:
     title_ = title;
   }
 
-//  void SetOnInvalidated(OnInvalidated on_invalidated){on_invalidated_=on_invalidated;}
-//  virtual void Invalidate(/* rect */)=0;
-
-#if 0
-  virtual void *window()=0;
-  virtual void *renderer()=0;
-#endif
-
-//  virtual int Blit(void *context)=0;
-
   void SetSubtitleRenderer(SubtitleRenderer *renderer){subtitle_renderer_=renderer;}
 
 protected:
@@ -49,7 +37,6 @@ protected:
   int w_=0;
   int h_=0;
   std::string title_;
-//  OnInvalidated on_invalidated_=nullptr;
   SubtitleRenderer *subtitle_renderer_=nullptr;
 };
 
