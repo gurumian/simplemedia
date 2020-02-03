@@ -7,7 +7,7 @@ module.exports = class MediaPlayer {
     this.source = new Source();
     this.audio = {};
     this.video = {};
-    this.renderer = renderer;
+    this.renderer = renderer; // native renderer
     
     this.audio.renderer = new AudioRenderer();
     if(renderer) {
@@ -107,33 +107,6 @@ module.exports = class MediaPlayer {
 
   _decodeVideo() {
     this.video.decoder.decode(frame => {
-      // if(is_first_frame[VIDEO]) {
-      //   last_pts_[VIDEO] = frame->pts;
-      //   timer_[VIDEO].update();
-      //   is_first_frame[VIDEO]=false;
-      // }
-      // else {
-      //   int delay_step=kDefaultDelayStep;
-      //   bool synced=true;
-      //   if(source_->HasVideo() && source_->HasAudio()) {
-      //     int diff = last_pts_[VIDEO] - last_pts_[AUDIO] ;
-      //     if(diff > sync_threshold_) { // 1:1000000
-      //       synced=false;
-      //     }
-      //   }
-    
-      //   const int64_t frame_delay = frame->pts - last_pts_[VIDEO];
-      //   last_pts_[VIDEO] = frame->pts;
-      //   timer_[VIDEO].wait(frame_delay + (synced ? 0 : delay_step));
-      // }
-    
-      // if(width_ != frame->width || height_ != frame->height) {
-      //   width_ = frame->width;
-      //   height_ = frame->height;
-      //   if(video_renderer_) video_renderer_->Resize(width_, height_);
-      // }
-    
-
       var delay = 0;
       if(frame) {
         if(this.isFirstFrame) {
