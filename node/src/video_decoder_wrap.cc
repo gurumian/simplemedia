@@ -1,54 +1,54 @@
-#include "audio_decoder_wrap.h"
 #include <napi.h>
 #include <uv.h>
 #include "log_message.h"
 #include <future>
 #include "frame_wrap.h"
+#include "video_decoder_wrap.h"
 
 // struct Buffer {
 //   uint8_t *data;
 //   size_t size;
 // };
 
-Napi::FunctionReference AudioDecoder::constructor;
+Napi::FunctionReference VideoDecoder::constructor;
 
-Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
+Napi::Object VideoDecoder::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
   Napi::Function func =
       DefineClass(env,
-                  "AudioDecoder",
+                  "VideoDecoder",
                   {
-                    InstanceMethod("prepare", &AudioDecoder::Prepare),
-                    InstanceMethod("start", &AudioDecoder::Start),
-                    InstanceMethod("stop", &AudioDecoder::Stop),
-                    InstanceMethod("pause", &AudioDecoder::Pause),
-                    InstanceMethod("decode", &AudioDecoder::Decode),
-                    InstanceAccessor("pidchannel", nullptr, &AudioDecoder::SetPidChannel),
-                    InstanceAccessor("sampleformat", &AudioDecoder::sampleformat, nullptr),
-                    InstanceAccessor("samplerate", &AudioDecoder::samplerate, nullptr),
-                    InstanceAccessor("channels", &AudioDecoder::channels, nullptr),
-                    InstanceAccessor("channellayout", &AudioDecoder::channellayout, nullptr),
-                    InstanceAccessor("trace", &AudioDecoder::log_enabled, &AudioDecoder::EnableLog),
+                    InstanceMethod("prepare", &VideoDecoder::Prepare),
+                    InstanceMethod("start", &VideoDecoder::Start),
+                    InstanceMethod("stop", &VideoDecoder::Stop),
+                    InstanceMethod("pause", &VideoDecoder::Pause),
+                    InstanceMethod("decode", &VideoDecoder::Decode),
+                    InstanceAccessor("pidchannel", nullptr, &VideoDecoder::SetPidChannel),
+                    InstanceAccessor("width", &VideoDecoder::width, nullptr),
+                    InstanceAccessor("height", &VideoDecoder::height, nullptr),
+                    InstanceAccessor("pixelformat", &VideoDecoder::pixelFormat, nullptr),
+                    InstanceAccessor("trace", &VideoDecoder::log_enabled, &VideoDecoder::EnableLog),
                   });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("AudioDecoder", func);
+  exports.Set("VideoDecoder", func);
 
   return exports;
 }
 
-AudioDecoder::AudioDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<AudioDecoder>(info) {
+VideoDecoder::VideoDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<VideoDecoder>(info) {
+  LOG(INFO) << __func__;
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  decoder_.reset(new gurum::AudioDecoder);
+  decoder_.reset(new gurum::VideoDecoder);
 }
 
 
-void AudioDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value) {
+void VideoDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value) {
   if(log_enabled_) LOG(INFO) << __func__;
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !info[0].IsExternal()) {
@@ -65,7 +65,7 @@ void AudioDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Val
   decoder_->SetPidChannel(pidchannel);
 }
 
-void AudioDecoder::Prepare(const Napi::CallbackInfo& info) {
+void VideoDecoder::Prepare(const Napi::CallbackInfo& info) {
   if(log_enabled_) LOG(INFO) << __func__;
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !info[0].IsExternal()) {
@@ -84,14 +84,14 @@ void AudioDecoder::Prepare(const Napi::CallbackInfo& info) {
     int err; 
     err = decoder_->Prepare(strm);
     if(err) {
-      LOG(ERROR) << " failed to prepare the audio decoder";
+      LOG(ERROR) << " failed to prepare the video decoder";
       Napi::TypeError::New(env, "prepare exception").ThrowAsJavaScriptException();
       return;
     }
   }
 }
 
-void AudioDecoder::Start(const Napi::CallbackInfo& info) {
+void VideoDecoder::Start(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   assert(decoder_);
@@ -99,14 +99,14 @@ void AudioDecoder::Start(const Napi::CallbackInfo& info) {
     int err; 
     err = decoder_->Start();
     if(err) {
-      LOG(ERROR) << " failed to start the audio decoder";
+      LOG(ERROR) << " failed to start the video decoder";
       Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
       return;
     }
   }
 }
 
-void AudioDecoder::Stop(const Napi::CallbackInfo& info) {
+void VideoDecoder::Stop(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   assert(decoder_);
@@ -114,14 +114,14 @@ void AudioDecoder::Stop(const Napi::CallbackInfo& info) {
     int err;
     err = decoder_->Stop();
     if(err) {
-      LOG(ERROR) << " failed to start the audio decoder";
+      LOG(ERROR) << " failed to start the video decoder";
       Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
       return;
     }
   }
 }
 
-void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
+void VideoDecoder::Pause(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   assert(decoder_);
@@ -129,7 +129,7 @@ void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
     int err;
     err = decoder_->Pause();
     if(err) {
-      LOG(ERROR) << " failed to start the audio decoder";
+      LOG(ERROR) << " failed to start the video decoder";
       Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
       return;
     }
@@ -137,7 +137,7 @@ void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
 }
 
 
-void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
+void VideoDecoder::Decode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() <= 0 || !info[0].IsFunction()) {
@@ -167,7 +167,7 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
   });
 }
 
-AVFrame *AudioDecoder::copyFrame(const AVFrame *frame) {
+AVFrame *VideoDecoder::copyFrame(const AVFrame *frame) {
   AVFrame *copied = av_frame_alloc();
   copied->format = frame->format;
   copied->width = frame->width;
@@ -181,23 +181,19 @@ AVFrame *AudioDecoder::copyFrame(const AVFrame *frame) {
   return copied;
 }
 
-Napi::Value AudioDecoder::samplerate(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->samplerate());
+Napi::Value VideoDecoder::width(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), decoder_->width());
 }
 
-Napi::Value AudioDecoder::sampleformat(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->sampleFormat());
+Napi::Value VideoDecoder::height(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), decoder_->height());
 }
 
-Napi::Value AudioDecoder::channels(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->channels());
+Napi::Value VideoDecoder::pixelFormat(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), decoder_->pixelFormat());
 }
 
-Napi::Value AudioDecoder::channellayout(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->channellayout());
-}
-
-void AudioDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
+void VideoDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !value.IsBoolean()) {
     Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
@@ -207,11 +203,11 @@ void AudioDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &
   if(decoder_) decoder_->EnableLog(log_enabled_);
 }
 
-Napi::Value AudioDecoder::log_enabled(const Napi::CallbackInfo& info) {
+Napi::Value VideoDecoder::log_enabled(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), log_enabled_);
 }
 
-void AudioDecoder::Hexdump(const uint8_t *data, size_t len) {
+void VideoDecoder::Hexdump(const uint8_t *data, size_t len) {
   for(int i=0; i < (int)len; i++) {
     fprintf(stderr, "%02x ", data[i]);
 

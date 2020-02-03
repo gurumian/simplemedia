@@ -1,39 +1,40 @@
-#include "audio_renderer_wrap.h"
+#include "video_renderer_wrap.h"
 #include <napi.h>
 #include <uv.h>
 #include "log_message.h"
 #include <unistd.h>
 
-Napi::FunctionReference AudioRenderer::constructor;
+Napi::FunctionReference VideoRenderer::constructor;
 
-Napi::Object AudioRenderer::Init(Napi::Env env, Napi::Object exports) {
+Napi::Object VideoRenderer::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
   Napi::Function func =
       DefineClass(env,
-                  "AudioRenderer",
+                  "VideoRenderer",
                   {
-                    InstanceMethod("prepare", &AudioRenderer::Prepare),
-                    InstanceMethod("render", &AudioRenderer::Render),
-                    InstanceAccessor("trace", &AudioRenderer::log_enabled, &AudioRenderer::EnableLog),
+                    InstanceMethod("prepare", &VideoRenderer::Prepare),
+                    InstanceMethod("render", &VideoRenderer::Render),
+                    InstanceAccessor("trace", &VideoRenderer::log_enabled, &VideoRenderer::EnableLog),
                   });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("AudioRenderer", func);
+  exports.Set("VideoRenderer", func);
 
   return exports;
 }
 
-AudioRenderer::AudioRenderer(const Napi::CallbackInfo& info) : Napi::ObjectWrap<AudioRenderer>(info) {
+VideoRenderer::VideoRenderer(const Napi::CallbackInfo& info) : Napi::ObjectWrap<VideoRenderer>(info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  renderer_.reset(new gurum::SdlAudioRenderer);
+  renderer_.reset(new gurum::SdlVideoRenderer);
 }
 
-void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {
+void VideoRenderer::Prepare(const Napi::CallbackInfo& info) {
+  int pixelformat, width, height;
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !info[0].IsObject()) {
     Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
@@ -41,70 +42,55 @@ void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {
   }
 
   Napi::Object obj = info[0].ToObject();
-  if(!obj.HasOwnProperty("sampleformat")) {
-    Napi::TypeError::New(env, "no sampleformat").ThrowAsJavaScriptException();
+  if(!obj.HasOwnProperty("pixelformat")) {
+    Napi::TypeError::New(env, "no pixelformat").ThrowAsJavaScriptException();
     return;
   }
 
-  Napi::Value value = obj["sampleformat"];
+  Napi::Value value = obj["pixelformat"];
   if(! value.IsNumber()) {
     Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
     return;
   }
 
-  int sampleformat = (int)value.ToNumber();
+  pixelformat = (int)value.ToNumber();
 
 
 
 
-  if(!obj.HasOwnProperty("channels")) {
-    Napi::TypeError::New(env, "no channels").ThrowAsJavaScriptException();
+  if(!obj.HasOwnProperty("width")) {
+    Napi::TypeError::New(env, "no width").ThrowAsJavaScriptException();
     return;
   }
 
-  value = obj["channels"];
+  value = obj["width"];
   if(! value.IsNumber()) {
     Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
     return;
   }
 
-  int channels = (int) value.ToNumber();
+  width = (int) value.ToNumber();
 
 
-  if(!obj.HasOwnProperty("samplerate")) {
-    Napi::TypeError::New(env, "no samplerate").ThrowAsJavaScriptException();
+  if(!obj.HasOwnProperty("height")) {
+    Napi::TypeError::New(env, "no height").ThrowAsJavaScriptException();
     return;
   }
   
-  value = obj["samplerate"];
+  value = obj["height"];
   if(! value.IsNumber()) {
     Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
     return;
   }
 
-  int64_t samplerate = (int64_t) value.ToNumber();
+  height = (int) value.ToNumber();
 
-
-
-  if(!obj.HasOwnProperty("channellayout")) {
-    Napi::TypeError::New(env, "no channellayout").ThrowAsJavaScriptException();
-    return;
-  }
-
-  value = obj["channellayout"];
-  if(! value.IsNumber()) {
-    Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
-    return;
-  }
-
-  int64_t channellayout = (int64_t) value.ToNumber();
-  
   assert(renderer_);
   if(renderer_) {
     int err; 
-    err = renderer_->Prepare((AVSampleFormat)sampleformat, channels, samplerate, channellayout);
+    err = renderer_->Prepare(width, height, pixelformat);
     if(err) {
-      LOG(ERROR) << " failed to prepare the audio renderer";
+      LOG(ERROR) << " failed to prepare the video renderer";
       Napi::TypeError::New(env, "prepare exception").ThrowAsJavaScriptException();
       return;
     }
@@ -112,7 +98,7 @@ void AudioRenderer::Prepare(const Napi::CallbackInfo& info) {
 }
 
 
-void AudioRenderer::Render(const Napi::CallbackInfo& info) {
+void VideoRenderer::Render(const Napi::CallbackInfo& info) {
   if (info.Length() <= 0 || !info[0].IsExternal()) {
     Napi::TypeError::New(info.Env(), "External expected").ThrowAsJavaScriptException();
     return;
@@ -128,22 +114,22 @@ void AudioRenderer::Render(const Napi::CallbackInfo& info) {
   av_frame_free(&frame);
 }
 
-void AudioRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
+void VideoRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !value.IsBoolean()) {
     Napi::TypeError::New(env, "Boolean expected").ThrowAsJavaScriptException();
     return;
   }
   log_enabled_ = value.ToBoolean();
-  if(renderer_) renderer_->EnableLog(log_enabled_);
+  // if(renderer_) renderer_->EnableLog(log_enabled_);
 }
 
-Napi::Value AudioRenderer::log_enabled(const Napi::CallbackInfo& info) {
+Napi::Value VideoRenderer::log_enabled(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), log_enabled_);
 }
 
 
-void AudioRenderer::Hexdump(const uint8_t *data, size_t len) {
+void VideoRenderer::Hexdump(const uint8_t *data, size_t len) {
   for(int i=0; i < (int)len; i++) {
     fprintf(stderr, "%02x ", data[i]);
 

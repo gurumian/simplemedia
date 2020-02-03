@@ -26,6 +26,8 @@ class Source : public Napi::ObjectWrap<Source> {
   
   Napi::Value audioPid(const Napi::CallbackInfo& info);
   Napi::Value hasAudio(const Napi::CallbackInfo& info);
+  Napi::Value videoPid(const Napi::CallbackInfo& info);
+  Napi::Value hasVideo(const Napi::CallbackInfo& info);
   
 
   Napi::Value Prepare(const Napi::CallbackInfo& info);
