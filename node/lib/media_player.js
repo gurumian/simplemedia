@@ -3,13 +3,16 @@
 const {Source, AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
 const adjust = 3;
 module.exports = class MediaPlayer {
-  constructor() {
+  constructor(renderer) {
     this.source = new Source();
     this.audio = {};
     this.video = {};
+    this.renderer = renderer;
     
     this.audio.renderer = new AudioRenderer();
-    this.video.renderer = new VideoRenderer();
+    if(renderer) {
+      this.video.renderer = new VideoRenderer(renderer);
+    }
     
     this.count=0;
 
@@ -164,8 +167,7 @@ module.exports = class MediaPlayer {
   resume() {
     this.start();  
   }
-
-
+  
   /**
    * @param {string} datasource
    */

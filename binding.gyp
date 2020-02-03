@@ -28,6 +28,7 @@
         "node/src/audio_renderer_wrap.cc",
         "node/src/video_decoder_wrap.cc",
         "node/src/video_renderer_wrap.cc",
+        "node/src/window_wrap.cc",
       ],
       'link_settings': {
         'libraries': [

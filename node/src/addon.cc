@@ -5,8 +5,10 @@
 #include "audio_renderer_wrap.h"
 #include "video_decoder_wrap.h"
 #include "video_renderer_wrap.h"
+#include "window_wrap.h"
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+  Window::Init(env, exports);
   Frame::Init(env, exports);
   AudioRenderer::Init(env, exports);
   AudioDecoder::Init(env, exports);

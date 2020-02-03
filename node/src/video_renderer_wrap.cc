@@ -3,6 +3,7 @@
 #include <uv.h>
 #include "log_message.h"
 #include <unistd.h>
+#include <SDL2/SDL.h>
 
 Napi::FunctionReference VideoRenderer::constructor;
 
@@ -30,7 +31,13 @@ VideoRenderer::VideoRenderer(const Napi::CallbackInfo& info) : Napi::ObjectWrap<
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  renderer_.reset(new gurum::SdlVideoRenderer);
+  if (info.Length() <= 0 || !info[0].IsExternal()) {
+    Napi::TypeError::New(env, "External expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+  auto external = info[0].As<Napi::External<SDL_Renderer>>();
+  renderer_.reset(new gurum::SdlVideoRenderer(external.Data()));
 }
 
 void VideoRenderer::Prepare(const Napi::CallbackInfo& info) {
