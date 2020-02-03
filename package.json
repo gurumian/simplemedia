@@ -1,0 +1,28 @@
+{
+  "name": "simplemedia-nodejs",
+  "version": "0.0.1",
+  "description": "Node.js simple ffmpeg wrapper",
+  "main": "index.js",
+  "files": [
+    "node/lib/",
+    "node/index.js"
+  ],
+  "keywords": [
+    "ffmpeg",
+    "video",
+    "audio",
+    "image",
+    "media"
+  ],
+  "author": "Bryce Ghim",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bindings": "~1.2.1",
+    "node-addon-api": "^1.0.0"
+  },
+  "scripts": {
+    "test": "node node/tests/play.js"
+  },
+  "gypfile": true
+}

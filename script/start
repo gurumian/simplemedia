@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [[ "$(uname)" = "Darwin" ]] ; then
+export DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../lib:${DYLD_FALLBACK_LIBRARY_PATH}
+export PATH=$PWD:$PATH
+else
+export LD_LIBRARY_PATH=$PWD/../../lib:${LD_LIBRARY_PATH}
+export PATH=$PWD:$PATH
+export LD_BIND_NOW=y
+fi
+
+target=$1
+
+shift
+
+if [[ "$(uname)" = "Darwin" ]] ; then
+GLOG_logtostderr=1 GLOG_v=2 ${config} ${target} "$@"
+else
+exec env GLOG_logtostderr=1 GLOG_v=2 ${config} ${target} "$@"
+fi
+
