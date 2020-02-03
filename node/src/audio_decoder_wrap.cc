@@ -25,8 +25,6 @@ Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("pause", &AudioDecoder::Pause),
                     InstanceMethod("decode", &AudioDecoder::Decode),
                     InstanceAccessor("pidchannel", nullptr, &AudioDecoder::SetPidChannel),
-                    InstanceAccessor("onframefound", nullptr, &AudioDecoder::SetOnFrameFound),
-                    InstanceAccessor("onnullpacketsent", nullptr, &AudioDecoder::SetOnNullPacketSent),
                     InstanceAccessor("sampleformat", &AudioDecoder::sampleformat, nullptr),
                     InstanceAccessor("samplerate", &AudioDecoder::samplerate, nullptr),
                     InstanceAccessor("channels", &AudioDecoder::channels, nullptr),
@@ -179,85 +177,6 @@ AVFrame *AudioDecoder::copyFrame(const AVFrame *frame) {
   av_frame_copy(copied, frame);
   av_frame_copy_props(copied, frame);
   return copied;
-}
-
-//@deprecated
-void AudioDecoder::SetOnFrameFound(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  Napi::Env env = info.Env();
-
-  if (! value.IsFunction()) {
-    Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
-    return;
-  }
-
-
-  on_frame_found_ = Napi::ThreadSafeFunction::New(
-    env,
-    value.As<Napi::Function>(),  // JavaScript function called asynchronously
-    "",         // Name
-    0,                       // Unlimited queue
-    1,                       // Only one thread will use this initially
-    []( Napi::Env ) {        // Finalizer used to clean threads up
-      // nativeThread.join();
-    });
-
-  // assert(audio_decoder_);
-  // audio_decoder_->SetOnFrameFound([&](const AVFrame *frame) {
-  //   auto callback = []( Napi::Env env, Napi::Function js_callback, void *arg) {
-  //     Buffer *buf = (Buffer *) arg;
-  //     js_callback.Call( {Napi::ArrayBuffer::New(env, buf->data, buf->size)} );
-  //     delete buf;
-  //   };
-
-  //   int data_size = av_get_bytes_per_sample((AVSampleFormat)frame.format);
-
-  //   int i = 0;
-  //   for (i=0; i<frame.nb_samples; i++) {
-  //     for (int ch=0; ch<audio_decoder_->channels(); ch++) {
-  //       Buffer *buf = new Buffer;
-  //       buf->data = new uint8_t[data_size];
-  //       buf->size = data_size;
-  //       memcpy(buf->data, (frame.data[ch] + data_size*i), data_size);
-  //       Hexdump(buf->data, buf->size);
-  //       on_frame_found_.BlockingCall( (void *)buf, callback );
-  //     }
-  //   }
-
-  //   LOG(INFO) << __func__ << " count! " << i;
-  //   on_frame_found_.Release();
-  // });
-}
-
-// @deprecated
-void AudioDecoder::SetOnNullPacketSent(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  Napi::Env env = info.Env();
-
-  if (! value.IsFunction()) {
-    Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
-    return;
-  }
-
-
-  on_null_packet_sent_ = Napi::ThreadSafeFunction::New(
-    env,
-    value.As<Napi::Function>(),  // JavaScript function called asynchronously
-    "",         // Name
-    0,                       // Unlimited queue
-    1,                       // Only one thread will use this initially
-    []( Napi::Env ) {        // Finalizer used to clean threads up
-      // nativeThread.join();
-    }
-  );
-
-  assert(audio_decoder_);
-  audio_decoder_->SetOnNullPacketSent([&](const gurum::Decoder &decoder) {
-    auto callback = []( Napi::Env env, Napi::Function js_callback, void *arg) {
-      js_callback.Call( {} );
-    };
-
-    on_null_packet_sent_.BlockingCall( (void *)nullptr, callback );
-    on_null_packet_sent_.Release();
-  });
 }
 
 Napi::Value AudioDecoder::samplerate(const Napi::CallbackInfo& info) {
