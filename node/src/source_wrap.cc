@@ -61,35 +61,44 @@ Napi::Value Source::hasAudio(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), source_->HasAudio());
 }
 
-void Source::Prepare(const Napi::CallbackInfo& info) {
-
+Napi::Value Source::Prepare(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  if (info.Length() <= 0 || !info[0].IsFunction()) {
-    Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
-    return;
+  auto root = Napi::Object::New(env);
+  auto format = Napi::Object::New(env);
+
+  const AVFormatContext *fmt = source_->Prepare();
+  format["native"] = Napi::External<AVFormatContext>::New(env, (AVFormatContext *)fmt);
+  format["duration"] = fmt->duration;
+  AVDictionary* meta_data = fmt->metadata;
+  AVDictionaryEntry* entry = NULL;
+  while ((entry = av_dict_get((const AVDictionary*)meta_data, "", entry, AV_DICT_IGNORE_SUFFIX))) {
+    format[entry->key] = entry->value;
   }
 
-  assert(source_);
-  on_prepared_ = Napi::ThreadSafeFunction::New(
-    env,
-    info[0].As<Napi::Function>(),  // JavaScript function called asynchronously
-    "",         // Name
-    0,                       // Unlimited queue
-    1,                       // Only one thread will use this initially
-    []( Napi::Env ) {        // Finalizer used to clean threads up
-      // nativeThread.join();
+  root["format"] = format;
+
+  auto streams = Napi::Array::New(env, fmt->nb_streams);
+  for (int i = 0; i < (int)fmt->nb_streams; i++) {
+    auto stream = Napi::Object::New(env);
+    AVStream *strm = fmt->streams[i];
+    AVCodecParameters *codec_param = strm->codecpar;
+    stream["duration"] = Napi::Number::New(env, strm->duration);
+    AVCodecID codec_id = codec_param->codec_id;
+    stream["codec"] = Napi::String::New(env, avcodec_get_name(codec_id));
+    stream["bitrate"] = Napi::Number::New(env, codec_param->bit_rate);
+    stream["channels"] = Napi::Number::New(env, codec_param->channels);
+    stream["samplerate"] = Napi::Number::New(env, codec_param->sample_rate);
+
+    AVDictionary* meta_data = strm->metadata;
+    while ((entry = av_dict_get((const AVDictionary*)meta_data, "", entry, AV_DICT_IGNORE_SUFFIX))) {
+      stream[entry->key] = Napi::String::New(env, entry->value);
     }
-  );
 
-  source_->Prepare([&](const AVFormatContext *fmt)->int {
-    auto callback = []( Napi::Env env, Napi::Function js_callback, void *arg) {
-      js_callback.Call( {Napi::External<void>::New(env, arg)} );
-    };
-    on_prepared_.BlockingCall( (void *)fmt, callback );
+    streams[i] = stream;
+  }
 
-    on_prepared_.Release();
-    return 0;
-  });
+  root["streams"] = streams;
+  return root;
 }
 
 void Source::Start(const Napi::CallbackInfo& info) {
@@ -106,7 +115,6 @@ void Source::Pause(const Napi::CallbackInfo& info) {
   assert(source_);
   source_->Pause();
 }
-
 
 Napi::Value Source::RequestPidChannel(const Napi::CallbackInfo& info){
   Napi::Env env = info.Env();
@@ -151,7 +159,6 @@ Napi::Value Source::RequestPidChannel(const Napi::CallbackInfo& info){
   return object;
 #endif
 }
-
 
 Napi::Value Source::FindStream(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();

@@ -150,7 +150,7 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
   auto callback = info[0].As<Napi::Function>();
   bool eos = false;
   audio_decoder_->SetOnNullPacketSent([&](const gurum::Decoder &decoder){
-    LOG(INFO) << __func__ << " null packet!";
+    if(log_enabled_) LOG(INFO) << __func__ << " null packet!";
     callback.Call(env.Global(), {env.Null()});
     eos = true;
   });

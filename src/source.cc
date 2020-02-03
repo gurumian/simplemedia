@@ -55,11 +55,14 @@ void Source::PrepareAsync(OnPrepared on_prepared) {
   }
 
   thread_->PostTask([=]{
-    Prepare(on_prepared);
+    const AVFormatContext *fmt = Prepare();
+    if(on_prepared) {
+      on_prepared(fmt);
+    }
   });
 }
 
-int Source::Prepare(OnPrepared on_prepared) {
+const AVFormatContext *Source::Prepare() {
   int err;
 
   err = avformat_open_input(&fmt_, data_source_.c_str(), NULL, NULL);
@@ -68,14 +71,14 @@ int Source::Prepare(OnPrepared on_prepared) {
     av_strerror(err, buf, sizeof(buf));
     LOG(ERROR) << __func__ << " " << data_source_;
     LOG(FATAL) << __func__ << " failed to avformat_open_input : " << buf;
-    return -1;
+    return nullptr;
   }
 
   // probe media | acquire PSI information.
   err = Scan();
   if(err < 0) {
     LOG(ERROR) <<  "Scan :" << err;
-    return -1;
+    return nullptr;
   }
 
   const int pool_size = 100;
@@ -84,17 +87,7 @@ int Source::Prepare(OnPrepared on_prepared) {
   packet_pool_->Prepare(pool_size);
   state_ = prepared;
 
-  if(!thread_)
-    thread_ = base::SimpleThread::CreateThread();
-
-  if(on_prepared) {
-    err = on_prepared(fmt_);
-    if(err) {
-      LOG(ERROR) << __func__ << " [prepared] returned " << err;
-      return err;
-    }
-  }
-  return 0;
+  return (const AVFormatContext *)fmt_;
 }
 
 int Source::ReadAndDispatch() {
@@ -111,6 +104,9 @@ int Source::ReadAndDispatch() {
 }
 
 int Source::Start() {
+  if(!thread_)
+    thread_ = base::SimpleThread::CreateThread();
+
   av_read_play(fmt_);
   state_ = started;
 

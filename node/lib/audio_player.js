@@ -14,8 +14,10 @@ module.exports = class AudioPlayer {
 
   async prepare() {
     let source = this.source;
-    return new Promise(resolve => {
-      source.prepare(args => {
+    return new Promise((resolve, reject) => {
+      let fmt = source.prepare();
+      if(fmt) {
+        console.log(fmt);
         if(source.hasAudio) {
           let pid = source.audioPid;
           console.log('pid: ' + pid);
@@ -35,8 +37,11 @@ module.exports = class AudioPlayer {
             sampleformat: this.decoder.sampleformat,
           });
         }
-        resolve();
-      });
+        resolve(fmt);
+      }
+      else {
+        reject();
+      }
     });  
   }
 
@@ -53,24 +58,26 @@ module.exports = class AudioPlayer {
       else {
         console.log('null packet');
         console.log('count: ' + this.count);
-        setTimeout(()=>{
-          if(this.onend)
-            this.onend();
-        });
+        // setTimeout(()=>{
+        //   if(this.onend)
+        //     this.onend();
+        // });
       }
     });
   }
 
-  /**
-   * @param {() => void} onend
-   */
-  set onended(onend) {
-    this.onend = onend;
-  }
+  // /**
+  //  * @param {() => void} onend
+  //  */
+  // set onended(onend) {
+  //   this.onend = onend;
+  // }
 
   start() {
     this.source.start();
-    this._decode();
+    setTimeout(()=>{
+      this._decode();
+    });
   }
 
   stop() {

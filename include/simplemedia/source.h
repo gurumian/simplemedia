@@ -57,7 +57,7 @@ public:
 
   virtual void ParseDataSource() {};
 
-  int Prepare(OnPrepared on_prepared);
+  const AVFormatContext *Prepare();
   void PrepareAsync(OnPrepared on_prepared);
 
   int Start();

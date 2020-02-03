@@ -28,7 +28,7 @@ class Source : public Napi::ObjectWrap<Source> {
   Napi::Value hasAudio(const Napi::CallbackInfo& info);
   
 
-  void Prepare(const Napi::CallbackInfo& info);
+  Napi::Value Prepare(const Napi::CallbackInfo& info);
   void Start(const Napi::CallbackInfo& info);
   void Stop(const Napi::CallbackInfo& info);
   void Pause(const Napi::CallbackInfo& info);
@@ -41,7 +41,7 @@ class Source : public Napi::ObjectWrap<Source> {
   Napi::Value FindStream(const Napi::CallbackInfo& info);
 
 private:
-  Napi::ThreadSafeFunction on_prepared_;
+  // Napi::ThreadSafeFunction on_prepared_;
   std::unique_ptr<gurum::Source> source_{};
 
   bool log_enabled_{false};
