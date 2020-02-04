@@ -1,7 +1,7 @@
 'use strict'
 
 const {Source, AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
-const adjust = 3;
+const adjust = 0;
 module.exports = class MediaPlayer {
   constructor(renderer) {
     this.source = new Source();
