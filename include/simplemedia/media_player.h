@@ -69,9 +69,6 @@ private:
   void OnAudioFrameFound(const AVFrame *frame);
   void OnSubtitleFound(const AVSubtitle *subtitle);
   void OnNullPacketSent(const Decoder &decoder);
-//  void OnInvalidated(void *renderer, uint64_t pts);
-
-  void Hexdump(uint8_t *data, size_t len);
 
 private:
   static const int kDefaultSyncThreshold;

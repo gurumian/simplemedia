@@ -43,7 +43,6 @@ class Source : public Napi::ObjectWrap<Source> {
   Napi::Value FindStream(const Napi::CallbackInfo& info);
 
 private:
-  // Napi::ThreadSafeFunction on_prepared_;
   std::unique_ptr<gurum::Source> source_{};
 
   bool log_enabled_{false};

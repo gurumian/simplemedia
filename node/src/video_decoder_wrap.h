@@ -30,11 +30,6 @@ private:
 
   void SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value);
 
-  // void SetOnFrameFound(const Napi::CallbackInfo& info, const Napi::Value &value);
-  // void SetOnNullPacketSent(const Napi::CallbackInfo& info, const Napi::Value &value);
-
-  void Hexdump(const uint8_t *data, size_t len);
-
   Napi::Value width(const Napi::CallbackInfo& info);
   Napi::Value height(const Napi::CallbackInfo& info);
   Napi::Value pixelFormat(const Napi::CallbackInfo& info);
@@ -48,9 +43,6 @@ private:
 
 private:
   static Napi::FunctionReference constructor;
-
-  // Napi::ThreadSafeFunction on_frame_found_;
-  // Napi::ThreadSafeFunction on_null_packet_sent_;
 
   std::unique_ptr<gurum::VideoDecoder> decoder_{};
   bool log_enabled_{false};

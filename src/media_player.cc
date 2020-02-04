@@ -393,24 +393,4 @@ float MediaPlayer::volume() {
   return 0.0f;
 }
 
-void MediaPlayer::Hexdump(uint8_t *data, size_t len) {
-  for(int i=0; i < (int)len; i++) {
-    fprintf(stderr, "%02x ", data[i]);
-
-    if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-  }
-
-  fprintf(stderr, "\t");
-
-  for(int i=0; i < (int)len; i++) {
-    char tmp = '.';
-    if(((data[i] >= 'A') && (data[i] <= 'z')) || ((data[i] >= '0') && (data[i] <= '9'))) {
-      tmp = data[i];
-    }
-    fprintf(stderr, "%c ", tmp);
-
-    if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-  }
-}
-
 } // namespace gurum

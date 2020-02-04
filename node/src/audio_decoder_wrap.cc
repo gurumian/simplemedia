@@ -5,11 +5,6 @@
 #include <future>
 #include "frame_wrap.h"
 
-// struct Buffer {
-//   uint8_t *data;
-//   size_t size;
-// };
-
 Napi::FunctionReference AudioDecoder::constructor;
 
 Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
@@ -210,26 +205,3 @@ void AudioDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &
 Napi::Value AudioDecoder::log_enabled(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), log_enabled_);
 }
-
-void AudioDecoder::Hexdump(const uint8_t *data, size_t len) {
-  for(int i=0; i < (int)len; i++) {
-    fprintf(stderr, "%02x ", data[i]);
-
-    if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-  }
-
-  fprintf(stderr, "\n");
-
-  for(int i=0; i < (int)len; i++) {
-    char tmp = '.';
-    if(((data[i] >= 'A') && (data[i] <= 'z')) || ((data[i] >= '0') && (data[i] <= '9'))) {
-      tmp = data[i];
-    }
-    fprintf(stderr, "%c ", tmp);
-
-    if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-
-    fflush(stderr);
-  }
-}
-

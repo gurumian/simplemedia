@@ -18,7 +18,6 @@
 #include <future>
 
 static  void OnRawData(uint8_t* data, size_t size) {
-  // LOG(INFO) << Hexdump(data, size);
 }
 
 static void OnFrameFound(const AVFrame *frame, int channels) {

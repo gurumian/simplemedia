@@ -83,52 +83,56 @@ private:
 #include <glog/logging.h>
 #endif
 
+namespace base {
 
+namespace logging {
+class Hexdump {
+public:
+  Hexdump(const std::string &file, const std::string &func, int line, char *data, int len) {
+    const int unit = 0x16;
+    int lines = len / unit;
+    if(len % unit)
+      lines += 1;
 
-#include <sstream>
-#include <ostream>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include <cstring>
+    for(int i = 0; i < lines; i++) {
+      stream_.width(4);
+	    stream_.fill('0');
+      stream_ << std::hex << (i * unit) << " : ";
 
+      for(int j = 0; j < unit; j++) {
+        char tmp = '.';
+        if(((data[j] >= 'A') && (data[j] <= 'z')) || ((data[j] >= '0') && (data[j] <= '9'))) {
+          tmp = data[j];
+        }
+        stream_ << tmp;
+      }
 
-namespace {
+      stream_.width(2);
+	    stream_.fill('0');
+      for(int j = 0; j < unit; j++) {
+        stream_ << std::hex << std::uppercase << (int)((unsigned char)data[j]);
+        stream_ << " ";
+      }
 
-// static std::string Hexdump(const uint8_t *data, size_t len) {
-//   std::ostringstream stream;
-//   stream << std::hex << std::setfill ('0') << std::setw (2);
+      stream_ << "\n";
+    }
+  }
 
-//   for(int i=0; i < (int)len; i++) {
+  ~Hexdump() {
+    std::cerr << stream_.str() << std::endl;
+  }
 
-//     stream << (int) (0xFF & data[i]) << " ";
+  std::ostream &stream() {return stream_;}
 
-//     if(((i+1)%0x10)==0) stream << "\n";
-//   }
+private:
+  std::ostringstream stream_;
+};
 
-//   stream << std::dec << "\n";
+} // logging
 
+} // base
 
-//   stream << " [";
-
-//   for(int i=0; i < (int)len; i++) {
-//     char tmp = '.';
-//     if(((data[i] >= 'A') && (data[i] <= 'z')) || ((data[i] >= '0') && (data[i] <= '9')) || (data[i]==',')
-//         || (data[i]=='\"') || (data[i]==':') || (data[i]=='{') || (data[i]=='}')) {
-//       tmp = data[i];
-//     }
-//     stream << tmp << " ";
-
-//     if(((i+1)%0x10)==0) stream << "\n";
-//   }
-
-//   stream << " ]";
-
-//   return stream.str();
-// }
-
-}
+#define H(data, len) ::base::logging::Hexdump(__FILE__, __func__, __LINE__, data, len)
 
 #endif // BASE_LOGGING_LOG_MESSAGE_H_
 

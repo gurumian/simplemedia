@@ -9,7 +9,6 @@ class Window : public Napi::ObjectWrap<Window> {
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   Window(const Napi::CallbackInfo& info);
   virtual ~Window();
-  // static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
 
 private:
   Napi::Value createRenderer(const Napi::CallbackInfo& info);

@@ -122,7 +122,7 @@ void AudioRenderer::Render(const Napi::CallbackInfo& info) {
   AVFrame *frame = external.Data();
   assert(frame);
   renderer_->Render(frame, [&](uint8_t *data, size_t len)->int {
-    // Hexdump((const uint8_t *)data, (size_t)len);
+    // H((char *)data, (int)len);
     return 0;
   });
   av_frame_free(&frame);
@@ -141,27 +141,3 @@ void AudioRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value 
 Napi::Value AudioRenderer::log_enabled(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), log_enabled_);
 }
-
-
-void AudioRenderer::Hexdump(const uint8_t *data, size_t len) {
-  for(int i=0; i < (int)len; i++) {
-    fprintf(stderr, "%02x ", data[i]);
-
-    if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-  }
-
-  fprintf(stderr, "\n");
-
-  for(int i=0; i < (int)len; i++) {
-    char tmp = '.';
-    if(((data[i] >= 'A') && (data[i] <= 'z')) || ((data[i] >= '0') && (data[i] <= '9'))) {
-      tmp = data[i];
-    }
-    fprintf(stderr, "%c ", tmp);
-
-    if(((i+1)%0x10)==0) fprintf(stderr, "\n");
-
-    fflush(stderr);
-  }
-}
-

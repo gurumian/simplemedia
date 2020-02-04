@@ -9,16 +9,10 @@
 #include <functional>
 #include <simplemedia/sdl/sdl_video_renderer.h>
 #include <simplemedia/sdl/sdl_subtitle_renderer.h>
-#if defined(USE_OPENAL)
-#include <simplemedia/al/al_audio_renderer.h>
-#else
 #include <simplemedia/sdl/sdl_audio_renderer.h>
-#endif
 #include "log_message.h"
-
 #include <simplemedia/media_player.h>
-
-#include <SDL/SDL2.h>
+#include <SDL2/SDL.h>
 
 
 using namespace gurum;
