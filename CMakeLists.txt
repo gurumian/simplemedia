@@ -91,15 +91,6 @@ set(simplemedia_script_files
   ${simplemedia_script_dir}/start
 )
 
-#find_package(Jsoncpp REQUIRED)
-#include_directories(${JSONCPP_INCLUDE_DIRS})
-#link_directories(${JSONCPP_LIBRARY_DIRS})
-#set(LIBS ${LIBS} ${JSONCPP_LIBRARIES})
-
-find_package(Uriparser REQUIRED)
-include_directories(${URIPARSER_INCLUDE_DIR})
-set(LIBS ${LIBS} ${URIPARSER_LIBRARY})
-
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 set(LIBS ${LIBS} ${SDL2_LIBRARY})
@@ -139,32 +130,6 @@ set(LIBS ${LIBS} ${GLOG_LIBRARIES})
 if (GLOG_FOUND)
 	add_definitions(-DUSE_GLOG)
 endif (GLOG_FOUND)
-
-#find_package(SimpleThread)
-#include_directories(${SIMPLETHREAD_INCLUDE_DIRS})
-#set(LIBS ${LIBS} ${SIMPLETHREAD_LIBRARIES})
-
-
-if (USE_OPENAL)
-#PKG_CHECK_MODULES(OPENAL openal)    
-find_package(OpenAL)
-if (OPENAL_FOUND)
-include_directories(${OPENAL_INCLUDE_DIRS})
-link_directories(${OPENAL_LIBRARY_DIRS})
-set(LIBS ${LIBS} ${OPENAL_LIBRARIES})
-
-list(APPEND simplemedia_source_files   
-  ${simplemedia_src_dir}/al/al_audio_renderer.cc
-)
-
-list(APPEND simplemedia_header_files   
-  ${simplemedia_inc_dir}/simplemedia/al/al_audio_renderer.h
-)
-
-message(STATUS "Found openal   (include: ${OPENAL_INCLUDE_DIRS}, library: ${OPENAL_LIBRARIES})")
-endif (OPENAL_FOUND)
-endif (USE_OPENAL)
-
 
 include_directories(${simplemedia_inc_dir})
 include_directories(${simplemedia_inc_dir}/simplemedia)
