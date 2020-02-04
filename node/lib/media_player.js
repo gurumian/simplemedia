@@ -22,6 +22,45 @@ module.exports = class MediaPlayer {
     this.isFirstFrame = true;
   }
 
+  _prepareAudio(fmt, source) {
+    let pid = source.audioPid;
+    console.log('pid: ' + pid);
+    let pidchannel = source.requestPidChannel({
+      pid : pid,
+    });
+
+    this.audio.decoder = new AudioDecoder();
+    this.audio.decoder.prepare(fmt.streams[pid]['native']);
+    this.audio.decoder.pidchannel = pidchannel;
+    this.audio.decoder.trace = true;
+
+    this.audio.renderer.prepare({
+      samplerate: this.audio.decoder.samplerate,
+      channels: this.audio.decoder.channels,
+      channellayout: this.audio.decoder.channellayout,
+      sampleformat: this.audio.decoder.sampleformat,
+    });
+  }
+
+  _prepareVideo(fmt, source) {
+    let pid = source.videoPid;
+    console.log('pid: ' + pid);
+    let pidchannel = source.requestPidChannel({
+      pid : pid,
+    });
+
+    this.video.decoder = new VideoDecoder();
+    this.video.decoder.prepare(fmt.streams[pid]['native']);
+    this.video.decoder.pidchannel = pidchannel;
+    this.video.decoder.trace = true;
+
+    this.video.renderer.prepare({
+      width: this.video.decoder.width,
+      height: this.video.decoder.height,
+      pixelformat: this.video.decoder.pixelformat,
+    });
+  }
+
   async prepare() {
     let source = this.source;
     return new Promise((resolve, reject) => {
@@ -29,42 +68,11 @@ module.exports = class MediaPlayer {
       if(fmt) {
         console.log(fmt);
         if(source.hasAudio) {
-          let pid = source.audioPid;
-          console.log('pid: ' + pid);
-          let pidchannel = source.requestPidChannel({
-            pid : pid,
-          });
-      
-          this.audio.decoder = new AudioDecoder();
-          this.audio.decoder.prepare(fmt.streams[pid]['native']);
-          this.audio.decoder.pidchannel = pidchannel;
-          this.audio.decoder.trace = true;
-      
-          this.audio.renderer.prepare({
-            samplerate: this.audio.decoder.samplerate,
-            channels: this.audio.decoder.channels,
-            channellayout: this.audio.decoder.channellayout,
-            sampleformat: this.audio.decoder.sampleformat,
-          });
+          this._prepareAudio(fmt, source);
         }
 
         if(source.hasVideo) {
-          let pid = source.videoPid;
-          console.log('pid: ' + pid);
-          let pidchannel = source.requestPidChannel({
-            pid : pid,
-          });
-      
-          this.video.decoder = new VideoDecoder();
-          this.video.decoder.prepare(fmt.streams[pid]['native']);
-          this.video.decoder.pidchannel = pidchannel;
-          this.video.decoder.trace = true;
-      
-          this.video.renderer.prepare({
-            width: this.video.decoder.width,
-            height: this.video.decoder.height,
-            pixelformat: this.video.decoder.pixelformat,
-          });
+          this._prepareVideo(fmt, source);
         }
         resolve(fmt);
       }
@@ -90,9 +98,10 @@ module.exports = class MediaPlayer {
         this.audio.renderer.render(frame.data);
         this.count++;
        
+        delay = Math.floor(delay / 1000) - adjust;
         setTimeout(()=>{
           this._decodeAudio();
-        }, (delay / 1000) - adjust);
+        }, delay);
       }
       else {
         console.log('null packet');
@@ -107,6 +116,7 @@ module.exports = class MediaPlayer {
 
   _decodeVideo() {
     this.video.decoder.decode(frame => {
+      // console.log('{B}: ' + frame.pts);
       var delay = 0;
       if(frame) {
         if(this.isFirstFrame) {
@@ -139,9 +149,10 @@ module.exports = class MediaPlayer {
         this.video.renderer.render(frame.data);
         this.count++;
        
+        delay = Math.floor(delay / 1000) - adjust;
         setTimeout(()=>{
           this._decodeVideo();
-        }, (delay / 1000) - adjust);
+        }, delay);
       }
       else {
         console.log('null packet');
