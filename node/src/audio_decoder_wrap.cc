@@ -163,16 +163,7 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
 }
 
 AVFrame *AudioDecoder::copyFrame(const AVFrame *frame) {
-  AVFrame *copied = av_frame_alloc();
-  copied->format = frame->format;
-  copied->width = frame->width;
-  copied->height = frame->height;
-  copied->channels = frame->channels;
-  copied->channel_layout = frame->channel_layout;
-  copied->nb_samples = frame->nb_samples;
-  av_frame_get_buffer(copied, 32);
-  av_frame_copy(copied, frame);
-  av_frame_copy_props(copied, frame);
+  AVFrame *copied = av_frame_clone(frame);
   return copied;
 }
 
