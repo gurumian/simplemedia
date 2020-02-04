@@ -83,6 +83,8 @@ private:
 #include <glog/logging.h>
 #endif
 
+#include <iostream>
+
 namespace base {
 
 namespace logging {
