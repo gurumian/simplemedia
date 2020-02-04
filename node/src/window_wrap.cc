@@ -30,13 +30,18 @@ int InitSDL() {
 }
 
 static
-SDL_Window *CreateWindow() {
+SDL_Window *CreateWindow(const std::string &title, int width, int height) {
   SDL_DisplayMode display_mode;
-  SDL_GetDesktopDisplayMode(0, &display_mode);
+
+  if(!width || !height) {
+    SDL_GetDesktopDisplayMode(0, &display_mode);
+    width = display_mode.w;
+    height = display_mode.h;
+  }
 
   uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-  SDL_Window* window = SDL_CreateWindow("mediaplayer - Gurum Lab.", SDL_WINDOWPOS_CENTERED,
-                                        SDL_WINDOWPOS_CENTERED, display_mode.w, display_mode.h, flags);
+  SDL_Window* window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
+                                        SDL_WINDOWPOS_CENTERED, width, height, flags);
 
   return window;
 }
@@ -57,8 +62,6 @@ Napi::Object Window::Init(Napi::Env env, Napi::Object exports) {
   constructor.SuppressDestruct();
 
   exports.Set("Window", func);
-
-
   InitSDL();
 
   return exports;
@@ -68,7 +71,46 @@ Window::Window(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Window>(info) 
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
-  window_ = CreateWindow();
+  std::string title{};
+  int width = 0;
+  int height = 0;
+
+  if(info.Length() > 0) {
+    if(!info[0].IsObject()) {
+      Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
+      return;
+    }
+
+    Napi::Object obj = info[0].ToObject();
+    if(obj.HasOwnProperty("title")) {
+      Napi::Value value =  obj["title"];
+      if(! value.IsString()) {
+        Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
+        return;
+      }
+      title = value.ToString();
+    }
+
+    if(obj.HasOwnProperty("width")) {
+      Napi::Value value =  obj["width"];
+      if(! value.IsNumber()) {
+        Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+        return;
+      }
+      width = (int)value.ToNumber();
+    }
+
+    if(obj.HasOwnProperty("height")) {
+      Napi::Value value =  obj["height"];
+      if(! value.IsNumber()) {
+        Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+        return;
+      }
+      height = (int)value.ToNumber();
+    }
+  }
+
+  window_ = CreateWindow(title, width, height);
 }
 
 Window::~Window() {

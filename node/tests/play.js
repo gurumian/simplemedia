@@ -11,7 +11,11 @@ function readAndDispatch() {
   setTimeout(readAndDispatch, 100);
 }
 
-let window = new Window();
+let window = new Window({
+  title: "simplemedia nodejs",
+  width: 640,
+  height: 480,
+});
 let renderer = window.createRenderer();
 
 const MediaPlayer = require('../lib/media_player.js');
