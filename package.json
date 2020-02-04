@@ -25,5 +25,8 @@
     "install": "cmake-js configure && node-gyp rebuild",
     "test": "node node/tests/play.js"
   },
-  "gypfile": true
+  "gypfile": true,
+  "devDependencies": {
+    "cmake-js": "^6.0.0"
+  }
 }

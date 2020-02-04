@@ -48,6 +48,9 @@ int SdlVideoRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
       frame->data[0], frame->linesize[0],
       frame->data[1], frame->linesize[1],
       frame->data[2], frame->linesize[2]);
+  if(err) {
+    LOG(WARNING) << __func__ << " failed to SDL_UpdateYUVTexture()";
+  }
 
   current_pts_ = frame->pts;
 

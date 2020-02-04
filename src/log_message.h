@@ -4,6 +4,7 @@
 // #define USE_SYSLOG
 #undef USE_SYSLOG
 
+#include <assert.h>
 #if !defined(USE_GLOG)
 
 #if defined(LOG)
