@@ -69,11 +69,18 @@ module.exports = class MediaPlayer {
         console.log(fmt);
         if(source.hasAudio) {
           this._prepareAudio(fmt, source);
+          setTimeout(()=>{
+            this._decodeAudio();
+          });
         }
 
         if(source.hasVideo) {
           this._prepareVideo(fmt, source);
+          setTimeout(()=>{
+            this._decodeVideo();
+          });
         }
+
         resolve(fmt);
       }
       else {
@@ -116,7 +123,6 @@ module.exports = class MediaPlayer {
 
   _decodeVideo() {
     this.video.decoder.decode(frame => {
-      // console.log('{B}: ' + frame.pts);
       var delay = 0;
       if(frame) {
         if(this.isFirstFrame) {
@@ -134,7 +140,7 @@ module.exports = class MediaPlayer {
           }
 
           delay = frame.pts - this.video.pts;
-          if(synced)
+          if(! synced)
             delay += delay_step;
 
           this.video.pts = frame.pts;
@@ -157,10 +163,6 @@ module.exports = class MediaPlayer {
       else {
         console.log('null packet');
         console.log('count: ' + this.count);
-        // setTimeout(()=>{
-        //   if(this.onend)
-        //     this.onend();
-        // });
       }
     });
   }
@@ -173,23 +175,25 @@ module.exports = class MediaPlayer {
 
   start() {
     this.source.start();
-    setTimeout(()=>{
-      this._decodeAudio();
-    });
-
-    setTimeout(()=>{
-      this._decodeVideo();
-    });    
   }
 
   stop() {
-    this.audio.decoder.stop();
+    if(this.video.decoder)
+      this.video.decoder.stop();
+
+    if(this.audio.decoder)
+      this.audio.decoder.stop();
+
     this.source.stop();
   }
 
   pause() {
     this.source.pause();
-    this.audio.decoder.pause();
+    if(this.audio.decoder)
+      this.audio.decoder.pause();
+
+    if(this.video.decoder)
+      this.video.decoder.pause();
   }
 
   resume() {

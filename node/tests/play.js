@@ -3,8 +3,7 @@
 const {Window} = require('bindings')('simplemedia');
 
 // const test_media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
-// const test_media_uri='/Users/buttonfly/Music/Aru_Hareta_Hi_Ni.mp3';
-const test_media_uri='/Users/buttonfly/Movies/ace.mp4';
+const test_media_uri= 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4'
 
 function readAndDispatch() {
   let event = window.pollEvent();
