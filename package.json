@@ -5,7 +5,12 @@
   "main": "index.js",
   "files": [
     "node/lib/",
-    "node/index.js"
+    "node/index.js",
+    "include",
+    "src",
+    "example",
+    "module",
+    "script"
   ],
   "keywords": [
     "ffmpeg",
