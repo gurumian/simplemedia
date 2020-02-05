@@ -21,7 +21,6 @@
     "email": "gurumian@gmail.com"
   },
   "license": "MIT",
-  "private": true,
   "dependencies": {
     "bindings": "~1.2.1",
     "node-addon-api": "^1.0.0"
@@ -33,5 +32,13 @@
   "gypfile": true,
   "devDependencies": {
     "cmake-js": "^6.0.0"
+  },
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gurumian/simplemedia.git"
   }
 }
