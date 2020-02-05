@@ -1,11 +1,13 @@
 {
   "name": "simplemedia-nodejs",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Node.js simple ffmpeg wrapper",
   "main": "index.js",
   "files": [
     "node/lib/",
     "node/index.js",
+    "node/src",
+    "node/tests",
     "include",
     "src",
     "example",
