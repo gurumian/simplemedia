@@ -134,6 +134,10 @@ void Source::Stop() {
   state_ = stopped;
 
   thread_=nullptr;
+
+  avformat_close_input(&fmt_);
+  fmt_ = nullptr;
+
   return;
 }
 
@@ -263,7 +267,6 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
 }
 
 int Source::ReadFrame(AVPacket *pkt) {
-  std::lock_guard<std::mutex> lk(lck_);
   int err = av_read_frame(fmt_, pkt);
   if(err < 0) {
     if(err==AVERROR_EOF && nullpkt_sent_==false) {
