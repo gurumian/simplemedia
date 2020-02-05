@@ -69,16 +69,10 @@ module.exports = class MediaPlayer {
         console.log(fmt);
         if(source.hasAudio) {
           this._prepareAudio(fmt, source);
-          setTimeout(()=>{
-            this._decodeAudio();
-          });
         }
 
         if(source.hasVideo) {
           this._prepareVideo(fmt, source);
-          setTimeout(()=>{
-            this._decodeVideo();
-          });
         }
 
         resolve(fmt);
@@ -175,6 +169,13 @@ module.exports = class MediaPlayer {
 
   start() {
     this.source.start();
+    setTimeout(()=>{
+      this._decodeAudio();
+    });
+
+    setTimeout(()=>{
+      this._decodeVideo();
+    });
   }
 
   stop() {
