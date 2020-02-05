@@ -43,10 +43,9 @@ VideoDecoder::VideoDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Vi
 
 
 void VideoDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  if(log_enabled_) LOG(INFO) << __func__;
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !info[0].IsExternal()) {
-    Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "External expected").ThrowAsJavaScriptException();
     return;
   }
 
@@ -60,10 +59,9 @@ void VideoDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Val
 }
 
 void VideoDecoder::Prepare(const Napi::CallbackInfo& info) {
-  if(log_enabled_) LOG(INFO) << __func__;
   Napi::Env env = info.Env();
   if (info.Length() <= 0 || !info[0].IsExternal()) {
-    Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "External expected").ThrowAsJavaScriptException();
     return;
   }
 
