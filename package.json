@@ -10,7 +10,9 @@
     "src",
     "example",
     "module",
-    "script"
+    "script",
+    "CMakeLists.txt",
+    "binding.gyp"
   ],
   "keywords": [
     "ffmpeg",
