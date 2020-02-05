@@ -3,34 +3,18 @@
 ### Prerequisites
 ```bash
 apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-dev
+
+(or brew)
 ```
 
-
-## Features
-
-
-## Quick Start
+## Install
 ```bash
-mkdir build; cd build
-cmake ..
-make
+npm i simplemedia --save
 ```
 
 ```bash
 npm install
 ```
 
-
-## Examples
-```bash
-./mediaplayer path/to/media
-```
-
-
-## Tests
-
-```bash
-npm install
-npm test
-```
-
+## Example
+See `example/index.js` and `example/media_player.js`
