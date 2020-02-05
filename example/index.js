@@ -1,6 +1,6 @@
 'use strict'
 
-const {Window} = require('simplemedia-nodejs');
+const {Window} = require('simplemedia');
 
 // const test_media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 const test_media_uri= 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4'

@@ -1,6 +1,6 @@
 'use strict'
 
-const {Source, AudioDecoder, AudioRenderer, VideoDecoder, VideoRenderer} = require('simplemedia-nodejs');
+const {Source, AudioDecoder, AudioRenderer, VideoDecoder, VideoRenderer} = require('simplemedia');
 
 const adjust = 0;
 module.exports = class MediaPlayer {
