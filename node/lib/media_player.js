@@ -171,11 +171,11 @@ module.exports = class MediaPlayer {
     this.source.start();
     setTimeout(()=>{
       this._decodeAudio();
-    });
+    }, 100);
 
     setTimeout(()=>{
       this._decodeVideo();
-    });
+    }, 100);
   }
 
   stop() {

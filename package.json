@@ -15,6 +15,11 @@
     "media"
   ],
   "author": "Bryce Ghim",
+  "homepage": "https://github.com/gurumian/simplemedia",
+  "bugs": {
+    "url": "https://github.com/gurumian/simplemedia/issues",
+    "email": "gurumian@gmail.com"
+  },
   "license": "MIT",
   "private": true,
   "dependencies": {
