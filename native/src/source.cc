@@ -114,6 +114,7 @@ int Source::Start() {
   thread_->PostTask([&]{
     while(state_ != stopped) {
       Run(0);
+      std::this_thread::yield();
     }
   });
   return 0;
@@ -226,7 +227,6 @@ void Source::Run(int unused) {
 }
 
 void Source::SetState(State state) {
-  // State tmp = state_;
   state_ = state;
 }
 
