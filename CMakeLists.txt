@@ -41,7 +41,14 @@ set(simplemedia_base_dir ${CMAKE_CURRENT_LIST_DIR})
 set(simplemedia_src_dir ${simplemedia_base_dir}/src)
 set(simplemedia_inc_dir ${simplemedia_base_dir}/native/include)
 
+
 find_package(SDL2)
+
+find_package(Glog)
+
+if (GLOG_FOUND)
+	add_definitions(-DUSE_GLOG)
+endif (GLOG_FOUND)
 
 set(simplemedia_source_files
   ${simplemedia_src_dir}/addon.cc
