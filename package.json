@@ -1,20 +1,17 @@
 {
   "name": "simplemedia",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Node.js simple ffmpeg wrapper",
   "main": "node/index.js",
   "files": [
-    "node/lib/",
-    "node/index.js",
-    "node/src",
-    "node/tests",
-    "include",
+    "lib/",
+    "index.js",
+    "native",
+    "src",
+    "tests",
     "src",
     "example",
-    "module",
-    "script",
-    "CMakeLists.txt",
-    "binding.gyp"
+    "CMakeLists.txt"
   ],
   "keywords": [
     "ffmpeg",
