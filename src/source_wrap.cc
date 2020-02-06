@@ -152,7 +152,7 @@ Napi::Value Source::RequestPidChannel(const Napi::CallbackInfo& info){
     value = info[0].ToNumber();
   }
   else {
-    Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "Object | Number expected").ThrowAsJavaScriptException();
     return env.Undefined();
   }
 
