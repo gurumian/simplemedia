@@ -18,6 +18,7 @@ project (simplemedia)
 
 #set(USE_OPENAL 1)
 option(USE_OPENAL "Use OpenAL" OFF)
+option(BUILD_EXAMPLE "Build examples" ON)
 
 #find_package(PkgConfig)
 
@@ -156,7 +157,7 @@ configure_file ("${simplemedia_inc_dir}/simplemedia/config.h.in"
 add_library(${simplemedia_lib_name} SHARED ${simplemedia_source_files})
 target_link_libraries(${simplemedia_lib_name} ${LIBS})
 
-if (USE_SDL2)
+if (USE_SDL2 AND BUILD_EXAMPLE)
 add_executable(mediaplayer ${simplemedia_base_dir}/example/example_player.cc)
 target_link_libraries(mediaplayer ${simplemedia_lib_name} ${LIBS} ${CMAKE_DL_LIBS})
 
@@ -165,7 +166,7 @@ target_link_libraries(audiodecoder ${simplemedia_lib_name} ${LIBS} ${CMAKE_DL_LI
 
 add_executable(audioplayer ${simplemedia_base_dir}/example/example_audio_player.cc)
 target_link_libraries(audioplayer ${simplemedia_lib_name} ${LIBS} ${CMAKE_DL_LIBS})
-endif (USE_SDL2)
+endif (USE_SDL2 AND BUILD_EXAMPLE)
 
 install(TARGETS ${simplemedia_lib_name} DESTINATION lib)
 install(DIRECTORY ${simplemedia_inc_dir}/simplemedia DESTINATION include)

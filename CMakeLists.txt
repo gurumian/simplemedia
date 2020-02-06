@@ -30,6 +30,8 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/native/module
     ${CMAKE_MODULE_PATH})
 
+
+set(BUILD_EXAMPLE OFF CACHE BOOL "Build example")
 add_subdirectory(native)
 
 add_definitions(${FFMPEG_DEFINITIONS})
