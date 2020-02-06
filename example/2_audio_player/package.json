@@ -1,0 +1,12 @@
+{
+  "name": "2_audio_player",
+  "version": "0.0.0",
+  "description": "Node.js simplemedia AudioPlayer example",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "simplemedia": "../../"
+  }
+}
