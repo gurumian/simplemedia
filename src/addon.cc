@@ -1,3 +1,4 @@
+#include "simplemedia/config.h"
 #include <napi.h>
 #include "frame_wrap.h"
 #include "source_wrap.h"
@@ -8,11 +9,13 @@
 #include "window_wrap.h"
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+#if defined(USE_SDL2)
   Window::Init(env, exports);
-  Frame::Init(env, exports);
   AudioRenderer::Init(env, exports);
-  AudioDecoder::Init(env, exports);
   VideoRenderer::Init(env, exports);
+#endif // USE_SDL2
+  Frame::Init(env, exports);
+  AudioDecoder::Init(env, exports);
   VideoDecoder::Init(env, exports);
   return Source::Init(env, exports);
 }

@@ -15,6 +15,7 @@
 
 #cmakedefine USE_SWRESAMPLE
 #cmakedefine USE_OPENAL
+#cmakedefine USE_SDL2
 
 #endif // _GURUM_SIMPLEMEIDA_CONFIGURATION_HEADER_GUARD_H_
 

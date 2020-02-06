@@ -41,16 +41,25 @@ set(simplemedia_base_dir ${CMAKE_CURRENT_LIST_DIR})
 set(simplemedia_src_dir ${simplemedia_base_dir}/src)
 set(simplemedia_inc_dir ${simplemedia_base_dir}/native/include)
 
+find_package(SDL2)
+
 set(simplemedia_source_files
   ${simplemedia_src_dir}/addon.cc
   ${simplemedia_src_dir}/audio_decoder_wrap.cc
   ${simplemedia_src_dir}/video_decoder_wrap.cc
-  ${simplemedia_src_dir}/audio_renderer_wrap.cc
-  ${simplemedia_src_dir}/video_renderer_wrap.cc
   ${simplemedia_src_dir}/frame_wrap.cc
   ${simplemedia_src_dir}/source_wrap.cc
+)
+
+if (SDL2_FOUND)
+set(simplemedia_source_files
+  ${simplemedia_source_files}
+  ${simplemedia_src_dir}/addon.cc
+  ${simplemedia_src_dir}/audio_renderer_wrap.cc
+  ${simplemedia_src_dir}/video_renderer_wrap.cc
   ${simplemedia_src_dir}/window_wrap.cc
 )
+endif (SDL2_FOUND)
 
 execute_process(COMMAND node -p "require('node-addon-api').include"
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

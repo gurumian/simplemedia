@@ -5,18 +5,6 @@ extern "C" {
 #include <libavutil/base64.h>
 }
 
-#define H_(buffer, buffer_len)   do{  \
-                    int _kn_;   \
-                    fflush(stderr); \
-                    for(_kn_ = 0 ; _kn_ < buffer_len; _kn_++){  \
-                      if((_kn_ != 0) && ((_kn_ %0x10) == 0)){ \
-                        fprintf(stderr, "\n");  \
-                      } \
-                      fprintf(stderr, "%02x ", buffer[_kn_]); \
-                    } \
-                    fprintf(stderr, "\n");  \
-                  }while(0)
-
 namespace gurum {
 
 int AudioEncoder::Encode(AVFrame *frame, OnPacketFound on_packet_found) {

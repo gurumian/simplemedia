@@ -2,7 +2,6 @@
 #define GURUM_VIDEO_RENDERER_H_
 
 #include <simplemedia/config.h>
-#include <SDL2/SDL.h>
 extern "C" {
 #include <libavutil/frame.h>
 }
