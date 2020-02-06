@@ -1,0 +1,12 @@
+{
+  "name": "1_media_player",
+  "version": "0.0.0",
+  "description": "Node.js simplemedia MediaPlayer example",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "simplemedia": "../../"
+  }
+}
