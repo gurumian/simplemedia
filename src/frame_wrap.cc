@@ -13,7 +13,9 @@ Napi::Object Frame::Init(Napi::Env env, Napi::Object exports) {
                   "Frame",
                   {
                     InstanceAccessor("pts", &Frame::pts, nullptr),
+                    InstanceAccessor("native", &Frame::native, nullptr),
                     InstanceAccessor("data", &Frame::data, nullptr),
+                    InstanceAccessor("nb_samples", &Frame::nb_samples, nullptr),
                   });
 
   constructor = Napi::Persistent(func);
@@ -48,7 +50,22 @@ Napi::Value Frame::pts(const Napi::CallbackInfo& info) {
   return Napi::Number::New(env, frame_->pts);
 }
 
-Napi::Value Frame::data(const Napi::CallbackInfo& info) {
+Napi::Value Frame::native(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   return Napi::External<AVFrame>::New(env, frame_);
 }
+
+Napi::Value Frame::data(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  // TODO: video
+  int data_size_per_channel = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
+  int data_size = frame_->channels * frame_->nb_samples * data_size_per_channel;
+  return Napi::ArrayBuffer::New(env, frame_->data, data_size);
+}
+
+Napi::Value Frame::nb_samples(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  return Napi::Number::New(env, frame_->nb_samples);
+}
+

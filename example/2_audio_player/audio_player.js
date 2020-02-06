@@ -62,7 +62,7 @@ module.exports = class AudioPlayer {
           this.pts = frame.pts;
         }
 
-        this.renderer.render(frame.data);
+        this.renderer.render(frame.native);
         this.count++;
        
         delay = Math.floor(delay / 1000) - adjust;

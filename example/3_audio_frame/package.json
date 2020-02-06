@@ -1,0 +1,12 @@
+{
+  "name": "3_audio_frame",
+  "version": "0.0.0",
+  "description": "Node.js simplemedia extracting audio frames example",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "simplemedia": "../../"
+  }
+}

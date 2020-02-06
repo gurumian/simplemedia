@@ -11,4 +11,4 @@ npm i simplemedia --save
 ```
 
 ## Example
-See `example/index.js` and `example/media_player.js`
+See `example/`

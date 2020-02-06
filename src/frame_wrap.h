@@ -19,7 +19,9 @@ class Frame : public Napi::ObjectWrap<Frame> {
 
 private:
   Napi::Value pts(const Napi::CallbackInfo& info);
+  Napi::Value native(const Napi::CallbackInfo& info);
   Napi::Value data(const Napi::CallbackInfo& info);
+  Napi::Value nb_samples(const Napi::CallbackInfo& info);
 
 private:
   static Napi::FunctionReference constructor;
