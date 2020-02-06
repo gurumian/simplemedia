@@ -36,8 +36,8 @@
     "node-addon-api": "^1.0.0"
   },
   "scripts": {
-    "install": "cmake-js configure && node-gyp rebuild",
-    "test": "node node/tests/play.js"
+    "install": "cmake-js compile",
+    "test": "node tests/play.js"
   },
   "gypfile": true,
   "directories": {
