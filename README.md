@@ -1,6 +1,4 @@
-## Installation
-
-### Prerequisites
+## Prerequisites
 ```bash
 apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-dev
 
@@ -10,10 +8,6 @@ apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-
 ## Install
 ```bash
 npm i simplemedia --save
-```
-
-```bash
-npm install
 ```
 
 ## Example
