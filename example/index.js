@@ -1,6 +1,6 @@
 'use strict'
 
-const {Window} = require('simplemedia');
+const {Window, MediaPlayer} = require('simplemedia');
 
 // const test_media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 const test_media_uri= 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4'
@@ -17,7 +17,6 @@ let window = new Window({
 });
 let renderer = window.createRenderer();
 
-const MediaPlayer = require('./media_player');
 let player = new MediaPlayer(renderer);
 player.datasource = test_media_uri;
 player.prepare().then(resolve => {
