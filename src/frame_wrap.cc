@@ -58,9 +58,14 @@ Napi::Value Frame::native(const Napi::CallbackInfo& info) {
 Napi::Value Frame::data(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
-  // TODO: video
-  int data_size_per_channel = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
-  int data_size = frame_->channels * frame_->nb_samples * data_size_per_channel;
+  int data_size = 0;
+  if(frame_->channels) {
+    int data_size_per_channel = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
+    data_size = frame_->channels * frame_->nb_samples * data_size_per_channel;
+  }
+  else {
+    // TODO: We assume that this is a video
+  }
   return Napi::ArrayBuffer::New(env, frame_->data, data_size);
 }
 
