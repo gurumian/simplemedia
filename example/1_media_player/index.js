@@ -45,7 +45,7 @@ function readAndDispatch() {
       }
     }
   }
-  setTimeout(readAndDispatch, 100);
+  setTimeout(readAndDispatch);
 }
 
 let window = new Window({
