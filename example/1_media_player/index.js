@@ -29,10 +29,9 @@ player.onend = (() => {
   console.log('end-of-stream!');
 });
 
+readAndDispatch();
+
 console.log('Press any key to exit');
 process.stdin.setRawMode(true);
 process.stdin.resume();
 process.stdin.on('data', process.exit.bind(process, 0));
-
-readAndDispatch();
-console.log('end!');
