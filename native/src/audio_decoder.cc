@@ -47,23 +47,23 @@ int AudioDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
 }
 
 int AudioDecoder::samplerate() {
-	assert(codec_context_);
-	return codec_context_->sample_rate;
+  assert(codec_context_);
+  return codec_context_->sample_rate;
 }
 
 AVSampleFormat AudioDecoder::sampleFormat() {
-	assert(codec_context_);
-	return codec_context_->sample_fmt;
+  assert(codec_context_);
+  return codec_context_->sample_fmt;
 }
 
 int AudioDecoder::channels() {
-	assert(codec_context_);
-	return codec_context_->channels;
+  assert(codec_context_);
+  return codec_context_->channels;
 }
 
 int64_t AudioDecoder::channellayout() {
-	assert(codec_context_);
-	return codec_context_->channel_layout;
+  assert(codec_context_);
+  return codec_context_->channel_layout;
 }
 
 AVRational AudioDecoder::timebase() {
