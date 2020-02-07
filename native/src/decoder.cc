@@ -1,10 +1,3 @@
-/*
- * Decoder.cc
- *
- *  Created on: Feb 5, 2017
- *      Author: buttonfly
- */
-
 #include <string>
 #include "simplemedia/decoder.h"
 #include "log_message.h"
@@ -13,10 +6,10 @@ namespace gurum {
 
 
 Decoder::Decoder() {
-	static bool inited=false;
+  static bool inited=false;
   if(!inited) {
 	  inited = true;
-	}
+  }
 }
 
 Decoder::~Decoder() {
