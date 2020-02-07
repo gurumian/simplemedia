@@ -34,5 +34,3 @@ private:
 };
 
 #endif // GURUM_VIDEO_RENDERER_WRAP_H
-
-

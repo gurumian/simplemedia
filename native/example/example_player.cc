@@ -90,7 +90,7 @@ int ReadAndDispatch(SDL_Window *window, SDL_Renderer *renderer, SDL_Event *event
     }
     case SDLK_SPACE:{
       if(player->state() == paused) {
-       player->Start();
+        player->Start();
       }
       else {
         player->Pause();
@@ -226,4 +226,3 @@ int main(int argc, char *argv[]) {
   LOG(INFO) << __func__ << " done";
   return 0;
 }
-

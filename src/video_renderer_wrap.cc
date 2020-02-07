@@ -104,7 +104,6 @@ void VideoRenderer::Prepare(const Napi::CallbackInfo& info) {
   }
 }
 
-
 void VideoRenderer::Render(const Napi::CallbackInfo& info) {
   if (info.Length() <= 0 || !info[0].IsExternal()) {
     Napi::TypeError::New(info.Env(), "External expected").ThrowAsJavaScriptException();

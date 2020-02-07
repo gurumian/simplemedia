@@ -21,7 +21,10 @@ class AudioRenderer : public Napi::ObjectWrap<AudioRenderer> {
 private:
   void Prepare(const Napi::CallbackInfo& info);
   void Render(const Napi::CallbackInfo& info);
-  
+
+  void SetVolume(const Napi::CallbackInfo& info, const Napi::Value &value);
+  Napi::Value volume(const Napi::CallbackInfo& info);
+
   void EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value);
   Napi::Value log_enabled(const Napi::CallbackInfo& info);
 
@@ -33,5 +36,3 @@ private:
 };
 
 #endif // GURUM_AUDIO_DECODER_WRAP_H
-
-

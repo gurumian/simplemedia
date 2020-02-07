@@ -15,6 +15,7 @@ Napi::Object AudioRenderer::Init(Napi::Env env, Napi::Object exports) {
                   {
                     InstanceMethod("prepare", &AudioRenderer::Prepare),
                     InstanceMethod("render", &AudioRenderer::Render),
+                    InstanceAccessor("volume", &AudioRenderer::volume, &AudioRenderer::SetVolume),
                     InstanceAccessor("trace", &AudioRenderer::log_enabled, &AudioRenderer::EnableLog),
                   });
 
@@ -139,4 +140,23 @@ void AudioRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value 
 
 Napi::Value AudioRenderer::log_enabled(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), log_enabled_);
+}
+
+void AudioRenderer::SetVolume(const Napi::CallbackInfo& info, const Napi::Value &value) {
+  Napi::Env env = info.Env();
+  if (info.Length() <= 0 || !value.IsNumber()) {
+    Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+  if(!renderer_) {
+    Napi::TypeError::New(env, "Invalid operation").ThrowAsJavaScriptException();
+    return;
+  }
+
+  renderer_->SetVolume((float)value.ToNumber());
+}
+
+Napi::Value AudioRenderer::volume(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), renderer_->volume());
 }

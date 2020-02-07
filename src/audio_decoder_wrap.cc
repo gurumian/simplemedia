@@ -19,6 +19,7 @@ Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("stop", &AudioDecoder::Stop),
                     InstanceMethod("pause", &AudioDecoder::Pause),
                     InstanceMethod("decode", &AudioDecoder::Decode),
+                    InstanceMethod("flush", &AudioDecoder::Flush),
                     InstanceAccessor("pidchannel", nullptr, &AudioDecoder::SetPidChannel),
                     InstanceAccessor("sampleformat", &AudioDecoder::sampleformat, nullptr),
                     InstanceAccessor("samplerate", &AudioDecoder::samplerate, nullptr),
@@ -156,6 +157,11 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
     auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
     callback.Call(env.Global(), {frame});
   });
+}
+
+void AudioDecoder::Flush(const Napi::CallbackInfo& info) {
+  if(decoder_)
+    decoder_->Flush();
 }
 
 Napi::Value AudioDecoder::samplerate(const Napi::CallbackInfo& info) {

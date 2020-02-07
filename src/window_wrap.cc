@@ -141,7 +141,17 @@ Napi::Value Window::pollEvent(const Napi::CallbackInfo& info) {
 
   SDL_Event event;
   if(SDL_PollEvent(&event)) {
-    return Napi::Number::New(info.Env(), event.key.keysym.sym);
+    auto obj = Napi::Object::New(env);
+    obj["type"] = Napi::Number::New(env, event.type);
+    switch(event.type) {
+    case SDL_KEYUP:
+    case SDL_KEYDOWN: {
+      obj["key"] = Napi::Number::New(env, event.key.keysym.sym);
+      break;
+    }
+    }
+
+    return obj;
   }
   return env.Null();
 }

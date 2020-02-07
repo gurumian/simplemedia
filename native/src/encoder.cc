@@ -19,4 +19,3 @@ int Encoder::Prepare(AVStream *stream) {
 }
 
 } // namespace gurum
-

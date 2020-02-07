@@ -93,4 +93,3 @@ std::unique_ptr<base::SimpleThread> SimpleThread::CreateThread() {
 }
 
 } // namespace base
-

@@ -16,6 +16,7 @@ Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("start", &Source::Start),
                     InstanceMethod("stop", &Source::Stop),
                     InstanceMethod("pause", &Source::Pause),
+                    InstanceMethod("seek", &Source::Seek),
                     InstanceMethod("requestPidChannel", &Source::RequestPidChannel),
                     InstanceMethod("findStream", &Source::FindStream),
                     InstanceAccessor("datasource", &Source::dataSource, &Source::SetDataSource),
@@ -127,6 +128,62 @@ void Source::Pause(const Napi::CallbackInfo& info) {
   source_->Pause();
 }
 
+void Source::Seek(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  if (info.Length() <= 0 || !info[0].IsObject()) {
+    Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+  Napi::Object obj = info[0].ToObject();
+
+  do {
+    if(!obj.HasOwnProperty("pos")) {
+      Napi::TypeError::New(env, "no pos").ThrowAsJavaScriptException();
+      return;
+    }
+
+    if(!static_cast<Napi::Value>(obj["pos"]).IsNumber()) {
+      Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+      return;
+    }
+  } while(0);
+  int64_t pos = (int64_t) static_cast<Napi::Value>(obj["pos"]).ToNumber();
+
+
+  do {
+    if(!obj.HasOwnProperty("backward")) {
+      Napi::TypeError::New(env, "no backward").ThrowAsJavaScriptException();
+      return;
+    }
+
+    if(!static_cast<Napi::Value>(obj["backward"]).IsBoolean()) {
+      Napi::TypeError::New(env, "Boolean expected").ThrowAsJavaScriptException();
+      return;
+    }
+  } while(0);
+  bool backward = static_cast<Napi::Value>(obj["backward"]).ToBoolean();
+
+  do {
+    if(!obj.HasOwnProperty("callback")) {
+      Napi::TypeError::New(env, "no callback").ThrowAsJavaScriptException();
+      return;
+    }
+
+    if(!static_cast<Napi::Value>(obj["callback"]).IsFunction()) {
+      Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
+      return;
+    }
+  } while(0);
+  int flag = backward ? AVSEEK_FLAG_BACKWARD : 0;
+
+  assert(source_);
+  source_->Seek(pos, flag, [&]{
+    auto callback = static_cast<Napi::Value>(obj["callback"]).As<Napi::Function>();
+    callback.Call(env.Global(), {});
+  });
+}
+
 Napi::Value Source::RequestPidChannel(const Napi::CallbackInfo& info){
   Napi::Env env = info.Env();
   if (info.Length() <= 0) {
@@ -156,19 +213,11 @@ Napi::Value Source::RequestPidChannel(const Napi::CallbackInfo& info){
     return env.Undefined();
   }
 
-#if 1
   Napi::Number number = value.As<Napi::Number>();
   int pid = (int) number;
   gurum::PidChannel *pidchannel = source_->RequestPidChannel(pid);
   assert(pidchannel);
   return Napi::External<gurum::PidChannel>::New(env, pidchannel);
-#else
-  Napi::Number number = value.As<Napi::Number>();
-  int pid = (int) number;
-  Napi::Value pidchannel = Napi::External<gurum::PidChannel>::New(env, source_->RequestPidChannel(pid));
-  Napi::Object object = PidChannel::NewInstance(info.Env(), pidchannel);
-  return object;
-#endif
 }
 
 Napi::Value Source::FindStream(const Napi::CallbackInfo& info) {

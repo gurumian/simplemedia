@@ -26,6 +26,7 @@ private:
   void Pause(const Napi::CallbackInfo& info);
 
   void Decode(const Napi::CallbackInfo& info);
+  void Flush(const Napi::CallbackInfo& info);
 
 
   void SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value);
@@ -45,5 +46,3 @@ private:
 };
 
 #endif // GURUM_AUDIO_DECODER_WRAP_H
-
-

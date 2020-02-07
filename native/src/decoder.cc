@@ -107,4 +107,4 @@ int Decoder::Flush() {
   return 0;
 }
 
-} /* namespace grm */
+} // namespace gurum

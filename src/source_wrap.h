@@ -34,6 +34,7 @@ class Source : public Napi::ObjectWrap<Source> {
   void Start(const Napi::CallbackInfo& info);
   void Stop(const Napi::CallbackInfo& info);
   void Pause(const Napi::CallbackInfo& info);
+  void Seek(const Napi::CallbackInfo& info);
 
   void EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value);
   Napi::Value log_enabled(const Napi::CallbackInfo& info);
@@ -49,5 +50,3 @@ private:
 };
 
 #endif // GURUM_SOURCE_H
-
-

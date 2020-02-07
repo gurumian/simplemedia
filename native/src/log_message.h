@@ -138,4 +138,3 @@ private:
 #define H(data, len) ::base::logging::Hexdump(__FILE__, __func__, __LINE__, data, len)
 
 #endif // BASE_LOGGING_LOG_MESSAGE_H_
-

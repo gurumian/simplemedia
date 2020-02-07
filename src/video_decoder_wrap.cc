@@ -19,6 +19,7 @@ Napi::Object VideoDecoder::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("stop", &VideoDecoder::Stop),
                     InstanceMethod("pause", &VideoDecoder::Pause),
                     InstanceMethod("decode", &VideoDecoder::Decode),
+                    InstanceMethod("flush", &VideoDecoder::Flush),
                     InstanceAccessor("pidchannel", nullptr, &VideoDecoder::SetPidChannel),
                     InstanceAccessor("width", &VideoDecoder::width, nullptr),
                     InstanceAccessor("height", &VideoDecoder::height, nullptr),
@@ -155,6 +156,11 @@ void VideoDecoder::Decode(const Napi::CallbackInfo& info) {
     auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
     callback.Call(env.Global(), {frame});
   });
+}
+
+void VideoDecoder::Flush(const Napi::CallbackInfo& info) {
+  if(decoder_)
+    decoder_->Flush();
 }
 
 Napi::Value VideoDecoder::width(const Napi::CallbackInfo& info) {

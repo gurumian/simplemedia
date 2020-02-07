@@ -32,5 +32,3 @@ private:
 };
 
 #endif // GURUM_FRAME_WRAP_H
-
-

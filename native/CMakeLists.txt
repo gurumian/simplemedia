@@ -172,4 +172,3 @@ install(TARGETS ${simplemedia_lib_name} DESTINATION lib)
 install(DIRECTORY ${simplemedia_inc_dir}/simplemedia DESTINATION include)
 #install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/{mediaplayer,audioplayer,audiodecoder} DESTINATION bin/simplemedia)
 install(PROGRAMS ${simplemedia_script_files} DESTINATION bin/simplemedia)
-

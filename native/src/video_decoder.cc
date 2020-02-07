@@ -51,4 +51,4 @@ AVRational VideoDecoder::timebase() {
   return stream_->time_base;
 }
 
-} // namespace grum
+} // namespace gurum

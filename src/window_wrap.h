@@ -22,5 +22,3 @@ private:
 };
 
 #endif // GURUM_WINDOW_WRAP_H
-
-
