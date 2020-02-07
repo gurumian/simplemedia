@@ -114,7 +114,6 @@ int Source::Start() {
   thread_->PostTask([&]{
     while(state_ != stopped) {
       Run(0);
-      std::this_thread::yield();
     }
   });
   return 0;
@@ -267,6 +266,7 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
 }
 
 int Source::ReadFrame(AVPacket *pkt) {
+  std::lock_guard<std::mutex> lk(lck_);
   int err = av_read_frame(fmt_, pkt);
   if(err < 0) {
     if(err==AVERROR_EOF && nullpkt_sent_==false) {
