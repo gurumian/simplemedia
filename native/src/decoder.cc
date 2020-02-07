@@ -8,7 +8,7 @@ namespace gurum {
 Decoder::Decoder() {
   static bool inited=false;
   if(!inited) {
-	  inited = true;
+    inited = true;
   }
 }
 
