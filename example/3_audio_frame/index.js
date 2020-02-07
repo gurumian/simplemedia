@@ -1,6 +1,6 @@
 'use strict'
 
-const {Source, AudioDecoder, AudioRenderer} = require('simplemedia');
+const {Source, AudioDecoder} = require('simplemedia');
 
 const test_media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 
@@ -22,7 +22,6 @@ function dump(frame) {
 
 function decode() {
   decoder.decode(frame => {
-  var delay = 0;
   if(frame) {
     dump(frame);
     setTimeout(decode);
