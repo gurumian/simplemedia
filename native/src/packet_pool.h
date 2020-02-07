@@ -16,17 +16,17 @@ namespace gurum {
 
 class PacketPool {
 public:
-	PacketPool()=default;
-	~PacketPool()=default;
+  PacketPool()=default;
+  ~PacketPool()=default;
 
-	int Prepare(int num);
-	AVPacket *Request(int timeout=0);
-	void Release(AVPacket *pkt, bool notify=true);
+  int Prepare(int num);
+  AVPacket *Request(int timeout=0);
+  void Release(AVPacket *pkt, bool notify=true);
 
 private:
-	std::mutex lck_;
-	std::condition_variable cond_;
-	std::list<AVPacket *> lst_;
+  std::mutex lck_;
+  std::condition_variable cond_;
+  std::list<AVPacket *> lst_;
 };
 
 } // namespace gurum
