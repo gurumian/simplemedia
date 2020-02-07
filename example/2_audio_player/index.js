@@ -1,11 +1,17 @@
 'use strict'
 
+var args = process.argv.slice(2);
+console.log('args: ', args);
+
 const AudioPlayer = require('./audio_player');
 
-const test_media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
+var media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
+if(args.length) {
+  media_uri = args[0];
+}
 
 let player = new AudioPlayer();
-player.datasource = test_media_uri;
+player.datasource = media_uri;
 player.prepare().then(resolve => {
   console.log('prepared');
   player.start();
