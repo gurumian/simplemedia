@@ -19,30 +19,29 @@ PidChannel::PidChannel(NativeHandle natve_handle, uint16_t pid, PacketPool *pack
 }
 
 PidChannel::~PidChannel() {
-	unlink(pipe_.c_str());
+  unlink(pipe_.c_str());
 }
 
 int PidChannel::Push(const AVPacket *pkt) {
-	std::lock_guard<std::mutex> lk(lck_);
-	que_.push_back((AVPacket *)pkt);
-	return 0;
+  std::lock_guard<std::mutex> lk(lck_);
+  que_.push_back((AVPacket *)pkt);
+  return 0;
 }
 
 int PidChannel::Pop(AVPacket *pkt) {
-	std::lock_guard<std::mutex> lk(lck_);
+  std::lock_guard<std::mutex> lk(lck_);
 
-	assert(pkt);
-	if(que_.empty())
-		return -1;
+  assert(pkt);
+  if(que_.empty())
+    return -1;
 
-	AVPacket *pkt1 = que_.front();
-	av_packet_move_ref(pkt, pkt1);
-	que_.pop_front();
+  AVPacket *pkt1 = que_.front();
+  av_packet_move_ref(pkt, pkt1);
+  que_.pop_front();
 
-	assert(packet_pool_);
-	packet_pool_->Release(pkt1);
-
-	return 0;
+  assert(packet_pool_);
+  packet_pool_->Release(pkt1);
+  return 0;
 }
 
 void PidChannel::Flush() {
