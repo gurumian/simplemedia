@@ -16,6 +16,9 @@ namespace gurum {
 
 class PacketPool {
 public:
+	PacketPool()=default;
+	~PacketPool()=default;
+
 	int Prepare(int num);
 	AVPacket *Request(int timeout=0);
 	void Release(AVPacket *pkt, bool notify=true);

@@ -39,9 +39,6 @@ private:
   Napi::Value log_enabled(const Napi::CallbackInfo& info);
 
 private:
-  AVFrame *copyFrame(const AVFrame *frame);
-
-private:
   static Napi::FunctionReference constructor;
   std::unique_ptr<gurum::AudioDecoder> decoder_{};
   bool log_enabled_{false};

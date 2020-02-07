@@ -4,11 +4,20 @@ const {Source, AudioDecoder, AudioRenderer} = require('simplemedia');
 
 const test_media_uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 
+var count = 0;
 var decoder = null;
 var channels = 0;
 
 function dump(frame) {
-  console.log(frame.data);
+  let data = frame.data;
+  let samples = frame.nb_samples;
+
+  for(var i = 0; i < samples; i++) {
+    let sample = data[i];
+    for(var j = 0; j < channels; j++) {
+      console.log(sample[j]);
+    }
+  }
 }
 
 function decode() {
@@ -20,7 +29,10 @@ function decode() {
   }
   else {
     console.log('null packet');
-    console.log('count: ' + this.count);
+    console.log('count: ' + count);
+
+    decoder = null;
+    source = null;
   }
   });	
 }

@@ -16,6 +16,7 @@ Napi::Object Frame::Init(Napi::Env env, Napi::Object exports) {
                     InstanceAccessor("native", &Frame::native, nullptr),
                     InstanceAccessor("data", &Frame::data, nullptr),
                     InstanceAccessor("nb_samples", &Frame::nb_samples, nullptr),
+                    InstanceAccessor("bytes_per_sample", &Frame::bytes_per_sample, nullptr),
                   });
 
   constructor = Napi::Persistent(func);
@@ -36,7 +37,15 @@ Frame::Frame(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Frame>(info) {
   }
 
   auto frame = info[0].As<Napi::External<AVFrame>>();
-  frame_ = frame.Data();
+  frame_ = av_frame_clone(frame.Data());
+  assert(frame_);
+}
+
+Frame::~Frame() {
+  if(frame_) {
+    av_frame_free(&frame_);
+    frame_ = nullptr;
+  }
 }
 
 Napi::Object Frame::NewInstance(Napi::Env env, Napi::Value arg) {
@@ -57,16 +66,28 @@ Napi::Value Frame::native(const Napi::CallbackInfo& info) {
 
 Napi::Value Frame::data(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
-  int data_size = 0;
   if(frame_->channels) {
-    int data_size_per_channel = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
-    data_size = frame_->channels * frame_->nb_samples * data_size_per_channel;
+    int data_size_per_sample = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
+    auto data = Napi::Array::New(env, frame_->nb_samples);
+    for(int i = 0; i < frame_->nb_samples; i++) {
+      auto sub = Napi::Array::New(env, frame_->channels);
+      for(int ch = 0; ch < frame_->channels; ch++) {
+        sub[ch] = Napi::ArrayBuffer::New(env, (frame_->data[ch] + data_size_per_sample*i), data_size_per_sample);
+      }
+      data[i] = sub;
+    }
+    return data;
   }
   else {
-    // TODO: We assume that this is a video
+    const int len = 3;
+    auto data = Napi::Array::New(env, len);
+    for(int i = 0; i < len; i++) {
+      data[i] = Napi::ArrayBuffer::New(env, frame_->data[i], frame_->linesize[i]);
+    }
+    return data;
   }
-  return Napi::ArrayBuffer::New(env, frame_->data, data_size);
+  Napi::TypeError::New(env, "unhandled").ThrowAsJavaScriptException();
+  return env.Undefined();
 }
 
 Napi::Value Frame::nb_samples(const Napi::CallbackInfo& info) {
@@ -74,3 +95,7 @@ Napi::Value Frame::nb_samples(const Napi::CallbackInfo& info) {
   return Napi::Number::New(env, frame_->nb_samples);
 }
 
+Napi::Value Frame::bytes_per_sample(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  return Napi::Number::New(env, av_get_bytes_per_sample((AVSampleFormat)frame_->format));
+}

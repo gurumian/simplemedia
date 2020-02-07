@@ -153,16 +153,9 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
   }
 
   decoder_->Decode([&](const AVFrame *arg){
-    auto copied = copyFrame(arg);
-    auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)copied));
-
+    auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
     callback.Call(env.Global(), {frame});
   });
-}
-
-AVFrame *AudioDecoder::copyFrame(const AVFrame *frame) {
-  AVFrame *copied = av_frame_clone(frame);
-  return copied;
 }
 
 Napi::Value AudioDecoder::samplerate(const Napi::CallbackInfo& info) {

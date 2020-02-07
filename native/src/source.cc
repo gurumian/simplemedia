@@ -22,14 +22,14 @@ extern "C" {
 namespace gurum {
 
 Source::Source() {
-  static bool inited=false;
+  static bool inited{false};
   if(!inited) {
     avformat_network_init ();
-    LOG(INFO) << "ffmpeg configure: " << avcodec_configuration();
-    LOG(INFO) << " avcodec version: " << avcodec_version() << " ["  << LIBAVCODEC_VERSION_MAJOR << "."
-        << LIBAVCODEC_VERSION_MINOR << "."
-        << LIBAVCODEC_VERSION_MICRO << "]";
-    inited=true;
+    // LOG(INFO) << "ffmpeg configure: " << avcodec_configuration();
+    // LOG(INFO) << " avcodec version: " << avcodec_version() << " ["  << LIBAVCODEC_VERSION_MAJOR << "."
+    //     << LIBAVCODEC_VERSION_MINOR << "."
+    //     << LIBAVCODEC_VERSION_MICRO << "]";
+    inited = true;
   }
 
   pid_[0] = pid_[1] = pid_[2] = -1;

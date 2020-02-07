@@ -125,7 +125,6 @@ void AudioRenderer::Render(const Napi::CallbackInfo& info) {
     // H((char *)data, (int)len);
     return 0;
   });
-  av_frame_free(&frame);
 }
 
 void AudioRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {

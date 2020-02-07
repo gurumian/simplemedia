@@ -118,6 +118,7 @@ int SdlAudioRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
     for (int ch=0; ch<channels_; ch++) {
       uint8_t buf[4];
       AdjustVolume(buf, (frame->data[ch] + data_size*i), data_size);
+      // H((char *)buf, data_size);
       err = SDL_QueueAudio(audio_device_, (const void *)buf, data_size);
       if(err) {
         LOG(WARNING) << " failed to SDL_QueueAudio():" << err;

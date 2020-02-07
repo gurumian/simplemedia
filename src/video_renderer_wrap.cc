@@ -117,7 +117,6 @@ void VideoRenderer::Render(const Napi::CallbackInfo& info) {
   renderer_->Render(frame, [&](uint8_t *data, size_t len)->int {
     return 0;
   });
-  av_frame_free(&frame);
 }
 
 void VideoRenderer::Resize(const Napi::CallbackInfo& info) {

@@ -152,25 +152,9 @@ void VideoDecoder::Decode(const Napi::CallbackInfo& info) {
   }
 
   decoder_->Decode([&](const AVFrame *arg){
-    auto copied = copyFrame(arg);
-    auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)copied));
-
+    auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
     callback.Call(env.Global(), {frame});
   });
-}
-
-AVFrame *VideoDecoder::copyFrame(const AVFrame *frame) {
-  AVFrame *copied = av_frame_alloc();
-  copied->format = frame->format;
-  copied->width = frame->width;
-  copied->height = frame->height;
-  copied->channels = frame->channels;
-  copied->channel_layout = frame->channel_layout;
-  copied->nb_samples = frame->nb_samples;
-  av_frame_get_buffer(copied, 32);
-  av_frame_copy(copied, frame);
-  av_frame_copy_props(copied, frame);
-  return copied;
 }
 
 Napi::Value VideoDecoder::width(const Napi::CallbackInfo& info) {
