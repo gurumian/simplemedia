@@ -94,7 +94,7 @@ void AudioDecoder::Start(const Napi::CallbackInfo& info) {
     err = decoder_->Start();
     if(err) {
       LOG(ERROR) << " failed to start the audio decoder";
-      Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
+      Napi::TypeError::New(env, "exception while starting a decoder").ThrowAsJavaScriptException();
       return;
     }
   }
@@ -108,8 +108,8 @@ void AudioDecoder::Stop(const Napi::CallbackInfo& info) {
     int err;
     err = decoder_->Stop();
     if(err) {
-      LOG(ERROR) << " failed to start the audio decoder";
-      Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
+      LOG(ERROR) << " failed to stop the audio decoder";
+      Napi::TypeError::New(env, "exception while stopping a decoder").ThrowAsJavaScriptException();
       return;
     }
   }
@@ -123,8 +123,8 @@ void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
     int err;
     err = decoder_->Pause();
     if(err) {
-      LOG(ERROR) << " failed to start the audio decoder";
-      Napi::TypeError::New(env, "start exception").ThrowAsJavaScriptException();
+      LOG(ERROR) << " failed to pause the audio decoder";
+      Napi::TypeError::New(env, "pause exception").ThrowAsJavaScriptException();
       return;
     }
   }
