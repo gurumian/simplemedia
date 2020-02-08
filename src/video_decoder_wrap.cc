@@ -131,7 +131,6 @@ void VideoDecoder::Pause(const Napi::CallbackInfo& info) {
 
 
 void VideoDecoder::Decode(const Napi::CallbackInfo& info) {
-  if(log_enabled_) LOG(INFO) << __func__ ;
   Napi::Env env = info.Env();
 
   if (info.Length() <= 0 || !info[0].IsFunction()) {
