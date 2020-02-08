@@ -25,6 +25,7 @@ Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
                     InstanceAccessor("videoPid", &Source::videoPid, nullptr),
                     InstanceAccessor("hasVideo", &Source::hasVideo, nullptr),
                     InstanceAccessor("trace", &Source::log_enabled, &Source::EnableLog),
+                    InstanceAccessor("duration", &Source::duration, nullptr),
                   });
 
   constructor = Napi::Persistent(func);
@@ -245,4 +246,8 @@ void Source::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value)
 
 Napi::Value Source::log_enabled(const Napi::CallbackInfo& info) {
   return Napi::Boolean::New(info.Env(), log_enabled_);
+}
+
+Napi::Value Source::duration(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), source_->GetDuration());
 }

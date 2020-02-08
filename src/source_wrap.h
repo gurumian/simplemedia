@@ -38,6 +38,7 @@ class Source : public Napi::ObjectWrap<Source> {
 
   void EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value);
   Napi::Value log_enabled(const Napi::CallbackInfo& info);
+  Napi::Value duration(const Napi::CallbackInfo& info);
 
   Napi::Value RequestPidChannel(const Napi::CallbackInfo& info);
 
