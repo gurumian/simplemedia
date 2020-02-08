@@ -55,7 +55,10 @@ let window = new Window({
 });
 let renderer = window.createRenderer();
 
-let player = new MediaPlayer(renderer);
+let player = new MediaPlayer({
+  renderer: renderer,
+  trace: true,
+});
 player.datasource = media_uri;
 player.prepare().then(resolve => {
   console.log('duration: ' + player.duration);

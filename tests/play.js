@@ -18,7 +18,9 @@ let window = new Window({
 let renderer = window.createRenderer();
 
 const MediaPlayer = require('../lib/media_player');
-let player = new MediaPlayer(renderer);
+let player = new MediaPlayer({
+  renderer: renderer,
+});
 player.datasource = test_media_uri;
 player.prepare().then(resolve => {
   console.log('prepared');
