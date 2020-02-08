@@ -31,12 +31,18 @@ public:
 
   void SetSubtitleRenderer(SubtitleRenderer *renderer){subtitle_renderer_=renderer;}
 
+  void EnableLog(bool enable=true) {
+    log_enabled_=enable;
+  }
+
 protected:
   AVPixelFormat pixel_fmt_=(AVPixelFormat)0;
   int w_=0;
   int h_=0;
   std::string title_;
   SubtitleRenderer *subtitle_renderer_=nullptr;
+
+  bool log_enabled_=false;
 };
 
 } // namespace gurum

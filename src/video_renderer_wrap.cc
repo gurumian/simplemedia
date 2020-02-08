@@ -142,7 +142,7 @@ void VideoRenderer::EnableLog(const Napi::CallbackInfo& info, const Napi::Value 
     return;
   }
   log_enabled_ = value.ToBoolean();
-  // if(renderer_) renderer_->EnableLog(log_enabled_);
+  if(renderer_) renderer_->EnableLog(log_enabled_);
 }
 
 Napi::Value VideoRenderer::log_enabled(const Napi::CallbackInfo& info) {
