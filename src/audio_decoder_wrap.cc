@@ -139,24 +139,26 @@ void AudioDecoder::Decode(const Napi::CallbackInfo& info) {
     return;
   }
 
-  assert(decoder_);
 
   auto callback = info[0].As<Napi::Function>();
-  bool eos = false;
+  bool sent_frame{false};
   decoder_->SetOnNullPacketSent([&](const gurum::Decoder &decoder){
     if(log_enabled_) LOG(INFO) << __func__ << " null packet!";
     callback.Call(env.Global(), {env.Null()});
-    eos = true;
+    sent_frame = true;
   });
 
-  if(eos) {
-    return;
-  }
+  if(sent_frame) return;
 
   decoder_->Decode([&](const AVFrame *arg){
     auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
     callback.Call(env.Global(), {frame});
+    sent_frame = true;
   });
+
+  if(sent_frame) return;
+
+  Napi::Error::New(env, " need more packet to get a frame").ThrowAsJavaScriptException();
 }
 
 void AudioDecoder::Flush(const Napi::CallbackInfo& info) {
