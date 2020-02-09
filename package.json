@@ -31,7 +31,7 @@
   },
   "scripts": {
     "install": "cmake-js compile",
-    "test": "node tests/play.js"
+    "test": "mocha"
   },
   "gypfile": true,
   "directories": {
@@ -41,5 +41,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gurumian/simplemedia.git"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.1"
   }
 }
