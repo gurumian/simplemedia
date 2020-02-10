@@ -47,7 +47,7 @@ readAndDispatch();
 ## (Optional) Native only build
 ```bash
 cd native;
-mkdir build; cd buiild
+mkdir build; cd build
 cmake .. && make
 ```
 You'll probably get a binary named `mediaplayer`
