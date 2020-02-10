@@ -25,7 +25,7 @@ private:
   void Stop(const Napi::CallbackInfo& info);
   void Pause(const Napi::CallbackInfo& info);
 
-  void Decode(const Napi::CallbackInfo& info);
+  Napi::Value Decode(const Napi::CallbackInfo& info);
   void Flush(const Napi::CallbackInfo& info);
 
   void SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value);

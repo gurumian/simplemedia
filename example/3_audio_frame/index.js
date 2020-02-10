@@ -27,19 +27,22 @@ function dump(frame) {
 }
 
 function decode() {
-  decoder.decode(frame => {
-  if(frame) {
-    dump(frame);
-    setTimeout(decode);
-  }
-  else {
-    console.log('null packet');
-    console.log('count: ' + count);
+  var done = false;
+  while(!done) {
+    done = decoder.decode(frame => {
+      if(frame) {
+        dump(frame);
+        setTimeout(decode);
+      }
+      else {
+        console.log('null packet');
+        console.log('count: ' + count);
 
-    decoder = null;
-    source = null;
+        decoder = null;
+        source = null;
+      }
+    });
   }
-  });	
 }
 
 var source = new Source();

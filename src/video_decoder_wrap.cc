@@ -130,15 +130,14 @@ void VideoDecoder::Pause(const Napi::CallbackInfo& info) {
 }
 
 
-void VideoDecoder::Decode(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
+Napi::Value VideoDecoder::Decode(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
 
   if (info.Length() <= 0 || !info[0].IsFunction()) {
     Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
-    return;
+    return env.Undefined();
   }
 
-  assert(decoder_);
 
   auto callback = info[0].As<Napi::Function>();
   bool sent_frame{false};
@@ -148,17 +147,17 @@ void VideoDecoder::Decode(const Napi::CallbackInfo& info) {
     sent_frame = true;
   });
 
-  if(sent_frame) return;
+  if(sent_frame) {
+    return Napi::Boolean::New(env, sent_frame);
+  }
 
   decoder_->Decode([&](const AVFrame *arg){
-    auto frame = Frame::NewInstance(info.Env(), Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
+    auto frame = Frame::NewInstance(env, Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
     callback.Call(env.Global(), {frame});
     sent_frame = true;
   });
 
-  if(sent_frame) return;
-
-  Napi::Error::New(env, " need more packet to get a frame").ThrowAsJavaScriptException();
+  return Napi::Boolean::New(env, sent_frame);
 }
 
 void VideoDecoder::Flush(const Napi::CallbackInfo& info) {
