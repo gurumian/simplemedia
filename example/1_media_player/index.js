@@ -6,9 +6,9 @@ console.log('args: ', args);
 
 const {Window, MediaPlayer} = require('simplemedia');
 
-var media_uri = 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4'
+var uri = 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4'
 if(args.length) {
-  media_uri = args[0];
+  uri = args[0];
 }
 
 function readAndDispatch() {
@@ -59,7 +59,7 @@ let player = new MediaPlayer({
   renderer: renderer,
   trace: true,
 });
-player.datasource = media_uri;
+player.datasource = uri;
 player.prepare().then(resolve => {
   console.log('duration: ' + player.duration);
   player.start();

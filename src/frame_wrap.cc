@@ -15,8 +15,8 @@ Napi::Object Frame::Init(Napi::Env env, Napi::Object exports) {
                     InstanceAccessor("pts", &Frame::pts, nullptr),
                     InstanceAccessor("native", &Frame::native, nullptr),
                     InstanceAccessor("data", &Frame::data, nullptr),
-                    InstanceAccessor("nb_samples", &Frame::nb_samples, nullptr),
-                    InstanceAccessor("bytes_per_sample", &Frame::bytes_per_sample, nullptr),
+                    InstanceAccessor("numofSamples", &Frame::nb_samples, nullptr),
+                    InstanceAccessor("bytesPerSample", &Frame::bytes_per_sample, nullptr),
                   });
 
   constructor = Napi::Persistent(func);
