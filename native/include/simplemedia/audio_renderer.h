@@ -59,19 +59,19 @@ public:
   float volume() { return volume_;}
 
 protected:
-  AVSampleFormat fmt_=AV_SAMPLE_FMT_NONE;
-  int channels_=0;
-  int samplerate_=0;
-  int64_t channel_layout_=0;
+  AVSampleFormat fmt_{AV_SAMPLE_FMT_NONE};
+  int channels_{0};
+  int samplerate_{0};
+  int64_t channel_layout_{0};
 
   std::mutex lck_;
   std::condition_variable cond_;
 #if defined(USE_SWRESAMPLE)
-  struct SwrContext *swr_=nullptr;
+  struct SwrContext *swr_{nullptr};
 #endif
-  bool log_enabled_=false;
+  bool log_enabled_{false};
 
-  float volume_=0.5f;
+  float volume_{0.5f};
 };
 
 } // namespace gurum

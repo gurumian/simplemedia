@@ -61,7 +61,7 @@ private:
   void AdjustVolume(uint8_t *out, uint8_t *data, size_t data_size);
 
 private:
-  SDL_AudioDeviceID audio_device_=0;
+  SDL_AudioDeviceID audio_device_{0};
   SDL_AudioSpec obtained_;
 };
 

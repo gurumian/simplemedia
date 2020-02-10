@@ -88,16 +88,16 @@ private:
   Timer timer_[NUMOF_STREAM_TYPE];
   int64_t last_pts_[NUMOF_STREAM_TYPE] = {0, 0, 0};
   bool is_first_frame[NUMOF_STREAM_TYPE] = {true, true, true};
-  State state_=none;
+  State state_{none};
 
-  int width_=0;
-  int height_=0;
+  int width_{0};
+  int height_{0};
 
-  bool eos_sent_=false;
-  OnEndOfStream on_end_of_stream_;
-  OnStateChanged on_state_changed_;
-  int sync_threshold_=0;
-  bool log_enabled_=false;
+  bool eos_sent_{false};
+  OnEndOfStream on_end_of_stream_{nullptr};
+  OnStateChanged on_state_changed_{nullptr};
+  int sync_threshold_{0};
+  bool log_enabled_{false};
 };
 
 } // namespace gurum
