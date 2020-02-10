@@ -265,7 +265,7 @@ void MediaPlayer::OnVideoFrameFound(const AVFrame *frame) {
   else {
     int delay_step=kDefaultDelayStep;
     bool synced=true;
-    if(source_->HasVideo() && source_->HasAudio()) {
+    if(source_->HasAudio()) {
       int diff = last_pts_[VIDEO] - last_pts_[AUDIO] ;
       if(diff > sync_threshold_) { // 1:1000000
         synced=false;
@@ -324,7 +324,7 @@ void MediaPlayer::OnAudioFrameFound(const AVFrame *frame) {
   else {
     int delay_step=kDefaultDelayStep;
     bool synced=true;
-    if(source_->HasVideo() && source_->HasAudio()) {
+    if(source_->HasVideo()) {
       int diff = last_pts_[AUDIO] - last_pts_[VIDEO];
       if(diff > sync_threshold_) { // 1:1000000
         synced=false;
