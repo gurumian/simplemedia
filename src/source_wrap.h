@@ -1,5 +1,5 @@
-#ifndef GURUM_SOURCE_H
-#define GURUM_SOURCE_H
+#ifndef GURUM_SOURCE_WRAP_H
+#define GURUM_SOURCE_WRAP_H
 
 #include <napi.h>
 
@@ -47,4 +47,4 @@ private:
   bool log_enabled_{false};
 };
 
-#endif // GURUM_SOURCE_H
+#endif // GURUM_SOURCE_WRAP_H
