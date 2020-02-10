@@ -219,6 +219,9 @@ void Source::Run(int unused) {
   if(pid_channel) {
     pid_channel->Push(pkt);
   }
+  else {
+    packet_pool_->Release(pkt);
+  }
 }
 
 void Source::SetState(State state) {

@@ -44,9 +44,6 @@ int main(int argc, char *argv[]) {
           is_first_frame=false;
         }
         else {
-          int delay_step=100;
-          bool synced=true;
-          
           const int64_t frame_delay = frame->pts - last_pts;
           last_pts = frame->pts;
           timer.wait(frame_delay);
