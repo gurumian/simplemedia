@@ -8,12 +8,12 @@ namespace gurum {
 
 class Timer {
 public:
-	Timer();
-	void wait(int64_t period);
-	void update();
+  Timer();
+  void wait(int64_t period);
+  void update();
 
 private:
-	std::chrono::time_point<std::chrono::high_resolution_clock> target_time_;
+  std::chrono::time_point<std::chrono::high_resolution_clock> target_time_;
 };
 
 }
