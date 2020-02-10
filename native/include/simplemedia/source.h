@@ -11,9 +11,6 @@
 #include "pid_channel.h"
 
 extern "C" {
-#include <libavutil/imgutils.h>
-#include <libavutil/samplefmt.h>
-#include <libavutil/timestamp.h>
 #include <libavformat/avformat.h>
 }
 #include <functional>

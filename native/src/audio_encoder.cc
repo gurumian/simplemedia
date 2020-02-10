@@ -1,14 +1,10 @@
 #include "simplemedia/audio_encoder.h"
 
 #include "log_message.h"
-extern "C" {
-#include <libavutil/base64.h>
-}
 
 namespace gurum {
 
 int AudioEncoder::Encode(AVFrame *frame, OnPacketFound on_packet_found) {
-#if (LIBAVCODEC_VERSION_MAJOR > 57)
   int ret = avcodec_send_frame(codec_context_, frame);
   if (ret < 0) {
       fprintf(stderr, "Error sending the frame to the encoder\n");
@@ -31,9 +27,6 @@ int AudioEncoder::Encode(AVFrame *frame, OnPacketFound on_packet_found) {
     if(on_packet_found) on_packet_found(pkt);
     av_packet_unref(pkt);
   }
-#else
-  // TODO:
-#endif
   return 0;
 }
 

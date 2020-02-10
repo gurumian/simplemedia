@@ -2,9 +2,9 @@
 #define GURUM_VIDEO_RENDERER_H_
 
 #include <simplemedia/config.h>
-extern "C" {
-#include <libavutil/frame.h>
-}
+// extern "C" {
+// #include <libavutil/frame.h>
+// }
 
 #include <functional>
 #include "simplemedia/renderer.h"

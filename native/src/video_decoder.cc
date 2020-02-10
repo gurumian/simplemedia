@@ -1,8 +1,5 @@
 #include <assert.h>
 #include "log_message.h"
-extern "C" {
-#include <libavutil/base64.h>
-}
 
 #include "simplemedia/video_decoder.h"
 

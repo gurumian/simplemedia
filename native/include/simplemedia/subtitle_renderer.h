@@ -5,7 +5,6 @@
 extern "C" {
 #include <libavutil/frame.h>
 #include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
 }
 
 #include <functional>
@@ -32,11 +31,11 @@ public:
   virtual void Blit(void *renderer, int64_t pts)=0;
 
 protected:
-  AVPixelFormat pixel_fmt_=(AVPixelFormat)0;
-  int w_=0;
-  int h_=0;
-  int64_t start_display_time_=0;
-  int64_t end_display_time_=0;
+  AVPixelFormat pixel_fmt_{(AVPixelFormat)0};
+  int w_{0};
+  int h_{0};
+  int64_t start_display_time_{0};
+  int64_t end_display_time_{0};
 };
 
 } // namespace gurum

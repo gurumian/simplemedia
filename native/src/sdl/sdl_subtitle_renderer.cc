@@ -1,10 +1,6 @@
 #include <assert.h>
 
 #include "simplemedia/sdl/sdl_subtitle_renderer.h"
-extern "C" {
-#include <libavutil/imgutils.h>
-}
-
 #include <unistd.h>
 #include <iostream>
 #include "log_message.h"
