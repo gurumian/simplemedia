@@ -15,6 +15,7 @@ var decoder = null;
 var channels = 0;
 
 function dump(frame) {
+  count++;
   let data = frame.data;
   let numofSamples = frame.numofSamples;
 
@@ -36,7 +37,7 @@ function decode() {
       }
       else {
         console.log('null packet');
-        console.log('count: ' + count);
+        console.log('frame count: ' + count);
 
         decoder = null;
         source = null;
