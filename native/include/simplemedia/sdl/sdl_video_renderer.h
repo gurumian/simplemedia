@@ -46,16 +46,16 @@ private:
   int Blit(const SDL_Rect *rect=nullptr);
 
 private:
-  SDL_Renderer *renderer_ = nullptr;
-  SDL_Texture *texture_ = nullptr;
+  SDL_Renderer *renderer_{nullptr};
+  SDL_Texture *texture_{nullptr};
 
-  AVPixelFormat pixel_fmt_=(AVPixelFormat)0;
-  int w_=0;
-  int h_=0;
-  std::string title_;
-  int64_t current_pts_=0;
+  AVPixelFormat pixel_fmt_{(AVPixelFormat)0};
+  int w_{0};
+  int h_{0};
+  std::string title_{};
+  int64_t current_pts_{0};
   std::mutex lck_;
-  OnInvalidated on_invalidated_=nullptr;
+  OnInvalidated on_invalidated_{nullptr};
 };
 
 } // namespace gurum

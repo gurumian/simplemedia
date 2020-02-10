@@ -40,11 +40,11 @@ private:
   std::mutex lck_;
   std::condition_variable cond_;
 
-  bool started_ = false;
-  bool stopped_ = false;
+  bool started_{false};
+  bool stopped_{false};
 
-  int numof_thread_=1;
-  int timeout_=0;
+  int numof_thread_{1};
+  int timeout_{0};
 };
 
 } // namespace base

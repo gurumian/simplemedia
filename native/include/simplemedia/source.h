@@ -94,25 +94,23 @@ private:
   int ReadFrame(AVPacket *pkt);
 
 protected:
-  std::string data_source_;
-  std::unique_ptr<base::SimpleThread> thread_;
+  std::string data_source_{};
+  std::unique_ptr<base::SimpleThread> thread_{};
 
-  bool log_enabled_=false;
-  bool thread_started_ = false;
+  bool log_enabled_{false};
+  bool thread_started_{false};
 
   PidChannelDictionary pid_channel_pool_;
 
   std::atomic<gurum::State> state_{none};
-  AVFormatContext *fmt_ = nullptr;
+  AVFormatContext *fmt_{nullptr};
 
   std::condition_variable cond_;
   std::mutex lck_;
-  bool nullpkt_sent_=false;
+  bool nullpkt_sent_{false};
   std::unique_ptr<PacketPool> packet_pool_;
 
-
   int pid_[NUMOF_STREAM_TYPE];
-
 };
 
 inline bool Source::HasVideo() {

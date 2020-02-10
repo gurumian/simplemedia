@@ -27,9 +27,9 @@ public:
 private:
   int decode(AVPacket *pkt, OnSubtitleFound on_subtitle_found);
 
-  bool log_enabled_=false;
-  OnSubtitleFound on_subtitle_found_=nullptr;
-  AVSubtitle subtitle_;
+  bool log_enabled_{false};
+  OnSubtitleFound on_subtitle_found_{nullptr};
+  AVSubtitle subtitle_{};
 };
 
 } // namespace gurum

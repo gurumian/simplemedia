@@ -24,8 +24,8 @@ public:
 protected:
   virtual int decode(AVPacket *pkt, OnFrameFound on_frame_found)=0;
 
-  OnFrameFound on_frame_found_=nullptr;
-  AVFrame *frame_=nullptr;
+  OnFrameFound on_frame_found_{nullptr};
+  AVFrame *frame_{nullptr};
 };
 
 } // namespace gurum

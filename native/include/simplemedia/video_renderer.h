@@ -36,13 +36,13 @@ public:
   }
 
 protected:
-  AVPixelFormat pixel_fmt_=(AVPixelFormat)0;
-  int w_=0;
-  int h_=0;
-  std::string title_;
-  SubtitleRenderer *subtitle_renderer_=nullptr;
+  AVPixelFormat pixel_fmt_{(AVPixelFormat)0};
+  int w_{0};
+  int h_{0};
+  std::string title_{};
+  SubtitleRenderer *subtitle_renderer_{nullptr};
 
-  bool log_enabled_=false;
+  bool log_enabled_{false};
 };
 
 } // namespace gurum

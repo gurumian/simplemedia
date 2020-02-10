@@ -50,17 +50,17 @@ private:
   int unref() {return --ref_;}
 
 private:
-  NativeHandle native_handle_ = nullptr;
-  int ref_=1;
-  uint16_t pid_;
+  NativeHandle native_handle_{nullptr};
+  int ref_{1};
+  uint16_t pid_{0};
   std::condition_variable cond_;
   std::mutex lck_;
-  std::string pipe_;
+  std::string pipe_{};
   int fd_[2];
 
   std::list<AVPacket *> que_;
-  PacketPool *packet_pool_=nullptr;
-  bool log_enabled_=false;
+  PacketPool *packet_pool_{nullptr};
+  bool log_enabled_{false};
 };
 
 
