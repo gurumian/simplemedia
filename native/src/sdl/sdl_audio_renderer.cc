@@ -153,14 +153,6 @@ void SdlAudioRenderer::SetVolume(float volume) {
   if(volume_==volume)
     return;
 
-  // int sign;
-  // if(volume_ > volume) {
-  //   sign = -1;
-  // }
-  // else {
-  //   sign = 1;
-  // }
-
   volume_=volume;
   LOG(INFO) << __func__ << " [" << volume_ <<  "]";
 }

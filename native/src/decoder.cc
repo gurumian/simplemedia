@@ -2,8 +2,8 @@
 #include "simplemedia/decoder.h"
 #include "log_message.h"
 #include "simple_thread.h"
-namespace gurum {
 
+namespace gurum {
 
 Decoder::Decoder() {
   static bool inited=false;

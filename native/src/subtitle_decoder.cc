@@ -1,9 +1,6 @@
 #include "simplemedia/config.h"
 #include "simplemedia/subtitle_decoder.h"
 #include "log_message.h"
-extern "C" {
-#include <libavutil/base64.h>
-}
 
 namespace gurum {
 
