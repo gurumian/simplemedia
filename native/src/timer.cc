@@ -13,9 +13,10 @@ void Timer::wait(const int64_t period) {
 
   const auto diff =
     std::chrono::duration_cast<std::chrono::microseconds>(
-      target_time_ - std::chrono::high_resolution_clock::now());
+      std::chrono::high_resolution_clock::now() - target_time_);
 
-  std::this_thread::sleep_for(diff);
+  std::this_thread::sleep_for(std::chrono::duration_cast<std::chrono::microseconds>(
+      std::chrono::microseconds{period} - diff));
 }
 
 void Timer::update() {
