@@ -5,6 +5,12 @@ apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-
 (or brew)
 ```
 
+You may need to install `cmake-js` as well
+```
+npm install -g cmake-js
+```
+
+
 ## Install
 ```bash
 npm i simplemedia
