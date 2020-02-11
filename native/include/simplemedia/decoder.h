@@ -27,10 +27,7 @@ extern "C" {
 
 #include "pid_channel.h"
 #include "timer.h"
-
-namespace base {
-class SimpleThread;
-}
+#include "simple_thread.h"
 
 namespace gurum {
 
@@ -49,7 +46,7 @@ public:
   using OnPrepared=std::function<int()>;
   using OnNullPacketSent=std::function<void(const Decoder &decoder)>;
 
-	Decoder();
+	Decoder()=default;
 	virtual ~Decoder();
 
 	int Prepare(AVStream *stream);
@@ -78,21 +75,21 @@ public:
 	void EnableLog(bool enable=true) {log_enabled_=enable;}
 
 protected:
-	AVCodecContext *codec_context_=nullptr;
-	AVCodec *codec_=nullptr;
+	AVCodecContext *codec_context_{nullptr};
+	AVCodec *codec_{nullptr};
 
-	OnWillPrepare on_will_prepare_=nullptr;
-	OnPrepared on_prepared_=nullptr;
-	OnNullPacketSent on_null_packet_sent_=nullptr;
+	OnWillPrepare on_will_prepare_{nullptr};
+	OnPrepared on_prepared_{nullptr};
+	OnNullPacketSent on_null_packet_sent_{nullptr};
 
-	PidChannel *pidchannel_=nullptr;
-  std::unique_ptr<base::SimpleThread> thread_;
+	PidChannel *pidchannel_{nullptr};
+  std::unique_ptr<base::SimpleThread> thread_{};
   std::atomic<State> state_{none};
 
-  AVStream *stream_=nullptr;
+  AVStream *stream_{nullptr};
   std::mutex lck_;
   std::condition_variable cond_;
-  bool log_enabled_=false;
+  bool log_enabled_{false};
 };
 
 } // namespace gurum

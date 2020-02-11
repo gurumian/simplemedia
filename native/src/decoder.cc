@@ -5,9 +5,6 @@
 
 namespace gurum {
 
-Decoder::Decoder() {
-}
-
 Decoder::~Decoder() {
   if(codec_context_) {
     avcodec_close(codec_context_);
