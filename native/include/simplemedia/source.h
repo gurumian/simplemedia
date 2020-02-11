@@ -49,7 +49,7 @@ public:
   Source();
   virtual ~Source();
 
-  void SetDataSource(const std::string &dataSource);
+  void SetDataSource(const std::string &data_source);
   const std::string &dataSource();
 
   virtual void ParseDataSource() {};
