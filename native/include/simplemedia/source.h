@@ -15,11 +15,7 @@ extern "C" {
 }
 #include <functional>
 #include <atomic>
-
-
-namespace base {
-class SimpleThread;
-}
+#include "simple_thread.h"
 
 namespace gurum {
   enum State {
