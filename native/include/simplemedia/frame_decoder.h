@@ -22,7 +22,7 @@ public:
   int Decode(OnFrameFound on_frame_found);
 
 protected:
-  virtual int decode(AVPacket *pkt, OnFrameFound on_frame_found)=0;
+  virtual int decode(AVPacket *pkt, OnFrameFound on_frame_found);
 
   OnFrameFound on_frame_found_{nullptr};
   AVFrame *frame_{nullptr};

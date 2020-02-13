@@ -20,7 +20,6 @@ public:
   int width();
   int height();
   int pixelFormat();
-  AVRational timebase();
 
   virtual AVMediaType MediaType() const override {return AVMEDIA_TYPE_SUBTITLE;}
 

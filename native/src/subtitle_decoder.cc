@@ -58,10 +58,6 @@ int SubtitleDecoder::pixelFormat() {
   return (int)codec_context_->pix_fmt;
 }
 
-AVRational SubtitleDecoder::timebase() {
-  return stream_->time_base;
-}
-
 void SubtitleDecoder::Run() {
   while(state_!=stopped) {
     std::unique_lock<std::mutex> lk(lck_);
