@@ -13,17 +13,17 @@ Decoder::~Decoder() {
   }
 }
 
-int Decoder::Prepare(AVStream *stream) {
+int Decoder::Prepare(const AVCodecParameters *codecpar) {
   std::lock_guard<std::mutex> lk(lck_);
 
   int err;
-  stream_=stream;
   if(on_will_prepare_) {
     err = on_will_prepare_();
-    assert(err==0);
+    LOG(WARNING) << " WillPrepare return -1";
+    return -1;
   }
 
-  codec_ = avcodec_find_decoder(stream->codecpar->codec_id);
+  codec_ = avcodec_find_decoder(codecpar->codec_id);
   if(! codec_) {
     LOG(ERROR) << " failed to avcodec_find_decoder";
     return -1;
@@ -35,7 +35,7 @@ int Decoder::Prepare(AVStream *stream) {
     return -1;
   }
 
-  avcodec_parameters_to_context(codec_context_, stream->codecpar);
+  avcodec_parameters_to_context(codec_context_, codecpar);
   avcodec_open2(codec_context_, codec_, NULL);
 
   err = DidPrepare();
@@ -91,6 +91,10 @@ int Decoder::Flush() {
   if(codec_context_)
     avcodec_flush_buffers(codec_context_);
   return 0;
+}
+
+void Decoder::SetTimebase(AVRational &timebase) {
+  timebase_ = timebase;
 }
 
 } // namespace gurum

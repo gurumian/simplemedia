@@ -35,8 +35,9 @@ int main(int argc, char *argv[]) {
 
       audio_decoder.reset(new AudioDecoder);
       audio_decoder->EnableLog(true);
-      audio_decoder->Prepare(fmt->streams[pid]);
+      audio_decoder->Prepare(fmt->streams[pid]->codecpar);
       audio_decoder->SetPidChannel(pidchannel);
+      audio_decoder->SetTimebase(fmt->streams[pid]->time_base);
       audio_decoder->SetOnFrameFound([&](const AVFrame *frame) {
         if(is_first_frame) {
           last_pts = frame->pts;

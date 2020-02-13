@@ -11,13 +11,8 @@ public:
 	int width();
 	int height();
 	int pixelFormat();
-	AVRational timebase();
 
 	virtual AVMediaType MediaType() const override {return AVMEDIA_TYPE_VIDEO;}
-
-private:
-  int decode(AVPacket *pkt, OnFrameFound on_frame_found) override;
-
 };
 
 } // namespace gurum
