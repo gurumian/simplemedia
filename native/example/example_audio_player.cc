@@ -26,9 +26,8 @@ int main(int argc, char *argv[]) {
   source->PrepareAsync([&](const AVFormatContext *fmt)->int {
     if(source->HasAudio()) {
       int pid = source->audioPid();
-      AVStream *strm = source->FindStream(pid);
-
-      PidChannel *pidchannel = source->RequestPidChannel(pid);
+      auto strm = source->FindStream(pid);
+      auto pidchannel = source->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for audio";
         return -1;

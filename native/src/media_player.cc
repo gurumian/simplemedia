@@ -41,7 +41,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
     if(source_->HasVideo()) {
       int pid = source_->videoPid();
       auto strm = source_->FindStream(pid);
-      PidChannel *pidchannel = source_->RequestPidChannel(pid);
+      auto pidchannel = source_->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for video";
         return -1;
@@ -74,7 +74,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
     if(source_->HasAudio()) {
       int pid = source_->audioPid();
       auto strm = source_->FindStream(pid);
-      PidChannel *pidchannel = source_->RequestPidChannel(pid);
+      auto pidchannel = source_->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for audio";
         return -1;
@@ -107,7 +107,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
     if(source_->HasSubtitle()) {
       int pid = source_->subtitlePid();
       auto strm = source_->FindStream(pid);
-      PidChannel *pidchannel = source_->RequestPidChannel(pid);
+      auto pidchannel = source_->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for subtitle";
         return -1;
