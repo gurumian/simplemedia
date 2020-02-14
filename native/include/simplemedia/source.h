@@ -110,15 +110,15 @@ protected:
 };
 
 inline bool Source::HasVideo() {
-  return (pid_[VIDEO] >= 0) ? true : false;
+  return (pid_[VIDEO] >= 0);
 }
 
 inline bool Source::HasAudio() {
-  return (pid_[AUDIO] >= 0) ? true : false;
+  return (pid_[AUDIO] >= 0);
 }
 
 inline bool Source::HasSubtitle() {
-  return (pid_[SUBTITLE] >= 0) ? true : false;
+  return (pid_[SUBTITLE] >= 0);
 }
 
 inline int Source::videoPid() {
