@@ -13,8 +13,8 @@ Decoder::~Decoder() {
   }
 }
 
-int Decoder::Prepare(const AVStream *strm) {
-  int err = Prepare(strm->codecpar);
+int Decoder::Prepare(const AVStream *strm, OnWillPrepare on_will_prepared, OnPrepared on_prepared) {
+  int err = Prepare(strm->codecpar, on_will_prepared, on_prepared);
   if(err) {
     return err;
   }
@@ -23,12 +23,12 @@ int Decoder::Prepare(const AVStream *strm) {
   return 0;
 }
 
-int Decoder::Prepare(const AVCodecParameters *codecpar) {
+int Decoder::Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_prepared, OnPrepared on_prepared) {
   std::lock_guard<std::mutex> lk(lck_);
 
   int err;
-  if(on_will_prepare_) {
-    err = on_will_prepare_();
+  if(on_will_prepared) {
+    err = on_will_prepared();
     LOG(WARNING) << " WillPrepare return -1";
     return -1;
   }
@@ -46,14 +46,19 @@ int Decoder::Prepare(const AVCodecParameters *codecpar) {
   }
 
   avcodec_parameters_to_context(codec_context_, codecpar);
-  avcodec_open2(codec_context_, codec_, NULL);
+
+  err = avcodec_open2(codec_context_, codec_, NULL);
+  if(err) {
+    LOG(ERROR) << __func__ << " failed to avcodec_open2()";
+    return err;
+  }
 
   err = DidPrepare();
 
   state_=prepared;
 
-  if(on_prepared_) {
-    err = on_prepared_();
+  if(on_prepared) {
+    err = on_prepared();
     assert(err==0);
   }
 
