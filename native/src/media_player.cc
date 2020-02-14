@@ -40,6 +40,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
   source_->PrepareAsync([&](const AVFormatContext *fmt)->int {
     if(source_->HasVideo()) {
       int pid = source_->videoPid();
+      auto strm = source_->FindStream(pid);
       PidChannel *pidchannel = source_->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for video";
@@ -47,7 +48,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       }
 
       video_decoder_.reset(new VideoDecoder);
-      video_decoder_->Prepare(fmt->streams[pid]);
+      video_decoder_->Prepare(strm);
       video_decoder_->SetPidChannel(pidchannel);
 
       video_decoder_->SetOnFrameFound(
@@ -72,6 +73,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
 
     if(source_->HasAudio()) {
       int pid = source_->audioPid();
+      auto strm = source_->FindStream(pid);
       PidChannel *pidchannel = source_->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for audio";
@@ -79,7 +81,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       }
 
       audio_decoder_.reset(new AudioDecoder);
-      audio_decoder_->Prepare(fmt->streams[pid]);
+      audio_decoder_->Prepare(strm);
       audio_decoder_->SetPidChannel(pidchannel);
       audio_decoder_->SetOnFrameFound(
           std::bind(&MediaPlayer::OnAudioFrameFound, this, _1)
@@ -104,6 +106,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
 
     if(source_->HasSubtitle()) {
       int pid = source_->subtitlePid();
+      auto strm = source_->FindStream(pid);
       PidChannel *pidchannel = source_->RequestPidChannel(pid);
       if(! pidchannel) {
         LOG(ERROR) << " failed to request a pid-channel for subtitle";
@@ -111,7 +114,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       }
 
       subtitle_decoder_.reset(new SubtitleDecoder);
-      subtitle_decoder_->Prepare(fmt->streams[pid]);
+      subtitle_decoder_->Prepare(strm);
       subtitle_decoder_->SetPidChannel(pidchannel);
       subtitle_decoder_->SetOnSubtitleFound(
           std::bind(&MediaPlayer::OnSubtitleFound, this, _1)

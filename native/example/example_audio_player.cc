@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
   source->PrepareAsync([&](const AVFormatContext *fmt)->int {
     if(source->HasAudio()) {
       int pid = source->audioPid();
+      AVStream *strm = source->FindStream(pid);
 
       PidChannel *pidchannel = source->RequestPidChannel(pid);
       if(! pidchannel) {
@@ -35,9 +36,8 @@ int main(int argc, char *argv[]) {
 
       audio_decoder.reset(new AudioDecoder);
       audio_decoder->EnableLog(true);
-      audio_decoder->Prepare(fmt->streams[pid]->codecpar);
+      audio_decoder->Prepare(strm);
       audio_decoder->SetPidChannel(pidchannel);
-      audio_decoder->SetTimebase(fmt->streams[pid]->time_base);
       audio_decoder->SetOnFrameFound([&](const AVFrame *frame) {
         if(is_first_frame) {
           last_pts = frame->pts;
