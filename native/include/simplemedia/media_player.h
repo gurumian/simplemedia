@@ -71,8 +71,8 @@ private:
   void OnNullPacketSent(const Decoder &decoder);
 
 private:
-  static const int kDefaultSyncThreshold;
-  static const int kDefaultDelayStep;
+  static constexpr int kDefaultSyncThreshold{5000};
+  static constexpr int kDefaultDelayStep{100};
 
   std::mutex lck_;
   std::unique_ptr<Source> source_{new Source};

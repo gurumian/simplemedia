@@ -21,11 +21,6 @@ using namespace std::placeholders;
 
 namespace gurum {
 
-// static
-const int MediaPlayer::kDefaultSyncThreshold = 5000;
-const int MediaPlayer::kDefaultDelayStep = 100;
-
-
 MediaPlayer::MediaPlayer() {
   sync_threshold_ = kDefaultSyncThreshold;
 }
