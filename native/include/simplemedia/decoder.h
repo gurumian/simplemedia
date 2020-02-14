@@ -50,6 +50,7 @@ public:
   virtual ~Decoder();
 
   int Prepare(const AVCodecParameters *codecpar);
+  int Prepare(const AVStream *strm);
 
   void SetPidChannel(PidChannel *pidchannel){pidchannel_=pidchannel;}
 

@@ -13,6 +13,16 @@ Decoder::~Decoder() {
   }
 }
 
+int Decoder::Prepare(const AVStream *strm) {
+  int err = Prepare(strm->codecpar);
+  if(err) {
+    return err;
+  }
+
+  timebase_ = strm->time_base;
+  return 0;
+}
+
 int Decoder::Prepare(const AVCodecParameters *codecpar) {
   std::lock_guard<std::mutex> lk(lck_);
 
