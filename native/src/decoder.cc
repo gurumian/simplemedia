@@ -47,12 +47,6 @@ int Decoder::Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_pr
 
   avcodec_parameters_to_context(codec_context_, codecpar);
 
-  err = avcodec_open2(codec_context_, codec_, NULL);
-  if(err) {
-    LOG(ERROR) << __func__ << " failed to avcodec_open2()";
-    return err;
-  }
-
   err = DidPrepare();
 
   state_=prepared;
