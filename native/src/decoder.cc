@@ -13,26 +13,10 @@ Decoder::~Decoder() {
   }
 }
 
-int Decoder::Prepare(const AVStream *strm, OnWillPrepare on_will_prepared, OnPrepared on_prepared) {
-  int err = Prepare(strm->codecpar, on_will_prepared, on_prepared);
-  if(err) {
-    return err;
-  }
-
-  timebase_ = strm->time_base;
-  return 0;
-}
-
-int Decoder::Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_prepared, OnPrepared on_prepared) {
+int Decoder::Prepare(const AVCodecParameters *codecpar, const AVRational &timebase) {
   std::lock_guard<std::mutex> lk(lck_);
 
   int err = 0;
-  if(on_will_prepared) {
-    err = on_will_prepared();
-    LOG(WARNING) << " WillPrepare return -1";
-    return -1;
-  }
-
   codec_ = avcodec_find_decoder(codecpar->codec_id);
   if(! codec_) {
     LOG(ERROR) << " failed to avcodec_find_decoder";
@@ -50,16 +34,32 @@ int Decoder::Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_pr
   AVDictionary *opts = nullptr;
   err = avcodec_open2(codec_context_, codec_, &opts);
 
+  timebase_ = timebase;
   // err = DidPrepare();
 
   state_=prepared;
+  return 0;
+}
+
+int Decoder::Prepare(const AVStream *strm, OnWillPrepare on_will_prepared, OnPrepared on_prepared) {
+  int err = 0;
+  if(on_will_prepared) {
+    err = on_will_prepared();
+    LOG(WARNING) << " WillPrepare return -1";
+    return -1;
+  }
+
+  err = Prepare(strm->codecpar, strm->time_base);
+  if(err) {
+    LOG(ERROR) << __func__ << " failed to prepare: " << err;
+    return -1;
+  }
 
   if(on_prepared) {
     err = on_prepared();
     assert(err==0);
   }
-
-  return 0;
+  return err;
 }
 
 int Decoder::Start() {
@@ -105,7 +105,7 @@ int Decoder::Flush() {
   return 0;
 }
 
-void Decoder::SetTimebase(AVRational &timebase) {
+void Decoder::SetTimebase(const AVRational &timebase) {
   timebase_ = timebase;
 }
 

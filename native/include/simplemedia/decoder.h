@@ -49,8 +49,8 @@ public:
   Decoder()=default;
   virtual ~Decoder();
 
-  int Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_prepared=nullptr, OnPrepared on_prepared=nullptr);
   int Prepare(const AVStream *strm, OnWillPrepare on_will_prepared=nullptr, OnPrepared on_prepared=nullptr);
+  int Prepare(const AVCodecParameters *codecpar, const AVRational &timebase);
 
   void SetPidChannel(PidChannel *pidchannel){pidchannel_=pidchannel;}
 
@@ -60,7 +60,7 @@ public:
 
   int Flush();
 
-  void SetTimebase(AVRational &timebase);
+  void SetTimebase(const AVRational &timebase);
   const AVRational &timebase() { return timebase_; }
 
   void SetOnNullPacketSent(OnNullPacketSent on_null_packet_sent){on_null_packet_sent_=on_null_packet_sent;};
