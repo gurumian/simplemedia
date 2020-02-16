@@ -26,7 +26,7 @@ int Decoder::Prepare(const AVStream *strm, OnWillPrepare on_will_prepared, OnPre
 int Decoder::Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_prepared, OnPrepared on_prepared) {
   std::lock_guard<std::mutex> lk(lck_);
 
-  int err;
+  int err = 0;
   if(on_will_prepared) {
     err = on_will_prepared();
     LOG(WARNING) << " WillPrepare return -1";
@@ -47,7 +47,10 @@ int Decoder::Prepare(const AVCodecParameters *codecpar, OnWillPrepare on_will_pr
 
   avcodec_parameters_to_context(codec_context_, codecpar);
 
-  err = DidPrepare();
+  AVDictionary *opts = nullptr;
+  err = avcodec_open2(codec_context_, codec_, &opts);
+
+  // err = DidPrepare();
 
   state_=prepared;
 

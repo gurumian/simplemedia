@@ -11,19 +11,15 @@ FrameDecoder::~FrameDecoder() {
   }
 }
 
+AVFrame *FrameDecoder::frame() {
+  if(! frame_) {
+    frame_ = av_frame_alloc();
+  }
+  return frame_;
+}
+
 int FrameDecoder::DidPrepare() {
-  frame_ = av_frame_alloc();
-  assert(frame_);
-
-  AVDictionary *opts = nullptr;
-//	av_opt_set_int(&opts, "refcounted_frames",  1, 0);
-
-  assert(codec_context_);
-  assert(codec_);
-  int err = avcodec_open2(codec_context_, codec_, &opts);
-  assert(err==0);
-
-	return 0;
+  return 0;
 }
 
 int FrameDecoder::Decode(OnFrameFound on_frame_found) {
@@ -50,7 +46,7 @@ int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
   }
 
   while (!err) {
-    err = avcodec_receive_frame(codec_context_, frame_);
+    err = avcodec_receive_frame(codec_context_, frame());
     if(err) continue;
 
     if(timebase().num == 0 && timebase().den == 0) {

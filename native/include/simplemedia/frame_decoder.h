@@ -17,7 +17,7 @@ public:
 
   void Run() override;
 
-  AVFrame *frame() { return frame_; }
+  AVFrame *frame();
 
   int Decode(OnFrameFound on_frame_found);
 

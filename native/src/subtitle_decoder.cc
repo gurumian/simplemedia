@@ -10,11 +10,6 @@ SubtitleDecoder::~SubtitleDecoder() {
 }
 
 int SubtitleDecoder::DidPrepare() {
-  AVDictionary *opts = nullptr;
-  assert(codec_context_);
-  assert(codec_);
-  int err = avcodec_open2(codec_context_, codec_, &opts);
-  assert(err==0);
   return 0;
 }
 
