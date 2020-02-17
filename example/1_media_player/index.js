@@ -19,7 +19,10 @@ function readAndDispatch() {
     case 768:
       switch(event.key) {
       case 1073741903: { // right
-        player.position += 1000000;
+        var pos = player.position;
+        pos += 1000000;
+        if(pos < player.duration)
+          player.position = pos;
         break;
       }
       case 1073741904: { // left
