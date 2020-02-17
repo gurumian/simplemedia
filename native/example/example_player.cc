@@ -41,7 +41,7 @@ int InitSDL() {
   return 0;
 }
 
-int ReadAndDispatch(SDL_Window *window, SDL_Renderer *renderer, SDL_Event *event, MediaPlayer *player) {
+int ReadAndDispatch(SDL_Window *window, SDL_Renderer *renderer, SDL_Event *event, MediaPlayer *const player) {
   static SDL_Texture *texture=nullptr;
 
   SDL_WaitEvent(event);
@@ -73,7 +73,8 @@ int ReadAndDispatch(SDL_Window *window, SDL_Renderer *renderer, SDL_Event *event
     case SDLK_RIGHT: {
       int64_t pos = player->currentPosition();
       pos += (1 * 1000000);
-      player->Seek(pos);
+      if(pos < player->duration())
+        player->Seek(pos);
       break;
     }
     case SDLK_UP: {
