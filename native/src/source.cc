@@ -108,7 +108,7 @@ int Source::Start() {
 
 
   thread_->PostTask([&]{
-    while(state_ != stopped) {
+    while(state_ == started) {
       Run(0);
     }
   });
