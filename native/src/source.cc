@@ -258,8 +258,9 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
   int err = avformat_seek_file(fmt_, strm, min_ts, pos, max_ts, 0);
   if(err < 0) {
     LOG(ERROR) << " failed to avformat_seek_file(): [" << min_ts << "~" << max_ts << "]" << err;
-    min_ts -=(5 * 1000000);
-    err = avformat_seek_file(fmt_, strm, min_ts - (5 * 1000000), pos, max_ts, 0);
+    constexpr int64_t ms = 1000000;
+    min_ts -=(5 * ms);
+    err = avformat_seek_file(fmt_, strm, min_ts - (5 * ms), pos, max_ts, 0);
     if(err)
       LOG(ERROR) << " failed to avformat_seek_file(): [" << min_ts << "~" << max_ts << "]" << err;
   }
