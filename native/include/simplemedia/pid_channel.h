@@ -43,7 +43,6 @@ public:
 
 private:
   explicit PidChannel(NativeHandle nativeHandle, uint16_t pid, PacketPool *packet_pool);
-  virtual ~PidChannel();
 
 private:
   int ref() {return ++ref_;}
@@ -55,8 +54,6 @@ private:
   uint16_t pid_{0};
   std::condition_variable cond_;
   std::mutex lck_;
-  std::string pipe_{};
-  int fd_[2];
 
   std::list<AVPacket *> que_;
   PacketPool *packet_pool_{nullptr};

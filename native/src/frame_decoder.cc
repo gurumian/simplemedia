@@ -28,6 +28,7 @@ int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   if(!err) {
     decode(pkt, on_frame_found);
     if(PidChannel::IsNullPacket(pkt)) {
+      Pause();
       if(on_null_packet_sent_) on_null_packet_sent_(*this);
     }
     av_packet_unref(pkt);
@@ -36,12 +37,11 @@ int FrameDecoder::Decode(OnFrameFound on_frame_found) {
 }
 
 int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
+  std::lock_guard<std::mutex> lk(lck_);
   int err = 0;
-  assert(codec_context_);
-
   err = avcodec_send_packet(codec_context_, pkt);
   if(err < 0) {
-    LOG(ERROR) << __func__ << " E: avcodec_send_packet: " << err;
+    LOG(ERROR) << __func__ << " avcodec_send_packet: " << err;
     return err;
   }
 
@@ -63,15 +63,10 @@ int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
 }
 
 void FrameDecoder::Run() {
-  while(state_!=stopped) {
-    std::unique_lock<std::mutex> lk(lck_);
-    if(state_==paused) {
-      cond_.wait(lk);
-      continue;
-    }
-
+  while(state_==started) {
     Decode(on_frame_found_);
   }
+  if(log_enabled_) LOG(INFO) << __func__ << " thread leave!";
 }
 
 } // namespace gurum

@@ -6,6 +6,10 @@
 namespace gurum {
 
 Decoder::~Decoder() {
+  if(state_!=stopped) {
+    Stop();
+  }
+
   if(codec_context_) {
     avcodec_close(codec_context_);
     avcodec_free_context(&codec_context_);
@@ -33,11 +37,13 @@ int Decoder::Prepare(const AVCodecParameters *codecpar, const AVRational &timeba
 
   AVDictionary *opts = nullptr;
   err = avcodec_open2(codec_context_, codec_, &opts);
+  if(err < 0) {
+    LOG(ERROR) << __func__ << " failed to avcodec_open2()";
+    return err;
+  }
 
   timebase_ = timebase;
-  // err = DidPrepare();
-
-  state_=prepared;
+  state_ = prepared;
   return 0;
 }
 
@@ -57,7 +63,7 @@ int Decoder::Prepare(const AVStream *strm, OnWillPrepare on_will_prepared, OnPre
 
   if(on_prepared) {
     err = on_prepared();
-    assert(err==0);
+    assert(! err);
   }
   return err;
 }
@@ -65,32 +71,28 @@ int Decoder::Prepare(const AVStream *strm, OnWillPrepare on_will_prepared, OnPre
 int Decoder::Start() {
   assert(pidchannel_);
   state_=started;
-  if(! thread_)
-    thread_= base::SimpleThread::CreateThread();
+  if(!thread_) thread_= base::SimpleThread::CreateThread();
 
-
-  using namespace std::placeholders;
   thread_->PostTask(std::bind(&Decoder::Run, this));
-
-  cond_.notify_one();
   return 0;
 }
 
 int Decoder::Pause() {
-  state_=paused;
+  if(log_enabled_) LOG(INFO) << __func__;
+  state_ = paused;
   return 0;
 }
 
 int Decoder::Stop() {
-  state_=stopped;
-
-  cond_.notify_all();
-
-  if(thread_) {
-    thread_=nullptr;
+  if(state_==stopped) {
+    return 0;
   }
 
-  LOG(INFO) << __func__;
+  state_ = stopped;
+
+  if(thread_) thread_ = nullptr;
+
+  if(log_enabled_) LOG(INFO) << __func__;
   return 0;
 }
 

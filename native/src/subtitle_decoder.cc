@@ -54,16 +54,11 @@ int SubtitleDecoder::pixelFormat() {
 }
 
 void SubtitleDecoder::Run() {
-  while(state_!=stopped) {
-    std::unique_lock<std::mutex> lk(lck_);
-    if(state_==paused) {
-      cond_.wait(lk);
-      continue;
-    }
-
+  while(state_==started) {
     AVPacket pkt1, *pkt = &pkt1;
     int err = pidchannel_->Pop(pkt);
     if(!err) {
+      std::unique_lock<std::mutex> lk(lck_);
       decode(pkt, on_subtitle_found_);
       if(PidChannel::IsNullPacket(pkt)) {
         if(on_null_packet_sent_) on_null_packet_sent_(*this);

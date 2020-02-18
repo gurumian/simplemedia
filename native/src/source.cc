@@ -46,15 +46,11 @@ const std::string &Source::dataSource() {
 }
 
 void Source::PrepareAsync(OnPrepared on_prepared) {
-  if(! thread_) {
-    thread_ = base::SimpleThread::CreateThread();
-  }
+  if(!thread_) thread_ = base::SimpleThread::CreateThread();
 
   thread_->PostTask([=]{
     const AVFormatContext *fmt = Prepare();
-    if(on_prepared) {
-      on_prepared(fmt);
-    }
+    if(on_prepared) on_prepared(fmt);
   });
 }
 
@@ -80,7 +76,7 @@ const AVFormatContext *Source::Prepare() {
   const int pool_size = 100;
   packet_pool_ = std::unique_ptr<PacketPool>(new PacketPool);
   assert(packet_pool_);
-  packet_pool_->Prepare(pool_size);
+  packet_pool_->Init(pool_size);
   state_ = prepared;
 
   return (const AVFormatContext *)fmt_;
@@ -94,34 +90,39 @@ int Source::ReadAndDispatch() {
   }
 
   thread_->PostTask([&]{
-    Run(0);
+    Run();
   });
   return 0;
 }
 
 int Source::Start() {
+  if(log_enabled_) LOG(INFO) << __func__;
+  nullpkt_sent_ = false;
+
   if(!thread_)
     thread_ = base::SimpleThread::CreateThread();
 
   av_read_play(fmt_);
   state_ = started;
 
-
   thread_->PostTask([&]{
     while(state_ == started) {
-      Run(0);
+      Run();
     }
+    if(log_enabled_) LOG(INFO) << __func__ << " thread leave!";
   });
   return 0;
 }
 
 int Source::Pause() {
+  if(log_enabled_) LOG(INFO) << __func__;
   av_read_pause(fmt_);
   state_ = paused;
   return 0;
 }
 
 void Source::Stop() {
+  if(log_enabled_) LOG(INFO) << __func__;
   if(state_==stopped) {
     LOG(WARNING) <<  " It's already stopped.";
     return;
@@ -129,12 +130,12 @@ void Source::Stop() {
 
   state_ = stopped;
 
-  thread_=nullptr;
+  thread_ = nullptr;
 
   avformat_close_input(&fmt_);
   fmt_ = nullptr;
 
-  return;
+  if(log_enabled_) LOG(INFO) << __func__;
 }
 
 PidChannel *Source::FindPidChannelBy(uint16_t pid) {
@@ -196,21 +197,21 @@ int Source::Scan() {
 }
 
 void Source::Run(int unused) {
-  // static unsigned int count = 0;
-  int err;
-  assert(fmt_);
+  int err{0};
 
-  if(nullpkt_sent_)
+  if(nullpkt_sent_) {
+    LOG(WARNING) << __func__ << " null packet sent!";
     return;
+  }
 
   AVPacket *pkt = packet_pool_->Request(500);
   if(!pkt) {
     return;
   }
 
-
   err = ReadFrame(pkt);
   if(err) {
+    packet_pool_->Release(pkt);
     return;
   }
 
@@ -257,8 +258,9 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
   int err = avformat_seek_file(fmt_, strm, min_ts, pos, max_ts, 0);
   if(err < 0) {
     LOG(ERROR) << " failed to avformat_seek_file(): [" << min_ts << "~" << max_ts << "]" << err;
-    min_ts -=(5 * 1000000);
-    err = avformat_seek_file(fmt_, strm, min_ts - (5 * 1000000), pos, max_ts, 0);
+    constexpr int64_t ms = 1000000;
+    min_ts -=(5 * ms);
+    err = avformat_seek_file(fmt_, strm, min_ts - (5 * ms), pos, max_ts, 0);
     if(err)
       LOG(ERROR) << " failed to avformat_seek_file(): [" << min_ts << "~" << max_ts << "]" << err;
   }
@@ -278,6 +280,7 @@ int Source::ReadFrame(AVPacket *pkt) {
         if(log_enabled_) LOG(INFO) << " pushed a null-packet to stream[" << pos.first << "]";
       }
       nullpkt_sent_ = true;
+      Pause();
     }
   }
   return err;

@@ -4,7 +4,7 @@
 
 namespace gurum {
 
-int PacketPool::Prepare(int num) {
+int PacketPool::Init(int num) {
   for(int i = 0; i < num; i++) {
     AVPacket *pkt = av_packet_alloc();
     av_init_packet(pkt);
@@ -43,7 +43,7 @@ AVPacket *PacketPool::Request(int timeout) {
 
 void PacketPool::Release(AVPacket *pkt, bool notify) {
   std::lock_guard<std::mutex> lk(lck_);
-//	av_packet_unref(pkt);
+	av_packet_unref(pkt);
   lst_.push_back(pkt);
   if(notify)
     cond_.notify_one();

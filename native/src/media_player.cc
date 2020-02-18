@@ -27,6 +27,9 @@ MediaPlayer::MediaPlayer() {
 
 MediaPlayer::~MediaPlayer() {
   if(log_enabled_) LOG(INFO) << __func__;
+  if(state_ != stopped) {
+    Stop();
+  }
 }
 
 int MediaPlayer::Prepare(OnPrepared on_prepared) {
@@ -48,6 +51,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       }
 
       video_decoder_.reset(new VideoDecoder);
+      video_decoder_->EnableLog(log_enabled_);
       video_decoder_->Prepare(strm);
       video_decoder_->SetPidChannel(pidchannel);
 
@@ -81,6 +85,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       }
 
       audio_decoder_.reset(new AudioDecoder);
+      audio_decoder_->EnableLog(log_enabled_);
       audio_decoder_->Prepare(strm);
       audio_decoder_->SetPidChannel(pidchannel);
       audio_decoder_->SetOnFrameFound(
@@ -142,6 +147,8 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
 
 int MediaPlayer::Start() {
   int err=0;
+  is_first_frame[SUBTITLE]=is_first_frame[VIDEO]=is_first_frame[AUDIO]=true;
+
   if(audio_decoder_) err = audio_decoder_->Start();
   if(err) {
     LOG(WARNING) << " failed to start the audio decoder";
@@ -172,41 +179,25 @@ int MediaPlayer::Start() {
 }
 
 int MediaPlayer::Stop() {
+  if(log_enabled_) LOG(INFO) << __func__;
+
+  std::lock_guard<std::mutex> lk(lck_);
   SetState(stopped);
+  audio_renderer_ = nullptr;
+  audio_decoder_ = nullptr;
+  video_renderer_ = nullptr;
+  video_decoder_ = nullptr;
+  subtitle_decoder_ = nullptr;
+  source_ = nullptr;
 
-  if(audio_renderer_) {
-    audio_renderer_ = nullptr;
-  }
-
-  if(audio_decoder_) {
-    audio_decoder_->Stop();
-    audio_decoder_=nullptr;
-  }
-
-  if(video_renderer_) {
-    video_renderer_ = nullptr;
-  }
-
-  if(video_decoder_) {
-    video_decoder_->Stop();
-    video_decoder_=nullptr;
-  }
-
-  if(subtitle_decoder_) {
-    subtitle_decoder_->Stop();
-    subtitle_decoder_=nullptr;
-  }
-
-  if(source_) {
-    source_->Stop();
-    source_ = nullptr;
-  }
-
-  LOG(INFO) << __func__;
+  if(log_enabled_) LOG(INFO) << __func__;
   return 0;
 }
 
 int MediaPlayer::Pause() {
+  std::lock_guard<std::mutex> lk(lck_);
+  if(log_enabled_) LOG(INFO) << __func__;
+
   SetState(paused);
   if(source_) source_->Pause();
 
@@ -215,8 +206,6 @@ int MediaPlayer::Pause() {
   if(audio_decoder_) audio_decoder_->Pause();
 
   if(video_decoder_) video_decoder_->Pause();
-
-  is_first_frame[SUBTITLE]=is_first_frame[VIDEO]=is_first_frame[AUDIO]=true;
 
   return 0;
 }
@@ -247,7 +236,6 @@ void MediaPlayer::OnNullPacketSent(const Decoder &decoder) {
     if(on_end_of_stream_) on_end_of_stream_();
     eos_sent_=true;
     break;
-
   }
 }
 
@@ -338,6 +326,8 @@ void MediaPlayer::OnAudioFrameFound(const AVFrame *frame) {
 }
 
 int64_t MediaPlayer::Seek(uint64_t pos) {
+  if(!source_) return -1;
+
   int flag=(pos < (uint64_t)currentPosition()) ? AVSEEK_FLAG_BACKWARD : 0;
   source_->Seek(pos, flag, [&]{
         if(audio_decoder_) audio_decoder_->Flush();
@@ -351,11 +341,12 @@ int64_t MediaPlayer::Seek(uint64_t pos) {
 }
 
 int64_t MediaPlayer::duration() {
+  if(!source_) return -1;
   return source_->GetDuration();
 }
 
 int64_t MediaPlayer::currentPosition() {
-  if(source_->HasVideo())
+  if(source_ && source_->HasVideo())
     return last_pts_[VIDEO];
 
   return last_pts_[AUDIO];
@@ -374,7 +365,6 @@ void MediaPlayer::SetSubtitleRenderer(std::unique_ptr<SubtitleRenderer> renderer
 }
 
 void MediaPlayer::SetState(State state) {
-  std::lock_guard<std::mutex> lk(lck_);
   if(state_!=state) {
     State from = state_;
     state_=state;
