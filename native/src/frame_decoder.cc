@@ -26,6 +26,7 @@ int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   AVPacket pkt1, *pkt = &pkt1;
   int err = pidchannel_->Pop(pkt);
   if(!err) {
+    std::unique_lock<std::mutex> lk(lck_);
     decode(pkt, on_frame_found);
     if(PidChannel::IsNullPacket(pkt)) {
       if(on_null_packet_sent_) on_null_packet_sent_(*this);
@@ -63,13 +64,7 @@ int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
 }
 
 void FrameDecoder::Run() {
-  while(state_!=stopped) {
-    std::unique_lock<std::mutex> lk(lck_);
-    if(state_==paused) {
-      cond_.wait(lk);
-      continue;
-    }
-
+  while(state_==started) {
     Decode(on_frame_found_);
   }
 }

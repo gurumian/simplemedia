@@ -218,8 +218,7 @@ int main(int argc, char *argv[]) {
     // TODO:
   }
 
-  player->Stop();
-  player=nullptr;
+  player = nullptr;
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);

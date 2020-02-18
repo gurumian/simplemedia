@@ -6,6 +6,10 @@
 namespace gurum {
 
 Decoder::~Decoder() {
+  if(state_!=stopped) {
+    Stop();
+  }
+
   if(codec_context_) {
     avcodec_close(codec_context_);
     avcodec_free_context(&codec_context_);
@@ -77,20 +81,23 @@ int Decoder::Start() {
 }
 
 int Decoder::Pause() {
-  state_=paused;
+  state_ = paused;
   return 0;
 }
 
 int Decoder::Stop() {
-  state_=stopped;
+  if(state_==stopped) {
+    return 0;
+  }
+
+  state_ = stopped;
 
   cond_.notify_all();
 
   if(thread_) {
-    thread_=nullptr;
+    thread_ = nullptr;
   }
 
-  LOG(INFO) << __func__;
   return 0;
 }
 
