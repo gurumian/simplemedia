@@ -18,10 +18,6 @@ PidChannel::PidChannel(NativeHandle natve_handle, uint16_t pid, PacketPool *pack
   assert(packet_pool_);
 }
 
-PidChannel::~PidChannel() {
-  unlink(pipe_.c_str());
-}
-
 int PidChannel::Push(const AVPacket *pkt) {
   std::lock_guard<std::mutex> lk(lck_);
   que_.push_back((AVPacket *)pkt);
