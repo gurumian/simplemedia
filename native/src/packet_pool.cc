@@ -4,7 +4,7 @@
 
 namespace gurum {
 
-int PacketPool::Prepare(int num) {
+int PacketPool::Init(int num) {
   for(int i = 0; i < num; i++) {
     AVPacket *pkt = av_packet_alloc();
     av_init_packet(pkt);

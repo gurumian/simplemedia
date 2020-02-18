@@ -16,7 +16,7 @@ public:
   PacketPool()=default;
   ~PacketPool()=default;
 
-  int Prepare(int num);
+  int Init(int num);
   AVPacket *Request(int timeout=0);
   void Release(AVPacket *pkt, bool notify=true);
 

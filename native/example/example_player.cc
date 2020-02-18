@@ -146,22 +146,6 @@ SDL_Window *CreateWindow() {
   return window;
 }
 
-static
-std::string replace(const std::string &arg, const std::string &search_value, const std::string &new_value) {
-  std::string dst;
-  std::string src(arg);
-  auto at = arg.find(search_value);
-  if(at != std::string::npos) {
-    dst += src.substr(0, at);
-    src = src.substr(at+1);
-    dst += new_value;
-    dst += replace(src, search_value, new_value);
-    return dst;
-  }
-  dst += arg;
-  return dst;
-}
-
 int main(int argc, char *argv[]) {
   int err = 0;
   std::string uri = argv[1];
@@ -190,14 +174,14 @@ int main(int argc, char *argv[]) {
   player->SetAudioRenderer(std::move(audio_renderer));
   player->SetSubtitleRenderer(std::move(subtitle_renderer));
   player->SetOnEndOfStream([&]{
-    LOG(INFO) << __func__;
-    SDL_Event event;
-    SDL_memset(&event, 0, sizeof(event)); /* or SDL_zero(event) */
-    event.type = MEDIA_EVENT_TYPE;
-    event.user.code = 0;
-    event.user.data1 = 0;
-    event.user.data2 = 0;
-    SDL_PushEvent(&event);
+    LOG(INFO) << __func__ << " end-of-stream!";
+    // SDL_Event event;
+    // SDL_memset(&event, 0, sizeof(event)); /* or SDL_zero(event) */
+    // event.type = MEDIA_EVENT_TYPE;
+    // event.user.code = 0;
+    // event.user.data1 = 0;
+    // event.user.data2 = 0;
+    // SDL_PushEvent(&event);
   });
 
   player->SetOnStateChanged([&](gurum::State from, gurum::State to) {

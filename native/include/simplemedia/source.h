@@ -24,7 +24,7 @@ namespace gurum {
     started,
     stopped,
     paused,
-  } ;
+  };
 
   enum {
     VIDEO,
@@ -83,7 +83,7 @@ public:
   AVStream *FindStream(int pid);
 
 protected:
-  virtual void Run(int unused);
+  virtual void Run(int unused=0);
 
 private:
   int Scan();
