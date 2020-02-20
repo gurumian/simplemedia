@@ -60,7 +60,6 @@ public:
   int ReadAndDispatch();
 
   gurum::State state() {return state_;}
-  void SetState(gurum::State state);
 
   void EnableLog(bool enable=true) {log_enabled_=enable;}
 
@@ -88,6 +87,8 @@ protected:
 private:
   int Scan();
   int ReadFrame(AVPacket *pkt);
+
+  void QueueEOS();
 
 protected:
   std::string data_source_{};
