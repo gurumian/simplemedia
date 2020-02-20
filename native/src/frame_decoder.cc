@@ -25,14 +25,15 @@ int FrameDecoder::DidPrepare() {
 int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   AVPacket pkt1, *pkt = &pkt1;
   int err = pidchannel_->Pop(pkt);
-  if(!err) {
-    decode(pkt, on_frame_found);
-    if(PidChannel::IsNullPacket(pkt)) {
-      Pause();
-      if(on_null_packet_sent_) on_null_packet_sent_(*this);
-    }
-    av_packet_unref(pkt);
+  if(err) return err;
+
+  if(PidChannel::IsNullPacket(pkt)) {
+    Pause();
+    if(on_null_packet_sent_) on_null_packet_sent_(*this);
   }
+  else decode(pkt, on_frame_found);
+
+  av_packet_unref(pkt);
   return err;
 }
 

@@ -38,10 +38,12 @@ Source::~Source() {
 }
 
 void Source::SetDataSource(const std::string &dataSource) {
+  std::lock_guard<std::mutex> lk(lck_);
   data_source_ = dataSource;
 }
 
 const std::string &Source::dataSource() {
+  std::lock_guard<std::mutex> lk(lck_);
   return data_source_;
 }
 
@@ -55,7 +57,8 @@ void Source::PrepareAsync(OnPrepared on_prepared) {
 }
 
 const AVFormatContext *Source::Prepare() {
-  int err;
+  std::lock_guard<std::mutex> lk(lck_);
+  int err{0};
 
   err = avformat_open_input(&fmt_, data_source_.c_str(), NULL, NULL);
   if(err < 0) {
@@ -83,7 +86,9 @@ const AVFormatContext *Source::Prepare() {
 }
 
 int Source::ReadAndDispatch() {
+  if(log_enabled_) LOG(INFO) << __func__;
   if(state_==paused) {
+    std::lock_guard<std::mutex> lk(lck_);
     av_read_play(fmt_);
     state_=started;
     return 0;
@@ -99,8 +104,10 @@ int Source::Start() {
   if(log_enabled_) LOG(INFO) << __func__;
   nullpkt_sent_ = false;
 
-  if(!thread_)
-    thread_ = base::SimpleThread::CreateThread();
+  do {
+    std::lock_guard<std::mutex> lk(lck_);
+    if(!thread_) thread_= base::SimpleThread::CreateThread();
+  } while(0);
 
   av_read_play(fmt_);
   state_ = started;
@@ -115,9 +122,10 @@ int Source::Start() {
 }
 
 int Source::Pause() {
+  std::lock_guard<std::mutex> lk(lck_);
   if(log_enabled_) LOG(INFO) << __func__;
-  av_read_pause(fmt_);
   state_ = paused;
+  av_read_pause(fmt_);
   return 0;
 }
 
@@ -130,6 +138,7 @@ void Source::Stop() {
 
   state_ = stopped;
 
+  std::lock_guard<std::mutex> lk(lck_);
   thread_ = nullptr;
 
   avformat_close_input(&fmt_);
@@ -225,10 +234,6 @@ void Source::Run(int unused) {
   }
 }
 
-void Source::SetState(State state) {
-  state_ = state;
-}
-
 int64_t Source::GetDuration() {
   return fmt_->duration;
 }
@@ -261,29 +266,43 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
     constexpr int64_t ms = 1000000;
     min_ts -=(5 * ms);
     err = avformat_seek_file(fmt_, strm, min_ts - (5 * ms), pos, max_ts, 0);
-    if(err)
+    if(err < 0)
       LOG(ERROR) << " failed to avformat_seek_file(): [" << min_ts << "~" << max_ts << "]" << err;
   }
+
+  std::this_thread::yield();
 }
 
 int Source::ReadFrame(AVPacket *pkt) {
-  std::lock_guard<std::mutex> lk(lck_);
+  std::unique_lock<std::mutex> lk(lck_);
   int err = av_read_frame(fmt_, pkt);
   if(err < 0) {
     if(err==AVERROR_EOF && nullpkt_sent_==false) {
       // send null packet to all pidchannels
-      for(auto pos : pid_channel_pool_) {
-        pkt->data = NULL;
-        pkt->size = 0;
-        pkt->stream_index = pos.first;
-        pos.second->Push(pkt);
-        if(log_enabled_) LOG(INFO) << " pushed a null-packet to stream[" << pos.first << "]";
-      }
-      nullpkt_sent_ = true;
+      QueueEOS();
+      lk.unlock();
       Pause();
     }
   }
   return err;
+}
+
+void Source::QueueEOS() {
+  for(auto pos : pid_channel_pool_) {
+    AVPacket *pkt = packet_pool_->Request(500);
+    assert(pkt);
+    if(!pkt) {
+      LOG(WARNING) << __func__ << " lack of packet";
+      return;
+    }
+
+    pkt->data = NULL;
+    pkt->size = 0;
+    pkt->stream_index = pos.first;
+    pos.second->Push(pkt);
+    if(log_enabled_) LOG(INFO) << " pushed a null-packet to stream[" << pos.first << "]";
+  }
+  nullpkt_sent_ = true;
 }
 
 AVStream *Source::FindStream(int pid) {
