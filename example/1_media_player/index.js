@@ -43,7 +43,7 @@ function readAndDispatch() {
           player.pause();
         }
         else {
-          player.start();
+          player.resume();
         }
         break;
       }
