@@ -14,7 +14,7 @@ if(args.length) {
 function readAndDispatch() {
   let event = window.pollEvent();
   if(event) {
-    console.log(event);
+    // console.log(event);
     switch(event.type) {
     case 768:
       switch(event.key) {
@@ -38,7 +38,13 @@ function readAndDispatch() {
         break;
       }
       case 32: { // space
-        // TODO: pause & resume
+        const State = player.State;
+        if(player.state == State.started) {
+          player.pause();
+        }
+        else {
+          player.resume();
+        }
         break;
       }
       case 13: { // space

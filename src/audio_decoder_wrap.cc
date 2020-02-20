@@ -162,8 +162,7 @@ Napi::Value AudioDecoder::Decode(const Napi::CallbackInfo& info) {
 }
 
 void AudioDecoder::Flush(const Napi::CallbackInfo& info) {
-  if(decoder_)
-    decoder_->Flush();
+  if(decoder_) decoder_->Flush();
 }
 
 Napi::Value AudioDecoder::samplerate(const Napi::CallbackInfo& info) {

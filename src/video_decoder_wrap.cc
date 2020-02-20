@@ -161,8 +161,7 @@ Napi::Value VideoDecoder::Decode(const Napi::CallbackInfo& info) {
 }
 
 void VideoDecoder::Flush(const Napi::CallbackInfo& info) {
-  if(decoder_)
-    decoder_->Flush();
+  if(decoder_) decoder_->Flush();
 }
 
 Napi::Value VideoDecoder::width(const Napi::CallbackInfo& info) {
