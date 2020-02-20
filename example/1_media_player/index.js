@@ -16,6 +16,10 @@ function readAndDispatch() {
   if(event) {
     // console.log(event);
     switch(event.type) {
+    case 256:
+      process.exit();
+      break;
+
     case 768:
       switch(event.key) {
       case 1073741903: { // right
