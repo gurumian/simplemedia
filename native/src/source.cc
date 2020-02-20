@@ -76,7 +76,7 @@ const AVFormatContext *Source::Prepare() {
     return nullptr;
   }
 
-  const int pool_size = 100;
+  const int pool_size = 200;
   packet_pool_ = std::unique_ptr<PacketPool>(new PacketPool);
   assert(packet_pool_);
   packet_pool_->Init(pool_size);
