@@ -56,6 +56,7 @@ Napi::Object Window::Init(Napi::Env env, Napi::Object exports) {
                     InstanceMethod("createRenderer", &Window::createRenderer),
                     InstanceMethod("destroyRenderer", &Window::destroyRenderer),
                     InstanceMethod("pollEvent", &Window::pollEvent),
+                    InstanceAccessor("fullscreen", &Window::fullscreen, &Window::SetFullscreen),
                   });
 
   constructor = Napi::Persistent(func);
@@ -154,4 +155,26 @@ Napi::Value Window::pollEvent(const Napi::CallbackInfo& info) {
     return obj;
   }
   return env.Null();
+}
+
+void Window::SetFullscreen(const Napi::CallbackInfo& info, const Napi::Value &value) {
+  Napi::Env env = info.Env();
+  if (info.Length() <= 0 || !value.IsBoolean()) {
+    Napi::TypeError::New(env, "Boolean expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+  Uint32 flags = SDL_GetWindowFlags(window_);
+  if(! value.ToBoolean()) {
+    SDL_SetWindowFullscreen(window_, flags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
+  }
+  else {
+    SDL_SetWindowFullscreen(window_, flags | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_ShowCursor(SDL_DISABLE);
+  }
+}
+
+Napi::Value Window::fullscreen(const Napi::CallbackInfo& info) {
+  Uint32 flags = SDL_GetWindowFlags(window_);
+  return Napi::Boolean::New(info.Env(), flags & SDL_WINDOW_FULLSCREEN_DESKTOP);
 }

@@ -47,8 +47,8 @@ function readAndDispatch() {
         }
         break;
       }
-      case 13: { // space
-        // TODO: full screen
+      case 13: { // enter
+        window.fullscreen = !window.fullscreen;
         break;
       }
       }

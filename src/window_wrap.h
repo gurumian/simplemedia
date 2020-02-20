@@ -16,6 +16,9 @@ private:
 
   Napi::Value pollEvent(const Napi::CallbackInfo& info);
 
+  void SetFullscreen(const Napi::CallbackInfo& info, const Napi::Value &value);
+  Napi::Value fullscreen(const Napi::CallbackInfo& info);
+
 private:
   static Napi::FunctionReference constructor;
   SDL_Window *window_{nullptr};
