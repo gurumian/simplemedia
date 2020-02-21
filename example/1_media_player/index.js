@@ -25,26 +25,26 @@ const Event = Object.freeze({
 
 function onkeypressed(key) {
   switch(key) {
-    case Event.VK_RIGHT: { // right
+    case Event.VK_RIGHT: {
       var pos = player.position;
       pos += 1000000;
       if(pos < player.duration)
         player.position = pos;
       break;
     }
-    case Event.VK_LEFT: { // left
+    case Event.VK_LEFT: {
       player.position -= 1000000;
       break;
     }
-    case Event.VK_DOWN: { // down
+    case Event.VK_DOWN: {
       player.volume -= 0.1;
       break;
     }
-    case Event.VK_UP: { // up
+    case Event.VK_UP: {
       player.volume += 0.1;
       break;
     }
-    case Event.VK_SPACE: { // space
+    case Event.VK_SPACE: {
       const State = player.State;
       if(player.state == State.started) {
         player.pause();
@@ -54,7 +54,7 @@ function onkeypressed(key) {
       }
       break;
     }
-    case Event.VK_ENTER: { // enter
+    case Event.VK_ENTER: {
       window.fullscreen = !window.fullscreen;
       break;
     }
