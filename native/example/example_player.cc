@@ -132,6 +132,8 @@ int ReadAndDispatch(SDL_Window *window, SDL_Renderer *renderer, SDL_Event *event
   case SDL_QUIT:
     return -1;
   }
+
+  std::this_thread::yield();
   return 0;
 }
 
