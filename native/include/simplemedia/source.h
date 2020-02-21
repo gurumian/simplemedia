@@ -97,7 +97,7 @@ protected:
   bool log_enabled_{false};
   bool thread_started_{false};
 
-  PidChannelDictionary pid_channel_pool_;
+  PidChannelDictionary pid_channel_pool_{};
 
   std::atomic<gurum::State> state_{none};
   AVFormatContext *fmt_{nullptr};

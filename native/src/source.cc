@@ -245,8 +245,8 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
   std::lock_guard<std::mutex> lk(lck_);
   if(on_will_seek) on_will_seek();
 
-  for(auto it : pid_channel_pool_) {
-    it.second->Flush();
+  for(auto pos : pid_channel_pool_) {
+    if(auto pid_channel = pos.second) pid_channel->Flush();
   }
 
   int strm = -1;
@@ -289,6 +289,8 @@ int Source::ReadFrame(AVPacket *pkt) {
 
 void Source::QueueEOS() {
   for(auto pos : pid_channel_pool_) {
+    if(! pos.second) continue; // this is weird
+
     AVPacket *pkt = packet_pool_->Request(500);
     assert(pkt);
     if(!pkt) {
