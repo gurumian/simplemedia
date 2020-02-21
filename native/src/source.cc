@@ -279,7 +279,7 @@ int Source::ReadFrame(AVPacket *pkt) {
   if(err < 0) {
     if(err==AVERROR_EOF && nullpkt_sent_==false) {
       // send null packet to all pidchannels
-      QueueEOS();
+      QueueEoS();
       lk.unlock();
       Pause();
     }
@@ -287,7 +287,7 @@ int Source::ReadFrame(AVPacket *pkt) {
   return err;
 }
 
-void Source::QueueEOS() {
+void Source::QueueEoS() {
   for(auto pos : pid_channel_pool_) {
     if(! pos.second) continue; // this is weird
 

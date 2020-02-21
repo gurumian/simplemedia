@@ -88,7 +88,7 @@ private:
   int Scan();
   int ReadFrame(AVPacket *pkt);
 
-  void QueueEOS();
+  void QueueEoS();
 
 protected:
   std::string data_source_{};
