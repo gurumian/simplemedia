@@ -17,7 +17,6 @@ class AudioDecoder : public Napi::ObjectWrap<AudioDecoder> {
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   AudioDecoder(const Napi::CallbackInfo& info);
 
-
 private:
   void Prepare(const Napi::CallbackInfo& info);
   void Start(const Napi::CallbackInfo& info);
