@@ -37,15 +37,8 @@ Frame::Frame(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Frame>(info) {
   }
 
   auto frame = info[0].As<Napi::External<AVFrame>>();
-  frame_ = av_frame_clone(frame.Data());
+  frame_ = frame.Data();
   assert(frame_);
-}
-
-Frame::~Frame() {
-  if(frame_) {
-    av_frame_free(&frame_);
-    frame_ = nullptr;
-  }
 }
 
 Napi::Object Frame::NewInstance(Napi::Env env, Napi::Value arg) {

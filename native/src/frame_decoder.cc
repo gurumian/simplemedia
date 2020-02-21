@@ -33,7 +33,6 @@ int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   }
   else decode(pkt, on_frame_found);
 
-  av_packet_unref(pkt);
   return err;
 }
 

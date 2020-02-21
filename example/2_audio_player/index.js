@@ -15,7 +15,7 @@ let player = new MediaPlayer({
 });
 player.datasource = uri;
 player.prepare().then(resolve => {
-  console.log('prepared');
+  console.log(resolve);
   player.start();
 }).catch(err => {
   console.log(err);

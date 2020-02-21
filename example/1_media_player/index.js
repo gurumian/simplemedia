@@ -74,7 +74,7 @@ let player = new MediaPlayer({
 });
 player.datasource = uri;
 player.prepare().then(resolve => {
-  console.log('duration: ' + player.duration);
+  console.log(resolve);
   player.start();
 }).catch(err => {
   console.log(err);
