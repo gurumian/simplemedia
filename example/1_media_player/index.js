@@ -11,51 +11,67 @@ if(args.length) {
   uri = args[0];
 }
 
+const Event = Object.freeze({
+  'quit':256,
+  'keyPressed':768,
+  'keyReleased':769,
+  'VK_RIGHT':1073741903,
+  'VK_LEFT':1073741904,
+  'VK_DOWN':1073741905,
+  'VK_UP': 1073741906,
+  'VK_SPACE':32,
+  'VK_ENTER':13,
+});
+
+function onkeypressed(key) {
+  switch(key) {
+    case Event.VK_RIGHT: { // right
+      var pos = player.position;
+      pos += 1000000;
+      if(pos < player.duration)
+        player.position = pos;
+      break;
+    }
+    case Event.VK_LEFT: { // left
+      player.position -= 1000000;
+      break;
+    }
+    case Event.VK_DOWN: { // down
+      player.volume -= 0.1;
+      break;
+    }
+    case Event.VK_UP: { // up
+      player.volume += 0.1;
+      break;
+    }
+    case Event.VK_SPACE: { // space
+      const State = player.State;
+      if(player.state == State.started) {
+        player.pause();
+      }
+      else {
+        player.resume();
+      }
+      break;
+    }
+    case Event.VK_ENTER: { // enter
+      window.fullscreen = !window.fullscreen;
+      break;
+    }
+  }
+}
+
 function readAndDispatch() {
   let event = window.pollEvent();
   if(event) {
     // console.log(event);
     switch(event.type) {
-    case 256:
+    case Event.quit:
       process.exit();
       break;
 
-    case 768:
-      switch(event.key) {
-      case 1073741903: { // right
-        var pos = player.position;
-        pos += 1000000;
-        if(pos < player.duration)
-          player.position = pos;
-        break;
-      }
-      case 1073741904: { // left
-        player.position -= 1000000;
-        break;
-      }
-      case 1073741905: { // down
-        player.volume -= 0.1;
-        break;
-      }
-      case 1073741906: { // up
-        player.volume += 0.1;
-        break;
-      }
-      case 32: { // space
-        const State = player.State;
-        if(player.state == State.started) {
-          player.pause();
-        }
-        else {
-          player.resume();
-        }
-        break;
-      }
-      case 13: { // enter
-        window.fullscreen = !window.fullscreen;
-        break;
-      }
-      }
+    case Event.keyPressed:
+      onkeypressed(event.key);
     }
   }
   setTimeout(readAndDispatch);
