@@ -1,11 +1,11 @@
+#ifndef GURUM_RENDERER_H_
+#define GURUM_RENDERER_H_
+
 #include <simplemedia/config.h>
 extern "C" {
 #include <libavutil/frame.h>
 }
 #include <functional>
-
-#ifndef GURUM_RENDERER_H_
-#define GURUM_RENDERER_H_
 
 namespace gurum {
 

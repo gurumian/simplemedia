@@ -76,7 +76,7 @@ void AudioDecoder::Prepare(const Napi::CallbackInfo& info) {
   assert(decoder_);
   if(decoder_) {
     int err; 
-    err = decoder_->Prepare(strm);
+    err = decoder_->Prepare(gurum::CodecParam(strm));
     if(err) {
       LOG(ERROR) << " failed to prepare the audio decoder";
       Napi::TypeError::New(env, "prepare exception").ThrowAsJavaScriptException();

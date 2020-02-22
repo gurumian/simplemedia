@@ -17,6 +17,36 @@ Decoder::~Decoder() {
   }
 }
 
+int Decoder::Prepare(const CodecParam &param) {
+  std::lock_guard<std::mutex> lk(lck_);
+
+  int err = 0;
+  codec_ = avcodec_find_decoder(param.codecpar->codec_id);
+  if(! codec_) {
+    LOG(ERROR) << " failed to avcodec_find_decoder";
+    return -1;
+  }
+
+  codec_context_ = avcodec_alloc_context3(codec_);
+  if(! codec_context_) {
+    LOG(ERROR) << " failed to avcodec_alloc_context3";
+    return -1;
+  }
+
+  avcodec_parameters_to_context(codec_context_, param.codecpar);
+
+  AVDictionary *opts = nullptr;
+  err = avcodec_open2(codec_context_, codec_, &opts);
+  if(err < 0) {
+    LOG(ERROR) << __func__ << " failed to avcodec_open2()";
+    return err;
+  }
+
+  timebase_ = param.timebase;
+  state_ = prepared;
+  return 0;
+}
+
 int Decoder::Prepare(const AVCodecParameters *codecpar, const AVRational &timebase) {
   std::lock_guard<std::mutex> lk(lck_);
 

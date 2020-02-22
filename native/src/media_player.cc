@@ -52,7 +52,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
 
       video_decoder_.reset(new VideoDecoder);
       video_decoder_->EnableLog(log_enabled_);
-      video_decoder_->Prepare(strm);
+      video_decoder_->Prepare(CodecParam(strm));
       video_decoder_->SetPidChannel(pidchannel);
 
       video_decoder_->SetOnFrameFound(
@@ -86,7 +86,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
 
       audio_decoder_.reset(new AudioDecoder);
       audio_decoder_->EnableLog(log_enabled_);
-      audio_decoder_->Prepare(strm);
+      audio_decoder_->Prepare(CodecParam(strm));
       audio_decoder_->SetPidChannel(pidchannel);
       audio_decoder_->SetOnFrameFound(
           std::bind(&MediaPlayer::OnAudioFrameFound, this, _1)
@@ -119,7 +119,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       }
 
       subtitle_decoder_.reset(new SubtitleDecoder);
-      subtitle_decoder_->Prepare(strm);
+      subtitle_decoder_->Prepare(CodecParam(strm));
       subtitle_decoder_->SetPidChannel(pidchannel);
       subtitle_decoder_->SetOnSubtitleFound(
           std::bind(&MediaPlayer::OnSubtitleFound, this, _1)

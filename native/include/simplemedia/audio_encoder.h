@@ -10,16 +10,8 @@ public:
   AudioEncoder()=default;
   virtual ~AudioEncoder()=default;
 
-  int Encode(AVFrame *frame, OnPacketFound on_packet_found) override;
-
   AVRational timebase();
-
   virtual AVMediaType MediaType() override {return AVMEDIA_TYPE_AUDIO;}
-
-  int samplerate();
-  int sampleFormat();
-  int channels();
-  int64_t channellayout();
 };
 
 } // namespace gurum

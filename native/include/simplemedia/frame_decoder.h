@@ -20,6 +20,7 @@ public:
   AVFrame *frame();
 
   int Decode(OnFrameFound on_frame_found);
+  int Decode(AVPacket *pkt, OnFrameFound on_frame_found);
 
 protected:
   virtual int decode(AVPacket *pkt, OnFrameFound on_frame_found);

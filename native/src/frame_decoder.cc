@@ -36,6 +36,10 @@ int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   return err;
 }
 
+int FrameDecoder::Decode(AVPacket *pkt, OnFrameFound on_frame_found) {
+  return decode(pkt, on_frame_found);
+}
+
 int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
   std::lock_guard<std::mutex> lk(lck_);
   int err = 0;
