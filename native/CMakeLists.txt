@@ -108,6 +108,10 @@ set(simplemedia_source_files
   ${simplemedia_src_dir}/frame_decoder.cc
   ${simplemedia_src_dir}/subtitle_decoder.cc
   ${simplemedia_src_dir}/simple_thread.cc
+  ${simplemedia_src_dir}/encoder.cc
+  ${simplemedia_src_dir}/audio_encoder.cc
+  ${simplemedia_src_dir}/video_encoder.cc
+  ${simplemedia_src_dir}/codec_param.cc
 )
 
 set(simplemedia_header_files
@@ -122,11 +126,14 @@ set(simplemedia_header_files
   ${simplemedia_inc_dir}/simplemedia/audio_decoder.h
   ${simplemedia_inc_dir}/simplemedia/encoder.h
   ${simplemedia_inc_dir}/simplemedia/audio_encoder.h
+  ${simplemedia_inc_dir}/simplemedia/video_encoder.h
   ${simplemedia_inc_dir}/simplemedia/renderer.h
   ${simplemedia_inc_dir}/simplemedia/config.h
   ${simplemedia_inc_dir}/simplemedia/frame_decoder.h
   ${simplemedia_inc_dir}/simplemedia/subtitle_decoder.h
   ${simplemedia_inc_dir}/simplemedia/subtitle_renderer.h
+  ${simplemedia_inc_dir}/simplemedia/types.h
+  ${simplemedia_inc_dir}/simplemedia/codec_param.h
 )
 
 if (USE_SDL2)
