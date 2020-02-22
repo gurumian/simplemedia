@@ -28,6 +28,8 @@ extern "C" {
 #include "pid_channel.h"
 #include "timer.h"
 #include "simple_thread.h"
+#include "simplemedia/codec_param.h"
+
 
 namespace gurum {
 
@@ -49,7 +51,10 @@ public:
   Decoder()=default;
   virtual ~Decoder();
 
+  int Prepare(const CodecParam &param);
+  [[deprecated]]
   int Prepare(const AVStream *strm, OnWillPrepare on_will_prepared=nullptr, OnPrepared on_prepared=nullptr);
+  [[deprecated]]
   int Prepare(const AVCodecParameters *codecpar, const AVRational &timebase);
 
   void SetPidChannel(PidChannel *pidchannel){pidchannel_=pidchannel;}

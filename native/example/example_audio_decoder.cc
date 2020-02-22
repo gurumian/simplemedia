@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
        }
 
        audio_decoder_.reset(new gurum::AudioDecoder);
-       audio_decoder_->Prepare(strm);
+       audio_decoder_->Prepare(gurum::CodecParam(strm));
        audio_decoder_->SetPidChannel(pidchannel);
        audio_decoder_->SetOnFrameFound([&](const AVFrame *frame){
          OnFrameFound(frame, audio_decoder_->channels());

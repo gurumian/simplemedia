@@ -1,5 +1,4 @@
-#include "simplemedia/audio_encoder.h"
-
+#include "simplemedia/video_encoder.h"
 #include "log_message.h"
 
 namespace gurum {

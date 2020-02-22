@@ -22,6 +22,7 @@ extern "C" {
 }
 #include <assert.h>
 #include <functional>
+#include "simplemedia/codec_param.h"
 
 namespace gurum {
 
@@ -34,12 +35,12 @@ public:
   Encoder();
   virtual ~Encoder();
 
-  int Prepare(AVStream *stream);
+  int Prepare(const CodecParam &param);
 
   void SetOnWillPrepare(OnWillPrepare on_will_prepare){on_will_prepare_=on_will_prepare;}
   void SetOnPrepared(OnPrepared on_prepared){on_prepared_=on_prepared;}
 
-  virtual int Encode(AVFrame *frame, OnPacketFound on_packet_found)=0;
+  virtual int Encode(const AVFrame *frame, OnPacketFound on_packet_found);
   virtual AVMediaType MediaType()=0;
 
 protected:
