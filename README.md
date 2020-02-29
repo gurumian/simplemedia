@@ -1,3 +1,6 @@
+![Node.js CI](https://github.com/gurumian/simplemedia/workflows/Node.js%20CI/badge.svg)
+
+
 ## Prerequisites
 ```bash
 apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-dev
