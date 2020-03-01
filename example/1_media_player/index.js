@@ -6,7 +6,7 @@ console.log('args: ', args);
 
 const {Window, MediaPlayer} = require('simplemedia');
 
-var uri = 'https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4'
+var uri = 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4'
 if(args.length) {
   uri = args[0];
 }
