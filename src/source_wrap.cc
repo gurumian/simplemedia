@@ -216,7 +216,7 @@ Napi::Value Source::RequestPidChannel(const Napi::CallbackInfo& info){
 
   Napi::Number number = value.As<Napi::Number>();
   int pid = (int) number;
-  gurum::PidChannel *pidchannel = source_->RequestPidChannel(pid);
+  auto pidchannel = source_->RequestPidChannel(pid);
   assert(pidchannel);
   return Napi::External<gurum::PidChannel>::New(env, pidchannel);
 }
@@ -229,7 +229,7 @@ Napi::Value Source::FindStream(const Napi::CallbackInfo& info) {
   }
 
   int pid = (int) info[0].ToNumber();
-  AVStream *stream = source_->FindStream(pid);
+  auto stream = source_->FindStream(pid);
   assert(stream);
   return Napi::External<AVStream>::New(env, stream);
 }

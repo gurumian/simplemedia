@@ -119,8 +119,8 @@ void AudioRenderer::Render(const Napi::CallbackInfo& info) {
     return;
   }
 
-  Napi::External<AVFrame> external = info[0].As<Napi::External<AVFrame>>();
-  AVFrame *frame = external.Data();
+  auto external = info[0].As<Napi::External<AVFrame>>();
+  auto frame = external.Data();
   assert(frame);
   renderer_->Render(frame, [&](uint8_t *data, size_t len)->int {
     // H((char *)data, (int)len);

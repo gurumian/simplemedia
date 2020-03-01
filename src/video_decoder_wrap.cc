@@ -50,8 +50,8 @@ void VideoDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Val
     return;
   }
 
-  Napi::External<gurum::PidChannel> external = value.As<Napi::External<gurum::PidChannel>>();
-  gurum::PidChannel *pidchannel = external.Data();
+  auto external = value.As<Napi::External<gurum::PidChannel>>();
+  auto pidchannel = external.Data();
   if(log_enabled_) LOG(INFO) << __func__ << " pidchannel: " << pidchannel;
   assert(pidchannel);
   assert(decoder_);
@@ -66,8 +66,8 @@ void VideoDecoder::Prepare(const Napi::CallbackInfo& info) {
     return;
   }
 
-  Napi::External<AVStream> external = info[0].As<Napi::External<AVStream>>();
-  AVStream *strm = external.Data();
+  auto external = info[0].As<Napi::External<AVStream>>();
+  auto strm = external.Data();
   assert(strm);
   
   if(log_enabled_) LOG(INFO) << __func__ << " strm: "<< strm;
