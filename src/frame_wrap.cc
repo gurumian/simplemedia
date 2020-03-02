@@ -36,9 +36,28 @@ Frame::Frame(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Frame>(info) {
     return;
   }
 
-  auto frame = info[0].As<Napi::External<AVFrame>>();
-  frame_ = frame.Data();
-  assert(frame_);
+  auto frame = info[0].As<Napi::External<AVFrame>>().Data();
+  int err{0};
+  frame_ = av_frame_alloc();
+  frame_->format = frame->format;
+  frame_->width = frame->width;
+  frame_->height = frame->height;
+  frame_->channels = frame->channels;
+  frame_->channel_layout = frame->channel_layout;
+  frame_->nb_samples = frame->nb_samples;
+  err = av_frame_get_buffer(frame_, 32);
+  assert(!err);
+  err = av_frame_copy(frame_, frame);
+  assert(!err);
+  err = av_frame_copy_props(frame_, frame);
+  assert(!err);
+}
+
+Frame::~Frame() {
+  if(frame_) {
+    av_frame_free(&frame_);
+    frame_ = nullptr;
+  }
 }
 
 Napi::Object Frame::NewInstance(Napi::Env env, Napi::Value arg) {
