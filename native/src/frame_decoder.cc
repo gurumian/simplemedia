@@ -25,13 +25,16 @@ int FrameDecoder::DidPrepare() {
 int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   AVPacket pkt1, *pkt = &pkt1;
   int err = pidchannel_->Pop(pkt);
-  if(err) return err;
+  if(err) return EAGAIN;
 
   if(PidChannel::IsNullPacket(pkt)) {
     Pause();
     if(on_null_packet_sent_) on_null_packet_sent_(*this);
+    if(on_frame_found) on_frame_found(nullptr);
   }
-  else decode(pkt, on_frame_found);
+  else {
+    err = decode(pkt, on_frame_found);
+  }
 
   return err;
 }
@@ -51,7 +54,9 @@ int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
 
   while (!err) {
     err = avcodec_receive_frame(codec_context_, frame());
-    if(err) continue;
+    if (err == AVERROR(EAGAIN) || err == AVERROR_EOF)
+      return err;
+    // if(err) continue;
 
     if(timebase().num == 0 && timebase().den == 0) {
       frame_->pts = frame_->best_effort_timestamp;
