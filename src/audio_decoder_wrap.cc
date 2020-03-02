@@ -153,7 +153,7 @@ Napi::Value AudioDecoder::Decode(const Napi::CallbackInfo& info) {
   }
 
   decoder_->Decode([&](const AVFrame *arg){
-    auto frame = Frame::NewInstance(env, Napi::External<AVFormatContext>::New(env, (AVFormatContext *)arg));
+    auto frame = Frame::NewInstance(env, Napi::External<AVFrame>::New(env, (AVFrame *)arg));
     callback.Call(env.Global(), {frame});
     sent_frame = true;
   });
