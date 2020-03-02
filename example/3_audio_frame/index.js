@@ -28,22 +28,24 @@ function dump(frame) {
 }
 
 function decode() {
-  var done = false;
-  while(!done) {
-    done = decoder.decode(frame => {
-      if(frame) {
-        dump(frame);
-        setTimeout(decode);
-      }
-      else {
-        console.log('null packet');
-        console.log('frame count: ' + count);
+  decoder.decode()
+  .then(frame => {
+    if(frame) {
+      dump(frame);
+      setTimeout(()=>decode())
+    }
+    else if(frame === undefined) { // retry
+      setTimeout(()=>decode())
+      return;
+    }
+    else {
+      console.log('null packet');
+      console.log('frame count: ' + count);
 
-        decoder = null;
-        source = null;
-      }
-    });
-  }
+      decoder = null;
+      source = null;
+    }
+  })
 }
 
 var source = new Source();
