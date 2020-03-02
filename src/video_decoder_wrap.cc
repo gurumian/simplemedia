@@ -45,89 +45,23 @@ VideoDecoder::VideoDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Vi
 
 
 void VideoDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  Napi::Env env = info.Env();
-  if (info.Length() <= 0 || !info[0].IsExternal()) {
-    Napi::TypeError::New(env, "External expected").ThrowAsJavaScriptException();
-    return;
-  }
-
-  auto external = value.As<Napi::External<gurum::PidChannel>>();
-  auto pidchannel = external.Data();
-  if(log_enabled_) LOG(INFO) << __func__ << " pidchannel: " << pidchannel;
-  assert(pidchannel);
-  assert(decoder_);
-
-  decoder_->SetPidChannel(pidchannel);
+  DecodeHelper::SetPidChannel(info, value, *decoder_);
 }
 
 void VideoDecoder::Prepare(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  if (info.Length() <= 0 || !info[0].IsExternal()) {
-    Napi::TypeError::New(env, "External expected").ThrowAsJavaScriptException();
-    return;
-  }
-
-  auto external = info[0].As<Napi::External<AVStream>>();
-  auto strm = external.Data();
-  assert(strm);
-  
-  if(log_enabled_) LOG(INFO) << __func__ << " strm: "<< strm;
-
-  assert(decoder_);
-  if(decoder_) {
-    int err; 
-    err = decoder_->Prepare(gurum::CodecParam(strm));
-    if(err) {
-      LOG(ERROR) << " failed to prepare the video decoder";
-      Napi::TypeError::New(env, "prepare exception").ThrowAsJavaScriptException();
-      return;
-    }
-  }
+  DecodeHelper::Prepare(info, *decoder_);
 }
 
 void VideoDecoder::Start(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-
-  assert(decoder_);
-  if(decoder_) {
-    int err; 
-    err = decoder_->Start();
-    if(err) {
-      LOG(ERROR) << " failed to start the video decoder";
-      Napi::TypeError::New(env, "exception while starting a decoder").ThrowAsJavaScriptException();
-      return;
-    }
-  }
+  DecodeHelper::Start(info, *decoder_);
 }
 
 void VideoDecoder::Stop(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-
-  assert(decoder_);
-  if(decoder_) {
-    int err;
-    err = decoder_->Stop();
-    if(err) {
-      LOG(ERROR) << " failed to stop the video decoder";
-      Napi::TypeError::New(env, "exception while stopping a decoder").ThrowAsJavaScriptException();
-      return;
-    }
-  }
+  DecodeHelper::Stop(info, *decoder_);
 }
 
 void VideoDecoder::Pause(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-
-  assert(decoder_);
-  if(decoder_) {
-    int err;
-    err = decoder_->Pause();
-    if(err) {
-      LOG(ERROR) << " failed to pause the video decoder";
-      Napi::TypeError::New(env, "exception while pausing a decoder").ThrowAsJavaScriptException();
-      return;
-    }
-  }
+  DecodeHelper::Pause(info, *decoder_);
 }
 
 
