@@ -4,6 +4,7 @@
 #include <future>
 #include "frame_wrap.h"
 #include "video_decoder_wrap.h"
+#include "decode_helper.h"
 
 Napi::FunctionReference VideoDecoder::constructor;
 
@@ -131,32 +132,7 @@ void VideoDecoder::Pause(const Napi::CallbackInfo& info) {
 
 
 Napi::Value VideoDecoder::Decode(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-
-  bool sent_frame{false};
-  auto deferred = Napi::Promise::Deferred::New(env);
-
-  decoder_->SetOnNullPacketSent([&](const gurum::Decoder &decoder){
-    if(log_enabled_) LOG(INFO) << __func__ << " null packet!";
-    sent_frame = true;
-  });
-
-  if(sent_frame) {
-    deferred.Reject(env.Null());
-  }
-
-  decoder_->Decode([&](const AVFrame *arg){
-    auto frame = Frame::NewInstance(env, Napi::External<AVFrame>::New(env, (AVFrame *)arg));
-    sent_frame = true;
-    deferred.Resolve(frame);
-  });
-
-  if(!sent_frame) {
-    // deferred.Reject(Napi::Error::New(env, "frame not available. feed it more").Value());
-    deferred.Resolve(env.Undefined());
-  }
-
-  return deferred.Promise();
+  return DecodeHelper::Decode(info, *decoder_);
 }
 
 void VideoDecoder::Flush(const Napi::CallbackInfo& info) {
