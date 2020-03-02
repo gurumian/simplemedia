@@ -95,6 +95,16 @@ namespace DecodeHelper{
       return;
     }
   }
+
+  static void EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value, gurum::FrameDecoder &decoder) {
+    Napi::Env env = info.Env();
+    if (info.Length() <= 0 || !value.IsBoolean()) {
+      Napi::TypeError::New(env, "Boolean expected").ThrowAsJavaScriptException();
+      return;
+    }
+    bool log_enabled = value.ToBoolean();
+    decoder.EnableLog(log_enabled);
+  }
 }
 
 #endif // GURUM_DECODE_HELPER_H
