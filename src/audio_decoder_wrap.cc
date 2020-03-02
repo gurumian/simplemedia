@@ -134,31 +134,29 @@ void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
 Napi::Value AudioDecoder::Decode(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
-  if (info.Length() <= 0 || !info[0].IsFunction()) {
-    Napi::TypeError::New(env, "Function expected").ThrowAsJavaScriptException();
-    return env.Undefined();
-  }
-
-
-  auto callback = info[0].As<Napi::Function>();
   bool sent_frame{false};
+  auto deferred = Napi::Promise::Deferred::New(env);
+
   decoder_->SetOnNullPacketSent([&](const gurum::Decoder &decoder){
     if(log_enabled_) LOG(INFO) << __func__ << " null packet!";
-    callback.Call(env.Global(), {env.Null()});
     sent_frame = true;
   });
 
   if(sent_frame) {
-    return Napi::Boolean::New(env, sent_frame);
+    deferred.Reject(env.Null());
   }
 
   decoder_->Decode([&](const AVFrame *arg){
     auto frame = Frame::NewInstance(env, Napi::External<AVFrame>::New(env, (AVFrame *)arg));
-    callback.Call(env.Global(), {frame});
     sent_frame = true;
+    deferred.Resolve(frame);
   });
 
-  return Napi::Boolean::New(env, sent_frame);
+  if(!sent_frame) {
+    deferred.Resolve(env.Undefined());
+  }
+
+  return deferred.Promise();
 }
 
 void AudioDecoder::Flush(const Napi::CallbackInfo& info) {
