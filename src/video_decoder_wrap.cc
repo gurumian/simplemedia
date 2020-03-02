@@ -86,13 +86,7 @@ Napi::Value VideoDecoder::pixelFormat(const Napi::CallbackInfo& info) {
 }
 
 void VideoDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  Napi::Env env = info.Env();
-  if (info.Length() <= 0 || !value.IsBoolean()) {
-    Napi::TypeError::New(env, "Boolean expected").ThrowAsJavaScriptException();
-    return;
-  }
-  log_enabled_ = value.ToBoolean();
-  if(decoder_) decoder_->EnableLog(log_enabled_);
+  DecodeHelper::EnableLog(info, value, *decoder_);
 }
 
 Napi::Value VideoDecoder::log_enabled(const Napi::CallbackInfo& info) {
