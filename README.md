@@ -1,4 +1,5 @@
 ![Node.js CI](https://github.com/gurumian/simplemedia/workflows/Node.js%20CI/badge.svg)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fgurumian%2Fsimplemedia.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fgurumian%2Fsimplemedia?ref=badge_shield)
 
 
 ## Prerequisites
@@ -64,3 +65,7 @@ Simply, try to run it with a media file
 ```bash
 ./mediaplayer /path/to/file
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fgurumian%2Fsimplemedia.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fgurumian%2Fsimplemedia?ref=badge_large)
