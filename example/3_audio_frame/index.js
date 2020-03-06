@@ -3,7 +3,7 @@
 var args = process.argv.slice(2);
 console.log('args: ', args);
 
-const {Source, AudioDecoder} = require('simplemedia');
+const {Source, AudioDecoder, Timer} = require('simplemedia');
 
 var uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 if(args.length) {
@@ -15,7 +15,6 @@ var decoder = null;
 var channels = 0;
 
 function dump(frame) {
-  count++;
   let data = frame.data;
   let numofSamples = frame.numofSamples;
 
@@ -31,7 +30,8 @@ function decode() {
   decoder.decode()
   .then(frame => {
     if(frame) {
-      dump(frame);
+      count++;
+      // dump(frame);
       setTimeout(()=>decode())
     }
     else if(frame === undefined) { // retry
@@ -40,14 +40,14 @@ function decode() {
     }
     else {
       console.log('null packet');
-      console.log('frame count: ' + count);
-
+      console.log(`frame count: ${count} ${timer.dt}(ms)`);
       decoder = null;
       source = null;
     }
   })
 }
 
+let timer = new Timer();
 var source = new Source();
 source.datasource = uri;
 let fmt = source.prepare();
@@ -74,6 +74,7 @@ decoder.prepare(fmt.streams[pid]['native']);
 decoder.pidchannel = pidchannel;
 channels = fmt.streams[pid]['channels'];
 
+timer.update();
 source.start();
 setTimeout(decode);
 
