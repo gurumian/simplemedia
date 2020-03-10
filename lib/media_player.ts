@@ -99,12 +99,12 @@ export class MediaPlayer {
   trace: boolean;
   renderer: any;
   source: any;
-  State: any;
+  State: object;
   state: number;
   audio: Audio;
   video: Video;
   onend: () => void;
-  constructor({ renderer: renderer, trace: trace }) {
+  constructor({ renderer, trace }) {
     this.trace = trace || false;
     this.renderer = renderer || null;
     this.source = new Source();
@@ -153,7 +153,7 @@ export class MediaPlayer {
       }
       else {
         let synced = true;
-        if(this.hasVideoDecoder()) {
+        if(this.hasVideoDecoder) {
           let diff = audio.pts - video.pts;
           if(diff > syncThreshold)
             synced = false;
@@ -174,7 +174,7 @@ export class MediaPlayer {
     else {
       console.log(`null packet, packet count: ${audio.count}`);
       audio.decoder.done = true;
-      if(this.hasVideoDecoder() && !video.decoder.done) return;
+      if(this.hasVideoDecoder && !video.decoder.done) return;
       if(this.onend) this.onend();
     }
   }
@@ -198,7 +198,7 @@ export class MediaPlayer {
       }
       else {
         let synced = true;
-        if(this.hasAudioDecoder()) {
+        if(this.hasAudioDecoder) {
           let diff = video.pts - audio.pts;
           if(diff > syncThreshold)
             synced = false;
@@ -227,7 +227,7 @@ export class MediaPlayer {
     else {
       console.log(`null packet, packet count: ${video.count}`);
       video.decoder.done = true;
-      if(this.hasAudioDecoder() && !audio.decoder.done) return;
+      if(this.hasAudioDecoder && !audio.decoder.done) return;
       if(this.onend) this.onend();
     }
   }
@@ -269,10 +269,10 @@ export class MediaPlayer {
     this.state = State.started;
     this.source.start();
 
-    if(this.hasAudioDecoder())
+    if(this.hasAudioDecoder)
       this._decode(this.audio.decoder);
 
-    if(this.hasVideoDecoder())
+    if(this.hasVideoDecoder)
       this._decode(this.video.decoder);
   }
 
@@ -283,10 +283,10 @@ export class MediaPlayer {
   stop(): void {
     this.state = State.stopped;
 
-    if(this.hasVideoDecoder())
+    if(this.hasVideoDecoder)
       this.video.decoder.stop();
 
-    if(this.hasAudioDecoder())
+    if(this.hasAudioDecoder)
       this.audio.decoder.stop();
 
     this.source.stop();
@@ -300,10 +300,10 @@ export class MediaPlayer {
     this.state = State.paused;
     this.source.pause();
 
-    if(this.hasAudioDecoder())
+    if(this.hasAudioDecoder)
       this.audio.decoder.pause();
 
-    if(this.hasVideoDecoder())
+    if(this.hasVideoDecoder)
       this.video.decoder.pause();
 
     this.position = this.position;
@@ -329,8 +329,8 @@ export class MediaPlayer {
    * @return current position
    */
   get position(): number {
-    if(this.hasVideoDecoder()) return this.video.pts;
-    if(this.hasAudioDecoder()) return this.audio.pts;
+    if(this.hasVideoDecoder) return this.video.pts;
+    if(this.hasAudioDecoder) return this.audio.pts;
     return 0;
   }
 
@@ -343,12 +343,12 @@ export class MediaPlayer {
       pos: pos,
       backward: (pos < this.position) ? true : false,
       callback: (() => {
-        if(this.hasVideoDecoder()) {
+        if(this.hasVideoDecoder) {
           this.video.decoder.flush();
           this.video.isFirstFrame = true;
         }
 
-        if(this.hasAudioDecoder()) {
+        if(this.hasAudioDecoder) {
           this.audio.decoder.flush();
           this.audio.isFirstFrame = true;
         }
@@ -385,7 +385,7 @@ export class MediaPlayer {
    * 
    * @return true if a video decoder exists
    */
-  hasVideoDecoder(): boolean  {
+  get hasVideoDecoder(): boolean  {
     return (this.video && this.video.decoder);
   }
 
@@ -393,10 +393,9 @@ export class MediaPlayer {
    * 
    * @return true if a audio decoder exists
    */
-  hasAudioDecoder(): boolean {
+  get hasAudioDecoder(): boolean {
     return (this.audio && this.audio.decoder);
   }
 }
 
-// module.exports = MediaPlayer
 export default MediaPlayer
