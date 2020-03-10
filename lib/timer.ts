@@ -1,9 +1,10 @@
-class Timer {
+export class Timer {
+  time: number;
   constructor() {
     this.time = Date.now()
   }
 
-  wait(period) {
+  wait(period: number) {
     period = Math.floor(period / 1000) // us -> ms
     this.time += period
     let adjust = Date.now() - this.time
@@ -18,5 +19,3 @@ class Timer {
     return Date.now() - this.time
   }
 }
-
-module.exports = Timer
