@@ -1,11 +1,11 @@
 {
   "name": "simplemedia",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Node.js simple ffmpeg wrapper",
-  "main": "node/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "lib/",
-    "index.js",
+    "dist",
     "native",
     "src",
     "CMakeLists.txt"
@@ -42,8 +42,10 @@
     "url": "git+https://github.com/gurumian/simplemedia.git"
   },
   "devDependencies": {
+    "@types/node": "^13.9.0",
     "chai": "^4.2.0",
     "cmake-js": "^6.0.0",
-    "mocha": "^7.0.1"
+    "mocha": "^7.0.1",
+    "typescript": "^3.8.3"
   }
 }

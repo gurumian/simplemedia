@@ -1,5 +1,6 @@
 const {Source, AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
-const Timer = require('./timer');
+import {Timer} from './timer'
+
 
 const State = Object.freeze({
   'none':0,
@@ -12,21 +13,31 @@ const State = Object.freeze({
 const syncThreshold = 5000;
 const delayStep = 100;
 
-class MediaPlayer {
-  constructor({ renderer: renderer, trace: trace }) {
-    this.trace = trace || false;
-    this.renderer = renderer || null;
-    this.source = new Source();
-
-    this.State = State;
-    this.state = State.none;
+abstract class Element {
+  renderer: any;
+  timer: Timer;
+  decoder: any;
+  isFirstFrame: boolean;
+  count: number;
+  pts: number;
+  constructor(fmt: any, source: any, trace: boolean, renderer?:any) {
+    this.init(fmt, source, trace, renderer);
+    this.timer = new Timer();
+    this.isFirstFrame = true;
+    this.count = 0;
   }
 
-  _prepareAudio(fmt, source) {
-    let audio = {};
+  abstract init(fmt: any, source: any, trace: boolean, renderer?:any): void;
+}
 
-    audio.renderer = new AudioRenderer();
-    audio.renderer.trace = this.trace;
+class Audio extends Element{
+  constructor(fmt: any, source: any, trace: boolean, renderer?:any) {
+    super(fmt, source, trace, renderer);
+  }
+
+  init(fmt: any, source: any, trace: boolean, renderer?:any): void {
+    this.renderer = new AudioRenderer();
+    this.renderer.trace = trace;
 
     let pid = source.audioPid;
     console.log(`audio index: ${pid}`);
@@ -38,30 +49,28 @@ class MediaPlayer {
     let strm = fmt.streams[pid].native;
     decoder.prepare(strm);
     decoder.pidchannel = pidchannel;
-    decoder.trace = this.trace;
+    decoder.trace = trace;
     decoder.done = false;
-    audio.renderer.prepare({
+    this.renderer.prepare({
       samplerate: decoder.samplerate,
       channels: decoder.channels,
       channellayout: decoder.channellayout,
       sampleformat: decoder.sampleformat,
     });
 
-    audio.timer = new Timer();
-    audio.decoder = decoder;
-    audio.isFirstFrame = true;
-    audio.count = 0;
-    return audio;
+    this.decoder = decoder;
+  }
+}
+
+class Video extends Element{
+  width: number;
+  height: number;
+  constructor(fmt: any, source: any, trace: boolean, renderer?:any) {
+    super(fmt, source, trace, renderer);
   }
 
-  _prepareVideo(fmt, source) {
-    let video = {};
-
-    if(this.renderer) {
-      let renderer = new VideoRenderer(this.renderer);
-      renderer.trace = this.trace;
-      video.renderer = renderer;
-    }
+  init(fmt: any, source: any, trace: boolean, renderer: any): void {
+    this.renderer = new VideoRenderer(renderer);
 
     let pid = source.videoPid;
     console.log(`video index: ${pid}`);
@@ -73,20 +82,35 @@ class MediaPlayer {
     let strm = fmt.streams[pid].native;
     decoder.prepare(strm);
     decoder.pidchannel = pidchannel;
-    decoder.trace = this.trace;
+    decoder.trace = trace;
     decoder.done = false;
 
-    video.renderer.prepare({
+    this.renderer.prepare({
       width: decoder.width,
       height: decoder.height,
       pixelformat: decoder.pixelformat,
     });
 
-    video.timer = new Timer();
-    video.decoder = decoder;
-    video.isFirstFrame = true;
-    video.count = 0;
-    return video;
+    this.decoder = decoder;
+  }
+}
+
+export class MediaPlayer {
+  trace: boolean;
+  renderer: any;
+  source: any;
+  State: any;
+  state: number;
+  audio: Audio;
+  video: Video;
+  onend: () => void;
+  constructor({ renderer: renderer, trace: trace }) {
+    this.trace = trace || false;
+    this.renderer = renderer || null;
+    this.source = new Source();
+
+    this.State = State;
+    this.state = State.none;
   }
 
   async prepare() {
@@ -96,11 +120,11 @@ class MediaPlayer {
       if(fmt) {
         // console.log(fmt);
         if(source.hasAudio) {
-          this.audio = this._prepareAudio(fmt, source);
+          this.audio = new Audio(fmt, source, true);
         }
 
         if(source.hasVideo && this.renderer) {
-          this.video = this._prepareVideo(fmt, source);
+          this.video = new Video(fmt, source, true, this.renderer);
         }
 
         this.state = State.prepared;
@@ -110,8 +134,8 @@ class MediaPlayer {
     });
   }
 
-  _ondecodedAudio(frame) {
-    let delay = 0;
+  _ondecodedAudio(frame: any) {
+    let delay: number = 0;
     let audio = this.audio;
     let video = this.video;
     if(frame) {
@@ -155,7 +179,7 @@ class MediaPlayer {
     }
   }
 
-  _ondecodedVideo(frame) {
+  _ondecodedVideo(frame: any) {
     let delay = 0;
     let audio = this.audio;
     let video = this.video;
@@ -215,9 +239,9 @@ class MediaPlayer {
       this._ondecodedVideo(frame);
   }
 
-  _decode(decoder) {
+  _decode(decoder: any) {
     decoder.decode()
-    .then(frame => {
+    .then((frame: any) => {
       if(frame === undefined) { // retry
         setTimeout(()=>this._decode(decoder))
         return;
@@ -233,7 +257,7 @@ class MediaPlayer {
   /**
    * @param {() => void} onend - notified on EOF
    */
-  set onended(onend) {
+  set onended(onend: () => void) {
     this.onend = onend;
   }
 
@@ -241,7 +265,7 @@ class MediaPlayer {
    * 
    * start the player
    */
-  start() {
+  start(): void {
     this.state = State.started;
     this.source.start();
 
@@ -256,7 +280,7 @@ class MediaPlayer {
    * 
    * stop the player
    */
-  stop() {
+  stop(): void {
     this.state = State.stopped;
 
     if(this.hasVideoDecoder())
@@ -272,7 +296,7 @@ class MediaPlayer {
    * 
    * pause the player
    */
-  pause() {
+  pause(): void {
     this.state = State.paused;
     this.source.pause();
 
@@ -289,14 +313,14 @@ class MediaPlayer {
    * 
    * start the player
    */
-  resume() {
+  resume(): void {
     this.start();
   }
 
   /**
    * @param {string} datasource
    */
-  set datasource(datasource) {
+  set datasource(datasource: string) {
     this.source.datasource = datasource;
   }
 
@@ -304,7 +328,7 @@ class MediaPlayer {
    * 
    * @return current position
    */
-  get position() {
+  get position(): number {
     if(this.hasVideoDecoder()) return this.video.pts;
     if(this.hasAudioDecoder()) return this.audio.pts;
     return 0;
@@ -314,7 +338,7 @@ class MediaPlayer {
    * 
    * @param {number} pos - new position
    */
-  set position(pos) {
+  set position(pos: number) {
     this.source.seek({
       pos: pos,
       backward: (pos < this.position) ? true : false,
@@ -336,7 +360,7 @@ class MediaPlayer {
    * 
    * @return current volume
    */
-  get volume() {
+  get volume() : number{
     return this.audio.renderer.volume;
   }
 
@@ -344,7 +368,7 @@ class MediaPlayer {
    * 
    * @param {number} vol - 0.0 ~ 1.0
    */
-  set volume(vol) {
+  set volume(vol: number) {
     this.audio.renderer.volume = vol;
   }
 
@@ -352,7 +376,7 @@ class MediaPlayer {
    * 
    * @return duration
    */
-  get duration() {
+  get duration(): number {
     return this.source.duration;
   }
 
@@ -361,7 +385,7 @@ class MediaPlayer {
    * 
    * @return true if a video decoder exists
    */
-  hasVideoDecoder() {
+  hasVideoDecoder(): boolean  {
     return (this.video && this.video.decoder);
   }
 
@@ -369,9 +393,10 @@ class MediaPlayer {
    * 
    * @return true if a audio decoder exists
    */
-  hasAudioDecoder() {
+  hasAudioDecoder(): boolean {
     return (this.audio && this.audio.decoder);
   }
 }
 
-module.exports = MediaPlayer
+// module.exports = MediaPlayer
+export default MediaPlayer

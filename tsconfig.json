@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "types": ["node"],
+    "declaration": true,
+    "sourceMap": true,
+    "typeRoots": ["node_modules/@types"],
+    "outDir": "./dist"
+  },
+  "include": [
+    "lib/**/*",
+    "index.ts"
+  ]
+}
