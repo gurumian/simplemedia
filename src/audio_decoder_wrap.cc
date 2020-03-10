@@ -4,7 +4,6 @@
 #include "log_message.h"
 #include <future>
 #include "frame_wrap.h"
-#include "decode_helper.h"
 
 Napi::FunctionReference AudioDecoder::constructor;
 
@@ -37,63 +36,27 @@ Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
-AudioDecoder::AudioDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<AudioDecoder>(info) {
-  Napi::Env env = info.Env();
-  Napi::HandleScope scope(env);
-
-  decoder_.reset(new gurum::AudioDecoder);
-}
-
-
-void AudioDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  DecodeHelper::SetPidChannel(info, value, *decoder_);
-}
-
-void AudioDecoder::Prepare(const Napi::CallbackInfo& info) {
-  DecodeHelper::Prepare(info, *decoder_);
-}
-
-void AudioDecoder::Start(const Napi::CallbackInfo& info) {
-  DecodeHelper::Start(info, *decoder_);
-}
-
-void AudioDecoder::Stop(const Napi::CallbackInfo& info) {
-  DecodeHelper::Stop(info, *decoder_);
-}
-
-void AudioDecoder::Pause(const Napi::CallbackInfo& info) {
-  DecodeHelper::Pause(info, *decoder_);
-}
-
-
-Napi::Value AudioDecoder::Decode(const Napi::CallbackInfo& info) {
-  return DecodeHelper::Decode(info, *decoder_);
-}
-
-void AudioDecoder::Flush(const Napi::CallbackInfo& info) {
-  if(decoder_) decoder_->Flush();
+AudioDecoder::AudioDecoder(const Napi::CallbackInfo& info) : Decoder<AudioDecoder>(info) {
+  std::unique_ptr<gurum::AudioDecoder> decoder{new gurum::AudioDecoder};
+  decoder_ = std::move(decoder);
 }
 
 Napi::Value AudioDecoder::samplerate(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->samplerate());
+  auto decoder = static_cast<gurum::AudioDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->samplerate());
 }
 
 Napi::Value AudioDecoder::sampleformat(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->sampleFormat());
+  auto decoder = static_cast<gurum::AudioDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->sampleFormat());
 }
 
 Napi::Value AudioDecoder::channels(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->channels());
+  auto decoder = static_cast<gurum::AudioDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->channels());
 }
 
 Napi::Value AudioDecoder::channellayout(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->channellayout());
-}
-
-void AudioDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  DecodeHelper::EnableLog(info, value, *decoder_);
-}
-
-Napi::Value AudioDecoder::log_enabled(const Napi::CallbackInfo& info) {
-  return Napi::Boolean::New(info.Env(), log_enabled_);
+  auto decoder = static_cast<gurum::AudioDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->channellayout());
 }

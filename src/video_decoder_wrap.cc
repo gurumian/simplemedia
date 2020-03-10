@@ -4,7 +4,6 @@
 #include <future>
 #include "frame_wrap.h"
 #include "video_decoder_wrap.h"
-#include "decode_helper.h"
 
 Napi::FunctionReference VideoDecoder::constructor;
 
@@ -36,59 +35,22 @@ Napi::Object VideoDecoder::Init(Napi::Env env, Napi::Object exports) {
   return exports;
 }
 
-VideoDecoder::VideoDecoder(const Napi::CallbackInfo& info) : Napi::ObjectWrap<VideoDecoder>(info) {
-  Napi::Env env = info.Env();
-  Napi::HandleScope scope(env);
-
-  decoder_.reset(new gurum::VideoDecoder);
-}
-
-
-void VideoDecoder::SetPidChannel(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  DecodeHelper::SetPidChannel(info, value, *decoder_);
-}
-
-void VideoDecoder::Prepare(const Napi::CallbackInfo& info) {
-  DecodeHelper::Prepare(info, *decoder_);
-}
-
-void VideoDecoder::Start(const Napi::CallbackInfo& info) {
-  DecodeHelper::Start(info, *decoder_);
-}
-
-void VideoDecoder::Stop(const Napi::CallbackInfo& info) {
-  DecodeHelper::Stop(info, *decoder_);
-}
-
-void VideoDecoder::Pause(const Napi::CallbackInfo& info) {
-  DecodeHelper::Pause(info, *decoder_);
-}
-
-
-Napi::Value VideoDecoder::Decode(const Napi::CallbackInfo& info) {
-  return DecodeHelper::Decode(info, *decoder_);
-}
-
-void VideoDecoder::Flush(const Napi::CallbackInfo& info) {
-  if(decoder_) decoder_->Flush();
+VideoDecoder::VideoDecoder(const Napi::CallbackInfo& info) : Decoder<VideoDecoder>(info) {
+  std::unique_ptr<gurum::VideoDecoder> decoder{new gurum::VideoDecoder};
+  decoder_ = std::move(decoder);
 }
 
 Napi::Value VideoDecoder::width(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->width());
+  auto decoder = static_cast<gurum::VideoDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->width());
 }
 
 Napi::Value VideoDecoder::height(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->height());
+  auto decoder = static_cast<gurum::VideoDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->height());
 }
 
 Napi::Value VideoDecoder::pixelFormat(const Napi::CallbackInfo& info) {
-  return Napi::Number::New(info.Env(), decoder_->pixelFormat());
-}
-
-void VideoDecoder::EnableLog(const Napi::CallbackInfo& info, const Napi::Value &value) {
-  DecodeHelper::EnableLog(info, value, *decoder_);
-}
-
-Napi::Value VideoDecoder::log_enabled(const Napi::CallbackInfo& info) {
-  return Napi::Boolean::New(info.Env(), log_enabled_);
+  auto decoder = static_cast<gurum::VideoDecoder *>(decoder_.get());
+  return Napi::Number::New(info.Env(), decoder->pixelFormat());
 }
