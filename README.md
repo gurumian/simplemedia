@@ -11,7 +11,7 @@ apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-
 
 You may need to install `cmake-js` as well
 ```
-npm install -g cmake-js
+npm i -g cmake-js
 npm i -g typescript
 ```
 
