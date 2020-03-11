@@ -291,7 +291,7 @@ void Source::QueueEoS() {
   for(auto pos : pid_channel_pool_) {
     if(! pos.second) continue; // this is weird
 
-    AVPacket *pkt = packet_pool_->Request(500);
+    AVPacket *pkt = packet_pool_->Request(100);
     assert(pkt);
     if(!pkt) {
       LOG(WARNING) << __func__ << " lack of packet";
