@@ -49,9 +49,11 @@ SDL_Window *CreateWindow(const std::string &title, int width, int height) {
 Napi::Object Window::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
+  constexpr auto name = "Window";
+
   Napi::Function func =
       DefineClass(env,
-                  "Window",
+                  name,
                   {
                     InstanceMethod("createRenderer", &Window::createRenderer),
                     InstanceMethod("destroyRenderer", &Window::destroyRenderer),
@@ -62,7 +64,7 @@ Napi::Object Window::Init(Napi::Env env, Napi::Object exports) {
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("Window", func);
+  exports.Set(name, func);
   InitSDL();
 
   return exports;

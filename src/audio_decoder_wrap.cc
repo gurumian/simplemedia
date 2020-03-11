@@ -10,9 +10,11 @@ Napi::FunctionReference AudioDecoder::constructor;
 Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
+  constexpr auto name = "AudioDecoder";
+
   Napi::Function func =
       DefineClass(env,
-                  "AudioDecoder",
+                  name,
                   {
                     InstanceMethod("prepare", &AudioDecoder::Prepare),
                     InstanceMethod("start", &AudioDecoder::Start),
@@ -31,7 +33,7 @@ Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("AudioDecoder", func);
+  exports.Set(name, func);
 
   return exports;
 }

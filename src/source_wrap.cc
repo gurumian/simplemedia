@@ -8,9 +8,11 @@ Napi::FunctionReference Source::constructor;
 Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
+  constexpr auto name = "Source";
+
   Napi::Function func =
       DefineClass(env,
-                  "Source",
+                  name,
                   {
                     InstanceMethod("prepare", &Source::Prepare),
                     InstanceMethod("start", &Source::Start),
@@ -31,7 +33,7 @@ Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("Source", func);
+  exports.Set(name, func);
 
   return exports;
 }

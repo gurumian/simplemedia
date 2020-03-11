@@ -9,10 +9,12 @@ Napi::FunctionReference VideoDecoder::constructor;
 
 Napi::Object VideoDecoder::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
+ 
+  constexpr auto name = "VideoDecoder";
 
   Napi::Function func =
       DefineClass(env,
-                  "VideoDecoder",
+                  name,
                   {
                     InstanceMethod("prepare", &VideoDecoder::Prepare),
                     InstanceMethod("start", &VideoDecoder::Start),
@@ -30,7 +32,7 @@ Napi::Object VideoDecoder::Init(Napi::Env env, Napi::Object exports) {
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("VideoDecoder", func);
+  exports.Set(name, func);
 
   return exports;
 }

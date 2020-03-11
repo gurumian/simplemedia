@@ -8,9 +8,11 @@ Napi::FunctionReference Frame::constructor;
 Napi::Object Frame::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
+  constexpr auto name = "Frame";
+
   Napi::Function func =
       DefineClass(env,
-                  "Frame",
+                  name,
                   {
                     InstanceAccessor("pts", &Frame::pts, nullptr),
                     InstanceAccessor("native", &Frame::native, nullptr),
@@ -22,7 +24,7 @@ Napi::Object Frame::Init(Napi::Env env, Napi::Object exports) {
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("Frame", func);
+  exports.Set(name, func);
 
   return exports;
 }
