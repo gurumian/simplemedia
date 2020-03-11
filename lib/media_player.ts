@@ -241,16 +241,21 @@ export class MediaPlayer {
 
   _decode(decoder: any) {
     decoder.decode()
-    .then((frame: any) => {
-      if(frame === undefined) { // retry
-        setTimeout(()=>this._decode(decoder))
-        return;
+    .then((frames: any) => {
+      if(frames) {
+        frames.map((frame: any) => {
+          this._ondecode({
+            decoder: decoder,
+            frame: frame,
+          })
+        })
       }
-
-      this._ondecode({
-        decoder: decoder,
-        frame: frame,
-      })
+      else { // eos
+        this._ondecode({
+          decoder: decoder,
+          frame: null,
+        })
+      }
     })
   }
 
