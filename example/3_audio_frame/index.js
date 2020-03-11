@@ -28,17 +28,15 @@ function dump(frame) {
 
 function decode() {
   decoder.decode()
-  .then(frame => {
-    if(frame) {
-      count++;
-      // dump(frame);
+  .then(frames => {
+    if(frames) {
+      frames.map((frame) => {
+        count++;
+        dump(frame);
+      })
       setTimeout(()=>decode())
     }
-    else if(frame === undefined) { // retry
-      setTimeout(()=>decode())
-      return;
-    }
-    else {
+    else { // eos
       console.log('null packet');
       console.log(`frame count: ${count} ${timer.dt}(ms)`);
       decoder = null;

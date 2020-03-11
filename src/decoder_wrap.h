@@ -5,6 +5,7 @@
 #include "simplemedia/frame_decoder.h"
 #include "log_message.h"
 #include "frame_wrap.h"
+#include <vector>
 
 
 template <class T>
@@ -72,24 +73,36 @@ protected:
   Napi::Value Decode(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
-    bool sent_frame{false};
     auto deferred = Napi::Promise::Deferred::New(env);
 
-    decoder_->Decode([&](const AVFrame *arg){
-      sent_frame = true;
-      if(arg) {
-        auto frame = Frame::NewInstance(env, Napi::External<AVFrame>::New(env, (AVFrame *)arg));
-        deferred.Resolve(frame);
-      }
-      else {
+    std::vector<Napi::Object> frames;
+    int err{0};
+    do {
+      err = decoder_->Decode([&](const AVFrame *arg){
+        if(arg) {
+          auto frame = Frame::NewInstance(env, Napi::External<AVFrame>::New(env, (AVFrame *)arg));
+          frames.push_back(frame);
+        }
+      });
+
+      if(err == AVERROR_EOF) {
         deferred.Resolve(env.Null());
+        return deferred.Promise();
       }
-    });
-
-    if(!sent_frame) {
-      deferred.Resolve(env.Undefined());
     }
+    while((err == EAGAIN) || (frames.empty())); // lack of packet
 
+    auto data = Napi::Array::New(env, frames.size());
+    if(frames.empty()) {
+      deferred.Resolve(data);
+    }
+    else {
+      const auto count = frames.size();
+      for(int i = 0; i < count; i++) {
+        data[i] = frames[i];
+      }
+      deferred.Resolve(data);
+    }
     return deferred.Promise();
   }
 
