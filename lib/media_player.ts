@@ -10,7 +10,7 @@ const State = Object.freeze({
   'paused':4,
 });
 
-const syncThreshold = 5000;
+const syncThreshold = 10000;
 const delayStep = 100;
 
 abstract class Element {
