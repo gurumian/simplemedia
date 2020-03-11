@@ -9,7 +9,7 @@ apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-
 (or brew)
 ```
 
-You may need to install `cmake-js` as well
+You may need to install `cmake-js` and `typescript`
 ```
 npm i -g cmake-js
 npm i -g typescript
@@ -62,7 +62,7 @@ mkdir build; cd build
 cmake .. && make
 ```
 You'll probably get a binary named `mediaplayer`
-Simply, try to run it with a media file
+try to run it with a media file
 ```bash
 ./mediaplayer /path/to/file
 ```
