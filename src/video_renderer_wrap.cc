@@ -10,7 +10,7 @@ Napi::FunctionReference VideoRenderer::constructor;
 Napi::Object VideoRenderer::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  constexpr auto name = "VideoRenderer";
+  constexpr auto name = "_VideoRenderer";
 
   Napi::Function func =
       DefineClass(env,

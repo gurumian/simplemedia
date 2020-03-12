@@ -1,7 +1,7 @@
-const {AudioRenderer, VideoRenderer} = require('bindings')('simplemedia');
 import {Timer} from './timer'
 import {Source} from './source'
 import {AudioDecoder, VideoDecoder} from './decoder'
+import {AudioRenderer, VideoRenderer} from './renderer'
 
 export enum State {
   none,
@@ -162,7 +162,7 @@ export class MediaPlayer {
         });
       }
 
-      audio.renderer.render(frame.native);
+      audio.renderer.render(frame);
       audio.count++;
     }
     else {
@@ -213,7 +213,7 @@ export class MediaPlayer {
           video.renderer.resize(video.width, video.height);
         }
 
-        video.renderer.render(frame.native);
+        video.renderer.render(frame);
       }
       video.count++;
     }

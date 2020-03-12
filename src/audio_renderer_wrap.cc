@@ -9,7 +9,7 @@ Napi::FunctionReference AudioRenderer::constructor;
 Napi::Object AudioRenderer::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  constexpr auto name = "AudioRenderer";
+  constexpr auto name = "_AudioRenderer";
 
   Napi::Function func =
       DefineClass(env,
