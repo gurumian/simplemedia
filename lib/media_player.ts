@@ -1,5 +1,6 @@
-const {Source, AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
+const {AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
 import {Timer} from './timer'
+import {Source} from './source'
 
 export enum State {
   none,
@@ -40,9 +41,7 @@ class Audio extends Element{
 
     let pid = source.audioPid;
     console.log(`audio index: ${pid}`);
-    let pidchannel = source.requestPidChannel({
-      pid : pid,
-    });
+    let pidchannel = source.requestPidChannel(pid);
 
     let decoder = new AudioDecoder();
     let strm = fmt.streams[pid].native;
@@ -73,9 +72,7 @@ class Video extends Element{
 
     let pid = source.videoPid;
     console.log(`video index: ${pid}`);
-    let pidchannel = source.requestPidChannel({
-      pid : pid,
-    });
+    let pidchannel = source.requestPidChannel(pid);
 
     let decoder = new VideoDecoder();
     let strm = fmt.streams[pid].native;
@@ -354,7 +351,7 @@ export class MediaPlayer {
           this.audio.isFirstFrame = true;
         }
       }),
-    });
+    })
   }
 
   /**
