@@ -49,7 +49,7 @@ SDL_Window *CreateWindow(const std::string &title, int width, int height) {
 Napi::Object Window::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  constexpr auto name = "Window";
+  constexpr auto name = "_Window";
 
   Napi::Function func =
       DefineClass(env,
