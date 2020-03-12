@@ -4,27 +4,27 @@ export abstract class Decoder {
   decoder: any;
   constructor() {}
 
-  prepare(strm: any) {
+  prepare(strm: any): void {
     this.decoder.prepare(strm)
   }
 
-  start() {
+  start(): void {
     this.decoder.start()
   }
 
-  stop() {
+  stop(): void {
     this.decoder.stop()
   }
 
-  pause() {
+  pause(): void {
     this.decoder.pause()
   }
 
-  decode() {
+  decode(): Promise<any> {
     return this.decoder.decode()
   }
 
-  flush() {
+  flush(): void {
     this.decoder.flush()
   }
 
