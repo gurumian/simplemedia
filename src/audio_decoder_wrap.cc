@@ -10,7 +10,7 @@ Napi::FunctionReference AudioDecoder::constructor;
 Napi::Object AudioDecoder::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  constexpr auto name = "AudioDecoder";
+  constexpr auto name = "_AudioDecoder";
 
   Napi::Function func =
       DefineClass(env,

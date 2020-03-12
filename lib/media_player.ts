@@ -1,6 +1,7 @@
-const {AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
+const {AudioRenderer, VideoRenderer} = require('bindings')('simplemedia');
 import {Timer} from './timer'
 import {Source} from './source'
+import {AudioDecoder, VideoDecoder} from './decoder'
 
 export enum State {
   none,
