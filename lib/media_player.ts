@@ -1,14 +1,13 @@
 const {Source, AudioDecoder, AudioRenderer, VideoRenderer, VideoDecoder} = require('bindings')('simplemedia');
 import {Timer} from './timer'
 
-
-const State = Object.freeze({
-  'none':0,
-  'prepared':1,
-  'started':2,
-  'stopped':3,
-  'paused':4,
-});
+export enum State {
+  none,
+  prepared,
+  started,
+  stopped,
+  paused
+}
 
 const syncThreshold = 10000;
 const delayStep = 100;
@@ -99,7 +98,6 @@ export class MediaPlayer {
   trace: boolean;
   renderer: any;
   source: any;
-  State: object;
   state: number;
   audio: Audio;
   video: Video;
@@ -108,8 +106,6 @@ export class MediaPlayer {
     this.trace = trace || false;
     this.renderer = renderer || null;
     this.source = new Source();
-
-    this.State = State;
     this.state = State.none;
   }
 
