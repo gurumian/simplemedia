@@ -52,7 +52,6 @@ int FrameDecoder::decode(AVPacket *pkt, OnFrameFound on_frame_found) {
       if(err == AVERROR_EOF) {
         Pause();
         if(on_null_packet_sent_) on_null_packet_sent_(*this);
-        if(on_frame_found) on_frame_found(nullptr);
         return err;
       }
 
