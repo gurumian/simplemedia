@@ -63,9 +63,7 @@ if(! source.hasAudio) {
 
 let pid = source.audioPid;
 console.log('pid: ' + pid);
-let pidchannel = source.requestPidChannel({
-  pid : pid,
-});
+let pidchannel = source.requestPidChannel(pid);
 
 decoder = new AudioDecoder();
 decoder.prepare(fmt.streams[pid]['native']);

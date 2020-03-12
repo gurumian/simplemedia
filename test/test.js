@@ -42,9 +42,7 @@ describe('All', function() {
     })
 
     it('should return -1 when the value is not present', function() {
-      let pidchannel = source.requestPidChannel({
-        pid : source.audioPid,
-      })
+      let pidchannel = source.requestPidChannel(source.audioPid)
       assert.notEqual(pidchannel, null)
       audioPidchannel = pidchannel
     })
