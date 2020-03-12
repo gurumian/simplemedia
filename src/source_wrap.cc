@@ -8,7 +8,7 @@ Napi::FunctionReference Source::constructor;
 Napi::Object Source::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  constexpr auto name = "Source";
+  constexpr auto name = "_Source";
 
   Napi::Function func =
       DefineClass(env,

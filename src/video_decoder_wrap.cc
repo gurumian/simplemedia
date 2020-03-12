@@ -10,7 +10,7 @@ Napi::FunctionReference VideoDecoder::constructor;
 Napi::Object VideoDecoder::Init(Napi::Env env, Napi::Object exports) {
   Napi::HandleScope scope(env);
  
-  constexpr auto name = "VideoDecoder";
+  constexpr auto name = "_VideoDecoder";
 
   Napi::Function func =
       DefineClass(env,
