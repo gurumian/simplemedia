@@ -34,7 +34,7 @@ function decode() {
         count++;
         dump(frame);
       })
-      setTimeout(()=>decode())
+      setTimeout(decode)
     }
     else { // eos
       console.log('null packet');
