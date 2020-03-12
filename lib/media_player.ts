@@ -194,8 +194,7 @@ export class MediaPlayer {
         let synced = true;
         if(this.hasAudioDecoder) {
           let diff = video.pts - audio.pts;
-          if(diff > syncThreshold)
-            synced = false;
+          if(diff > syncThreshold) synced = false;
         }
 
         delay = pts - video.pts;
