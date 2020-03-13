@@ -359,7 +359,9 @@ export class MediaPlayer {
    * @return current volume
    */
   get volume() : number{
-    return this.audio.renderer.volume;
+    if(this.hasAudioDecoder)
+      return this.audio.renderer.volume
+    return 0
   }
 
   /**
@@ -367,7 +369,8 @@ export class MediaPlayer {
    * @param {number} vol - 0.0 ~ 1.0
    */
   set volume(vol: number) {
-    this.audio.renderer.volume = vol;
+    if(this.hasAudioDecoder)
+      this.audio.renderer.volume = vol
   }
 
   /**
@@ -375,7 +378,7 @@ export class MediaPlayer {
    * @return duration
    */
   get duration(): number {
-    return this.source.duration;
+    return this.source.duration
   }
 
 
@@ -384,7 +387,7 @@ export class MediaPlayer {
    * @return true if a video decoder exists
    */
   get hasVideoDecoder(): boolean  {
-    return !!(this.video && this.video.decoder);
+    return !!(this.video && this.video.decoder)
   }
 
   /**
@@ -392,7 +395,7 @@ export class MediaPlayer {
    * @return true if a audio decoder exists
    */
   get hasAudioDecoder(): boolean {
-    return !!(this.audio && this.audio.decoder);
+    return !!(this.audio && this.audio.decoder)
   }
 }
 
