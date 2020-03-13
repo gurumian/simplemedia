@@ -14,7 +14,7 @@ export class Window {
     this.window.destroyRenderer()
   }
 
-  pollEvent(): object {
+  pollEvent(): any {
     return this.window.pollEvent()
   }
 
