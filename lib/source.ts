@@ -61,6 +61,14 @@ export class Source {
   get duration(): number {
     return this.source.duration
   }
+
+  set trace(enable: boolean) {
+    this.source.trace = enable
+  }
+
+  get trace(): boolean {
+    return this.source.trace
+  }
 }
 
 export default Source

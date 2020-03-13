@@ -13,6 +13,7 @@ export abstract class Renderer {
   }
 
   set trace(enable: boolean) {
+    this.renderer.trace = enable
   }
 }
 
