@@ -15,20 +15,20 @@ const syncThreshold = 10000;
 const delayStep = 100;
 
 abstract class Element {
-  renderer: any;
-  timer: Timer;
-  decoder: any;
-  isFirstFrame: boolean;
-  count: number;
-  pts: number;
-  constructor(fmt: any, source: any, trace: boolean, renderer?:any) {
-    this.init(fmt, source, trace, renderer);
-    this.timer = new Timer();
-    this.isFirstFrame = true;
-    this.count = 0;
+  renderer: any
+  timer: Timer
+  decoder: VideoDecoder | AudioDecoder
+  isFirstFrame: boolean
+  count: number
+  pts: number
+  constructor(fmt: any, source: Source, trace: boolean, renderer?:any) {
+    this.init(fmt, source, trace, renderer)
+    this.timer = new Timer()
+    this.isFirstFrame = true
+    this.count = 0
   }
 
-  abstract init(fmt: any, source: any, trace: boolean, renderer?:any): void;
+  abstract init(fmt: object, source: Source, trace: boolean, renderer?:any): void
 }
 
 class Audio extends Element{
@@ -95,7 +95,7 @@ class Video extends Element{
 export class MediaPlayer {
   trace: boolean;
   renderer: any;
-  source: any;
+  source: Source;
   state: number;
   audio: Audio;
   video: Video;
@@ -384,7 +384,7 @@ export class MediaPlayer {
    * @return true if a video decoder exists
    */
   get hasVideoDecoder(): boolean  {
-    return (this.video && this.video.decoder);
+    return !!(this.video && this.video.decoder);
   }
 
   /**
@@ -392,7 +392,7 @@ export class MediaPlayer {
    * @return true if a audio decoder exists
    */
   get hasAudioDecoder(): boolean {
-    return (this.audio && this.audio.decoder);
+    return !!(this.audio && this.audio.decoder);
   }
 }
 

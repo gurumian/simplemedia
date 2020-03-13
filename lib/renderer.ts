@@ -11,6 +11,9 @@ export abstract class Renderer {
   render(frame: any): void {
     return this.renderer.render(frame.native)
   }
+
+  set trace(enable: boolean) {
+  }
 }
 
 export class AudioRenderer extends Renderer {
@@ -26,9 +29,6 @@ export class AudioRenderer extends Renderer {
   set volume(vol: number) {
     this.renderer.volume = vol;
   }
-
-  set trace(enable: boolean) {
-  }
 }
 
 
@@ -36,5 +36,9 @@ export class VideoRenderer extends Renderer {
   constructor(surface: any) {
     super()
     this.renderer = new _VideoRenderer(surface)
+  }
+
+  resize(width: number, height: number): void {
+    this.renderer.resize(width, height)
   }
 }

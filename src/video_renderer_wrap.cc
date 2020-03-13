@@ -18,6 +18,7 @@ Napi::Object VideoRenderer::Init(Napi::Env env, Napi::Object exports) {
                   {
                     InstanceMethod("prepare", &VideoRenderer::Prepare),
                     InstanceMethod("render", &VideoRenderer::Render),
+                    InstanceMethod("resize", &VideoRenderer::Resize),
                     InstanceAccessor("trace", &VideoRenderer::log_enabled, &VideoRenderer::EnableLog),
                   });
 

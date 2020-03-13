@@ -23,7 +23,7 @@ export class Source {
     this.source.pause()
   }
 
-  seek(arg: {pos: number; backword: boolean; callback: ()=>void;}) {
+  seek(arg: {pos: number; backward: boolean; callback: ()=>void;}) {
     this.source.seek(arg)
   }
 
@@ -64,21 +64,3 @@ export class Source {
 }
 
 export default Source
-
-
-
-
-// InstanceMethod("prepare", &Source::Prepare),
-// InstanceMethod("start", &Source::Start),
-// InstanceMethod("stop", &Source::Stop),
-// InstanceMethod("pause", &Source::Pause),
-// InstanceMethod("seek", &Source::Seek),
-// InstanceMethod("requestPidChannel", &Source::RequestPidChannel),
-// InstanceMethod("findStream", &Source::FindStream),
-// InstanceAccessor("datasource", &Source::dataSource, &Source::SetDataSource),
-// InstanceAccessor("audioPid", &Source::audioPid, nullptr),
-// InstanceAccessor("hasAudio", &Source::hasAudio, nullptr),
-// InstanceAccessor("videoPid", &Source::videoPid, nullptr),
-// InstanceAccessor("hasVideo", &Source::hasVideo, nullptr),
-// InstanceAccessor("trace", &Source::log_enabled, &Source::EnableLog),
-// InstanceAccessor("duration", &Source::duration, nullptr),
