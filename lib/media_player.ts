@@ -130,8 +130,8 @@ export class MediaPlayer {
 
   _ondecodedAudio(frame: any) {
     let delay: number = 0;
-    let audio = this.audio;
-    let video = this.video;
+    let audio: Audio = this.audio;
+    let video: Video = this.video;
     if(frame) {
       let pts = frame.pts;
 

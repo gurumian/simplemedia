@@ -1,7 +1,8 @@
 var {_AudioDecoder, _VideoDecoder} = require('bindings')('simplemedia');
 
 export abstract class Decoder {
-  decoder: any;
+  decoder: any
+  done: boolean
   constructor() {}
 
   prepare(strm: any): void {
@@ -29,15 +30,15 @@ export abstract class Decoder {
   }
 
   set pidchannel(arg: any) {
-    this.decoder.pidchannel = arg;
-  }
-
-  set done(arg: boolean) {
-
+    this.decoder.pidchannel = arg
   }
 
   set trace(arg: boolean) {
+    this.decoder.trace = arg
+  }
 
+  get trace(): boolean {
+    return this.decoder.trace
   }
 }
 
