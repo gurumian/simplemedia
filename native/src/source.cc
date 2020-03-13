@@ -277,7 +277,7 @@ int Source::ReadFrame(AVPacket *pkt) {
   std::unique_lock<std::mutex> lk(lck_);
   int err = av_read_frame(fmt_, pkt);
   if(err < 0) {
-    if(err==AVERROR_EOF && nullpkt_sent_==false) {
+    if(err==AVERROR_EOF) {
       // send null packet to all pidchannels
       QueueEoS();
       lk.unlock();
@@ -289,7 +289,7 @@ int Source::ReadFrame(AVPacket *pkt) {
 
 void Source::QueueEoS() {
   for(auto pos : pid_channel_pool_) {
-    if(! pos.second) continue; // this is weird
+    assert(pos.second);
 
     AVPacket *pkt = packet_pool_->Request(100);
     assert(pkt);
