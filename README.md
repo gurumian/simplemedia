@@ -3,11 +3,16 @@
 
 
 ## Prerequisites
+on Ubuntu
 ```bash
 apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libsdl2-dev
 
-(or brew)
 ```
+on macOS
+```bash
+brew install ffmpeg sdl2
+```
+
 
 You may need to install `cmake-js` and `typescript`
 ```
