@@ -97,8 +97,8 @@ export class MediaPlayer {
   renderer: any;
   source: Source;
   state: number;
-  audio: Audio;
-  video: Video;
+  audio: Audio | null;
+  video: Video | null;
   onend: () => void;
   constructor({ renderer, trace }) {
     this.trace = trace || false;
@@ -130,12 +130,12 @@ export class MediaPlayer {
 
   _ondecodedAudio(frame: any) {
     let delay: number = 0;
-    let audio: Audio = this.audio;
-    let video: Video = this.video;
+    let audio: Audio | null = this.audio;
+    let video: Video | null = this.video;
     if(frame) {
       let pts = frame.pts;
 
-      if(audio.isFirstFrame) {
+      if(audio && audio.isFirstFrame) {
         audio.isFirstFrame = false;
         audio.timer.wait(0).then(() => {
           if(this.state == State.started) {
@@ -175,8 +175,8 @@ export class MediaPlayer {
 
   _ondecodedVideo(frame: any) {
     let delay = 0;
-    let audio = this.audio;
-    let video = this.video;
+    let audio: Audio | null = this.audio;
+    let video: Video | null = this.video;
     if(frame) {
       let pts = frame.pts;
 
@@ -226,9 +226,9 @@ export class MediaPlayer {
   }
 
   _ondecode({decoder, frame}) {
-    if(this.audio.decoder == decoder)
+    if(this.audio && this.audio.decoder == decoder)
       this._ondecodedAudio(frame);
-    else
+    else if(this.video && this.video.decoder == decoder)
       this._ondecodedVideo(frame);
   }
 
