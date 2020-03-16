@@ -225,7 +225,7 @@ void Source::Run(int unused) {
       QueueEoS();
     }
     else {
-      LOG(ERROR) << __func__ << " err: " << av_err2str(err);
+      // LOG(ERROR) << __func__ << " err: " << av_err2str(err);
       packet_pool_->Release(pkt);
     }
     Pause();
