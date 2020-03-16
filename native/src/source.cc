@@ -214,14 +214,21 @@ void Source::Run(int unused) {
     return;
   }
 
-  AVPacket *pkt = packet_pool_->Request(500);
+  AVPacket *pkt = packet_pool_->Request();
   if(!pkt) {
     return;
   }
 
   err = ReadFrame(pkt);
   if(err) {
-    packet_pool_->Release(pkt);
+    if(err==AVERROR_EOF) {
+      QueueEoS();
+    }
+    else {
+      LOG(ERROR) << __func__ << " err: " << av_err2str(err);
+      packet_pool_->Release(pkt);
+    }
+    Pause();
     return;
   }
 
@@ -242,6 +249,8 @@ int64_t Source::GetDuration() {
 
 void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
   if(log_enabled_) LOG(INFO) << __func__<< " pos: [" << pos << "]";
+
+  if(nullpkt_sent_) return;
 
   std::lock_guard<std::mutex> lk(lck_);
   if(on_will_seek) on_will_seek();
@@ -276,23 +285,14 @@ void Source::Seek(int64_t pos, int flag, OnWillSeek on_will_seek) {
 
 int Source::ReadFrame(AVPacket *pkt) {
   std::unique_lock<std::mutex> lk(lck_);
-  int err = av_read_frame(fmt_, pkt);
-  if(err < 0) {
-    if(err==AVERROR_EOF) {
-      // send null packet to all pidchannels
-      QueueEoS();
-      lk.unlock();
-      Pause();
-    }
-  }
-  return err;
+  return av_read_frame(fmt_, pkt);
 }
 
 void Source::QueueEoS() {
   for(auto pos : pid_channel_pool_) {
     assert(pos.second);
 
-    AVPacket *pkt = packet_pool_->Request(100);
+    AVPacket *pkt = packet_pool_->Request();
     assert(pkt);
     if(!pkt) {
       LOG(WARNING) << __func__ << " lack of packet";
