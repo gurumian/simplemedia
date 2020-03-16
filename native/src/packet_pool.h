@@ -21,9 +21,12 @@ public:
   void Release(AVPacket *pkt, bool notify=true);
 
 private:
+  AVPacket *createPacket();
+
+private:
   std::mutex lck_;
   std::condition_variable cond_;
-  std::list<AVPacket *> lst_;
+  std::list<AVPacket *> pkts_;
 };
 
 } // namespace gurum

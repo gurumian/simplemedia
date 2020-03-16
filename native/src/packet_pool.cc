@@ -6,12 +6,18 @@ namespace gurum {
 
 int PacketPool::Init(int num) {
   for(int i = 0; i < num; i++) {
-    AVPacket *pkt = av_packet_alloc();
-    av_init_packet(pkt);
-    pkt->data = nullptr;
-    lst_.push_back(pkt);
+    AVPacket *pkt = createPacket();
+    pkts_.push_back(pkt);
   }
   return 0;
+}
+
+AVPacket *PacketPool::createPacket() {
+  AVPacket *pkt = av_packet_alloc();
+  assert(pkt);
+  av_init_packet(pkt);
+  pkt->data = nullptr;
+  return pkt;
 }
 
 AVPacket *PacketPool::Request(int timeout) {
@@ -20,9 +26,9 @@ AVPacket *PacketPool::Request(int timeout) {
   AVPacket *pkt = nullptr;
 
   for(;;) {
-    pkt = lst_.front();
+    pkt = pkts_.front();
     if(pkt) {
-      lst_.pop_front();
+      pkts_.pop_front();
       av_packet_unref(pkt);
       break;
     }
@@ -44,7 +50,7 @@ AVPacket *PacketPool::Request(int timeout) {
 void PacketPool::Release(AVPacket *pkt, bool notify) {
   std::lock_guard<std::mutex> lk(lck_);
 	av_packet_unref(pkt);
-  lst_.push_back(pkt);
+  pkts_.push_back(pkt);
   if(notify)
     cond_.notify_one();
 }
