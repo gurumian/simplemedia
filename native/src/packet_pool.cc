@@ -21,11 +21,11 @@ AVPacket *PacketPool::createPacket() {
 }
 
 AVPacket *PacketPool::Request(int timeout) {
-  std::unique_lock<std::mutex> lk(lck_);
 
   AVPacket *pkt = nullptr;
 
   for(;;) {
+    std::unique_lock<std::mutex> lk(lck_);
     pkt = pkts_.front();
     if(pkt) {
       pkts_.pop_front();
