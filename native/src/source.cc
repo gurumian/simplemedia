@@ -148,7 +148,8 @@ void Source::Stop() {
 }
 
 PidChannel *Source::FindPidChannelBy(uint16_t pid) {
-  return pid_channel_pool_[pid];
+  auto pidchannel = pid_channel_pool_.find(pid);
+  return pidchannel->second;
 }
 
 PidChannel *Source::RequestPidChannel(uint16_t pid) {
