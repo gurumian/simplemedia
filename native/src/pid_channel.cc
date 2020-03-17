@@ -41,14 +41,14 @@ int PidChannel::Pop(AVPacket *pkt) {
 }
 
 void PidChannel::Flush() {
+  std::lock_guard<std::mutex> lk(lck_);
   while(true) {
-    std::unique_lock<std::mutex> lk(lck_);
     if(que_.empty())
       break;
 
     AVPacket *pkt1 = que_.front();
     que_.pop_front();
-    lk.unlock();
+    // lk.unlock();
     packet_pool_->Release(pkt1);
   }
 }

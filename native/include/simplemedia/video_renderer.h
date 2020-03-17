@@ -29,6 +29,7 @@ public:
     title_ = title;
   }
 
+  [[deprecated]]
   void SetSubtitleRenderer(SubtitleRenderer *renderer){subtitle_renderer_=renderer;}
 
   void EnableLog(bool enable=true) {
