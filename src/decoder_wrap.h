@@ -90,7 +90,7 @@ protected:
         return deferred.Promise();
       }
     }
-    while((err == EAGAIN) || (frames.empty())); // lack of packet
+    while(0 /*(err == EAGAIN) || (frames.empty())*/); // lack of packet
 
     auto data = Napi::Array::New(env, frames.size());
     if(frames.empty()) {
