@@ -21,11 +21,13 @@ SdlVideoRenderer::~SdlVideoRenderer() {
 int SdlVideoRenderer::Prepare() {
   Resize(w_, h_);
 
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-  SDL_RenderSetLogicalSize(renderer_, w_, h_);
-  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-  SDL_RenderClear(renderer_);
-  SDL_RenderPresent(renderer_);
+  if(renderer_) {
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL_RenderSetLogicalSize(renderer_, w_, h_);
+    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+    SDL_RenderClear(renderer_);
+    SDL_RenderPresent(renderer_);
+  }
 
   return 0;
 }
@@ -93,20 +95,18 @@ int SdlVideoRenderer::Blit(SDL_Texture *texture, const SDL_Rect *rect) {
 
 int SdlVideoRenderer::Blit(const SDL_Rect *rect) {
   SDL_RenderCopy(renderer_, texture_, rect, rect);
-
-  if(subtitle_renderer_)
-    subtitle_renderer_->Blit(renderer_, current_pts_);
-
   return 0;
 }
 
 void SdlVideoRenderer::Invalidate(const SDL_Rect *rect) {
-  std::lock_guard<std::mutex> lk(lck_);
-  SDL_RenderClear(renderer_);
-  Blit();
-  if(on_invalidated_) on_invalidated_(renderer_, rect);
-
-  SDL_RenderPresent(renderer_);
+  if(on_invalidated_) {
+    on_invalidated_(texture_, rect);
+  }
+  else {
+    SDL_RenderClear(renderer_);
+    Blit();
+    SDL_RenderPresent(renderer_);
+  }
 }
 
 } // namespace gurum

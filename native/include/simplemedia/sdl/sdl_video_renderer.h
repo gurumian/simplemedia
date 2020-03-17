@@ -15,7 +15,7 @@ namespace gurum {
 
 class SdlVideoRenderer : public VideoRenderer {
 public:
-  using OnInvalidated=std::function<void(SDL_Renderer *, const SDL_Rect *rect)>;
+  using OnInvalidated=std::function<void(SDL_Texture *texture, const SDL_Rect *rect)>;
 
   SdlVideoRenderer(SDL_Renderer *renderer=nullptr);
   virtual ~SdlVideoRenderer();

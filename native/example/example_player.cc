@@ -44,96 +44,94 @@ int InitSDL() {
 int ReadAndDispatch(SDL_Window *window, SDL_Renderer *renderer, SDL_Event *event, MediaPlayer *const player) {
   static SDL_Texture *texture=nullptr;
 
-  SDL_WaitEvent(event);
-
-  if(MEDIA_EVENT_TYPE==event->type) {
-    Uint32 flags = SDL_GetWindowFlags(window);
-    if(flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-      SDL_SetWindowFullscreen(window, flags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
-    }
-    return -1;
-  }
-
-  switch (event->type) {
-  case SDL_KEYUP: {
-    break;
-  }
-  case SDL_MOUSEMOTION: {
-    SDL_ShowCursor(SDL_ENABLE);
-    break;
-  }
-  case SDL_KEYDOWN:  {
-    switch(event->key.keysym.sym) {
-    case SDLK_LEFT: {
-      int64_t pos = player->currentPosition();
-      pos -= (1 * 1000000);
-      player->Seek(pos);
-      break;
-    }
-    case SDLK_RIGHT: {
-      int64_t pos = player->currentPosition();
-      pos += (1 * 1000000);
-      if(pos < player->duration())
-        player->Seek(pos);
-      break;
-    }
-    case SDLK_UP: {
-      float vol = player->volume();
-      vol += 0.1f;
-      player->SetVolume(vol);
-      break;
-    }
-    case SDLK_DOWN: {
-      float vol = player->volume();
-      vol -= 0.1f;
-      player->SetVolume(vol);
-      break;
-    }
-    case SDLK_SPACE:{
-      if(player->state() == paused) {
-        player->Start();
-      }
-      else {
-        player->Pause();
-      }
-      break;
-    }
-    case SDLK_RETURN:{
+  if(SDL_PollEvent(event)) {
+    if(MEDIA_EVENT_TYPE==event->type) {
       Uint32 flags = SDL_GetWindowFlags(window);
       if(flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
         SDL_SetWindowFullscreen(window, flags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
       }
-      else {
-        SDL_SetWindowFullscreen(window, flags | SDL_WINDOW_FULLSCREEN_DESKTOP);
-        SDL_ShowCursor(SDL_DISABLE);
+      return -1;
+    }
+
+    switch (event->type) {
+    case SDL_KEYUP: {
+      break;
+    }
+    case SDL_MOUSEMOTION: {
+      SDL_ShowCursor(SDL_ENABLE);
+      break;
+    }
+    case SDL_KEYDOWN:  {
+      switch(event->key.keysym.sym) {
+      case SDLK_LEFT: {
+        int64_t pos = player->currentPosition();
+        pos -= (1 * 1000000);
+        player->Seek(pos);
+        break;
       }
-      break;
-    }
-    case SDLK_l : {
-      if(texture)
-        SDL_DestroyTexture(texture);
-      texture=nullptr;
-      break;
-    }
-    case SDLK_k : {
-      if(player->state()!=started) {
-        SdlVideoRenderer *video_renderer = dynamic_cast<SdlVideoRenderer *>(player->videoRenderer());
-        if(video_renderer) {
-          video_renderer->Invalidate(nullptr);
+      case SDLK_RIGHT: {
+        int64_t pos = player->currentPosition();
+        pos += (1 * 1000000);
+        if(pos < player->duration())
+          player->Seek(pos);
+        break;
+      }
+      case SDLK_UP: {
+        float vol = player->volume();
+        vol += 0.1f;
+        player->SetVolume(vol);
+        break;
+      }
+      case SDLK_DOWN: {
+        float vol = player->volume();
+        vol -= 0.1f;
+        player->SetVolume(vol);
+        break;
+      }
+      case SDLK_SPACE:{
+        if(player->state() == paused) {
+          player->Start();
         }
+        else {
+          player->Pause();
+        }
+        break;
       }
+      case SDLK_RETURN:{
+        Uint32 flags = SDL_GetWindowFlags(window);
+        if(flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+          SDL_SetWindowFullscreen(window, flags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
+        }
+        else {
+          SDL_SetWindowFullscreen(window, flags | SDL_WINDOW_FULLSCREEN_DESKTOP);
+          SDL_ShowCursor(SDL_DISABLE);
+        }
+        break;
+      }
+      case SDLK_l : {
+        if(texture)
+          SDL_DestroyTexture(texture);
+        texture=nullptr;
+        break;
+      }
+      case SDLK_k : {
+        if(player->state()!=started) {
+          SdlVideoRenderer *video_renderer = dynamic_cast<SdlVideoRenderer *>(player->videoRenderer());
+          if(video_renderer) {
+            video_renderer->Invalidate(nullptr);
+          }
+        }
+        break;
+      }
+
+      } // switch
+
       break;
     }
-
-    } // switch
-
-    break;
+    case SDL_QUIT:
+      return -1;
+    }
   }
-  case SDL_QUIT:
-    return -1;
-  }
-
-  std::this_thread::yield();
   return 0;
 }
 
@@ -146,6 +144,17 @@ SDL_Window *CreateWindow() {
                                         SDL_WINDOWPOS_CENTERED, display_mode.w, display_mode.h, flags);
 
   return window;
+}
+
+SDL_Renderer *CreateRenderer(SDL_Window *window) {
+  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  assert(renderer);
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+  SDL_RenderSetLogicalSize(renderer, 0, 0);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+  SDL_RenderPresent(renderer);
+  return renderer;
 }
 
 int main(int argc, char *argv[]) {
@@ -161,8 +170,9 @@ int main(int argc, char *argv[]) {
   SDL_Window *window = CreateWindow();
   assert(window);
 
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  SDL_Renderer *renderer = CreateRenderer(window);
   assert(renderer);
+
 
   // 1. video
   std::unique_ptr<SdlVideoRenderer> video_renderer{ new SdlVideoRenderer(renderer) };
@@ -170,6 +180,12 @@ int main(int argc, char *argv[]) {
 
   std::unique_ptr<SdlAudioRenderer> audio_renderer{ new SdlAudioRenderer };
   std::unique_ptr<MediaPlayer> player{new MediaPlayer};
+
+  video_renderer->SetOnInvalidated([&](SDL_Texture *texture, const SDL_Rect *rect) {
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, rect, rect);
+    SDL_RenderPresent(renderer);
+  });
 
   // 3. set renderers
   player->SetVideoRenderer(std::move(video_renderer));
@@ -201,7 +217,7 @@ int main(int argc, char *argv[]) {
 
   SDL_Event event;
   while(! ReadAndDispatch(window, renderer, &event, player.get())) {
-    // TODO:
+    SDL_Delay(1000/60);
   }
 
   player = nullptr;

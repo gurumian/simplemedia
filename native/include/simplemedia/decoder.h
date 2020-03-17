@@ -54,7 +54,7 @@ public:
   int Prepare(const CodecParam &param);
   [[deprecated]]
   int Prepare(const AVStream *strm, OnWillPrepare on_will_prepared=nullptr, OnPrepared on_prepared=nullptr);
-  [[deprecated]]
+
   int Prepare(const AVCodecParameters *codecpar, const AVRational &timebase);
 
   void SetPidChannel(PidChannel *pidchannel){pidchannel_=pidchannel;}

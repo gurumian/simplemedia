@@ -131,7 +131,7 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
             video_decoder_->height(),
             subtitle_decoder_->pixelFormat());
 
-        video_renderer_->SetSubtitleRenderer(subtitle_renderer_.get());
+        // video_renderer_->SetSubtitleRenderer(subtitle_renderer_.get());
       }
     }
 
@@ -183,12 +183,12 @@ int MediaPlayer::Stop() {
 
   std::lock_guard<std::mutex> lk(lck_);
   SetState(stopped);
-  audio_renderer_ = nullptr;
+  source_ = nullptr;
   audio_decoder_ = nullptr;
-  video_renderer_ = nullptr;
   video_decoder_ = nullptr;
   subtitle_decoder_ = nullptr;
-  source_ = nullptr;
+  audio_renderer_ = nullptr;
+  video_renderer_ = nullptr;
 
   if(log_enabled_) LOG(INFO) << __func__;
   return 0;

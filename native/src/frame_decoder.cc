@@ -26,7 +26,6 @@ int FrameDecoder::Decode(OnFrameFound on_frame_found) {
   AVPacket pkt1, *pkt = &pkt1;
   int err = pidchannel_->Pop(pkt);
   if(err) {
-    std::this_thread::yield();
     return EAGAIN;
   }
 
