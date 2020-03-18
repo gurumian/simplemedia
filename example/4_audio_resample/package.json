@@ -1,0 +1,12 @@
+{
+  "name": "4_audio_resample",
+  "version": "0.0.0",
+  "description": "Node.js simplemedia extracting audio resample example",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "simplemedia": "../../"
+  }
+}
