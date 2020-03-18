@@ -4,6 +4,10 @@
 #include "log_message.h"
 #include <algorithm>
 #include <iterator>
+#include "simplemedia/types.h"
+extern "C" {
+#include <libavutil/base64.h>
+}
 
 Napi::FunctionReference Frame::constructor;
 
@@ -19,6 +23,7 @@ Napi::Object Frame::Init(Napi::Env env, Napi::Object exports) {
                     InstanceAccessor("pts", &Frame::pts, nullptr),
                     InstanceAccessor("native", &Frame::native, nullptr),
                     InstanceAccessor("data", &Frame::data, nullptr),
+                    InstanceAccessor("base64", &Frame::base64, nullptr),
                     InstanceAccessor("numofSamples", &Frame::nb_samples, nullptr),
                     InstanceAccessor("bytesPerSample", &Frame::bytes_per_sample, nullptr),
                   });
@@ -80,9 +85,12 @@ Napi::Value Frame::native(const Napi::CallbackInfo& info) {
   return Napi::External<AVFrame>::New(env, frame_);
 }
 
-Napi::Value Frame::data(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  if(frame_->channels) {
+bool Frame::isAudio() {
+  return (frame_->channels > 0);
+}
+
+std::tuple<gurum::Buffer, int> Frame::data(const AVFrame &frame) {
+  if(isAudio()) {
     std::vector<uint8_t> chunk;
     int size = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
     for(int i = 0; i < frame_->nb_samples; i++) {
@@ -91,7 +99,27 @@ Napi::Value Frame::data(const Napi::CallbackInfo& info) {
         chunk.insert(chunk.end(), ptr, ptr+size);
       }
     }
-    return Napi::ArrayBuffer::New(env, chunk.data(), chunk.size());
+
+    gurum::Buffer out {
+      (uint8_t *) av_malloc(chunk.size()),
+      [](void *ptr){ if(ptr) av_freep(&ptr);}
+    };
+    return std::make_tuple(std::move(out), chunk.size());
+  }
+  else {
+    // TODO:
+  }
+
+  return std::make_tuple(nullptr, 0);
+}
+
+Napi::Value Frame::data(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  if(isAudio()) {
+    gurum::Buffer lineared{};
+    int size;
+    std::tie(lineared, size) = data(*frame_);
+    return Napi::ArrayBuffer::New(env, lineared.get(), size);
   }
   else {
     const int len = 3;
@@ -100,6 +128,31 @@ Napi::Value Frame::data(const Napi::CallbackInfo& info) {
       data[i] = Napi::ArrayBuffer::New(env, frame_->data[i], frame_->linesize[i]);
     }
     return data;
+  }
+  Napi::TypeError::New(env, "unhandled").ThrowAsJavaScriptException();
+  return env.Undefined();
+}
+
+Napi::Value Frame::base64(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  if(isAudio()) {
+    std::vector<uint8_t> chunk;
+    gurum::Buffer lineared{};
+    int size;
+    std::tie(lineared, size) = data(*frame_);
+
+    int b64_size = AV_BASE64_SIZE(size);
+    gurum::Buffer buf {
+      (uint8_t *)av_malloc(b64_size),
+      [](void *ptr) { if(ptr) av_freep(&ptr);}
+    };
+
+    av_base64_encode((char *)buf.get(), b64_size, lineared.get(), size);
+
+    return Napi::String::New(env, (char *)buf.get());
+  }
+  else {
+    // TODO:
   }
   Napi::TypeError::New(env, "unhandled").ThrowAsJavaScriptException();
   return env.Undefined();

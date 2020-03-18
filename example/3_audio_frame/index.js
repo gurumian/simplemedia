@@ -15,8 +15,8 @@ var decoder = null
 var channels = 0
 
 function dump(frame) {
-  let data = frame.data
-  console.log(data)
+  console.log(frame.data)
+  // console.log(frame.base64) // Google speech api
 }
 
 function decode() {
