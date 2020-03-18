@@ -2,6 +2,8 @@
 #include <uv.h>
 #include "frame_wrap.h"
 #include "log_message.h"
+#include <algorithm>
+#include <iterator>
 
 Napi::FunctionReference Frame::constructor;
 
@@ -81,16 +83,15 @@ Napi::Value Frame::native(const Napi::CallbackInfo& info) {
 Napi::Value Frame::data(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   if(frame_->channels) {
-    int data_size_per_sample = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
-    auto data = Napi::Array::New(env, frame_->nb_samples);
+    std::vector<uint8_t> chunk;
+    int size = av_get_bytes_per_sample((AVSampleFormat)frame_->format);
     for(int i = 0; i < frame_->nb_samples; i++) {
-      auto sub = Napi::Array::New(env, frame_->channels);
       for(int ch = 0; ch < frame_->channels; ch++) {
-        sub[ch] = Napi::ArrayBuffer::New(env, (frame_->data[ch] + data_size_per_sample*i), data_size_per_sample);
+        uint8_t *ptr = (frame_->data[ch] + size*i);
+        chunk.insert(chunk.end(), ptr, ptr+size);
       }
-      data[i] = sub;
     }
-    return data;
+    return Napi::ArrayBuffer::New(env, chunk.data(), chunk.size());
   }
   else {
     const int len = 3;

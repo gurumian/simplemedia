@@ -45,7 +45,7 @@ class Audio extends Element{
     let pidchannel = source.requestPidChannel(pid);
 
     let decoder = new AudioDecoder();
-    let strm = fmt.streams[pid].native;
+    let strm = fmt.streams[pid];
     decoder.prepare(strm);
     decoder.pidchannel = pidchannel;
     decoder.trace = trace;
@@ -76,7 +76,7 @@ class Video extends Element{
     let pidchannel = source.requestPidChannel(pid);
 
     let decoder = new VideoDecoder();
-    let strm = fmt.streams[pid].native;
+    let strm = fmt.streams[pid];
     decoder.prepare(strm);
     decoder.pidchannel = pidchannel;
     decoder.trace = trace;

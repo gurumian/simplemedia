@@ -7,23 +7,16 @@ const {Source, AudioDecoder, Timer} = require('simplemedia');
 
 var uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 if(args.length) {
-  uri = args[0];
+  uri = args[0]
 }
 
-var count = 0;
-var decoder = null;
-var channels = 0;
+var count = 0
+var decoder = null
+var channels = 0
 
 function dump(frame) {
-  let data = frame.data;
-  let numofSamples = frame.numofSamples;
-
-  for(var i = 0; i < numofSamples; i++) {
-    let sample = data[i];
-    for(var j = 0; j < channels; j++) {
-      console.log(sample[j]);
-    }
-  }
+  let data = frame.data
+  console.log(data)
 }
 
 function decode() {
@@ -66,7 +59,7 @@ console.log('pid: ' + pid);
 let pidchannel = source.requestPidChannel(pid);
 
 decoder = new AudioDecoder();
-decoder.prepare(fmt.streams[pid]['native']);
+decoder.prepare(fmt.streams[pid]);
 decoder.pidchannel = pidchannel;
 channels = fmt.streams[pid]['channels'];
 

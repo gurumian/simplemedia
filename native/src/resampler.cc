@@ -1,6 +1,7 @@
 #include "simplemedia/resampler.h"
 #include "log_message.h"
 #include <cstring>
+#include <vector>
 
 namespace gurum {
   
@@ -57,7 +58,23 @@ std::tuple<gurum::Buffer, int> Resampler::Resample(const AVFrame &frame) {
   };
   return std::make_tuple(std::move(out), size);
 #else
-  // TODO:
+  std::vector<uint8_t> chunk;
+  int data_size = av_get_bytes_per_sample((AVSampleFormat)frame.format);
+  for(int i = 0; i < frame.nb_samples; i++) {
+    for(int ch = 0; ch < frame.channels; ch++) {
+      uint8_t *ptr = frame.data[ch] + data_size * i;
+      chunk.insert(chunk.end(), ptr, ptr+data_size);
+    }
+  }
+
+  int size = chunk.size();
+  gurum::Buffer out {
+    (uint8_t *)malloc(size),
+    [](void *ptr){ if(ptr) free(ptr);}
+  };
+
+  std::copy(chunk.begin(), chunk.end(), out.get());
+  return std::make_tuple(std::move(out), size);
 #endif // USE_SWRESAMPLE
 }
 
