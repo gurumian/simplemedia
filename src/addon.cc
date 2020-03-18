@@ -7,6 +7,7 @@
 #include "video_decoder_wrap.h"
 #include "video_renderer_wrap.h"
 #include "window_wrap.h"
+#include "resampler_wrap.h"
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
 #if defined(USE_SDL2)
@@ -14,6 +15,7 @@ Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
   AudioRenderer::Init(env, exports);
   VideoRenderer::Init(env, exports);
 #endif // USE_SDL2
+  Resampler::Init(env, exports);
   Frame::Init(env, exports);
   AudioDecoder::Init(env, exports);
   VideoDecoder::Init(env, exports);

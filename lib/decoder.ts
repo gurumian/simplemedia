@@ -6,7 +6,7 @@ export abstract class Decoder {
   constructor() {}
 
   prepare(strm: any): void {
-    this.decoder.prepare(strm)
+    this.decoder.prepare(strm.native)
   }
 
   start(): void {

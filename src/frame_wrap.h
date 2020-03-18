@@ -6,6 +6,7 @@
 extern "C" {
 #include <libavformat/avformat.h>
 }
+#include "simplemedia/types.h"
 
 class Frame : public Napi::ObjectWrap<Frame> {
  public:
@@ -19,8 +20,13 @@ private:
   Napi::Value pts(const Napi::CallbackInfo& info);
   Napi::Value native(const Napi::CallbackInfo& info);
   Napi::Value data(const Napi::CallbackInfo& info);
+  Napi::Value base64(const Napi::CallbackInfo& info);
   Napi::Value nb_samples(const Napi::CallbackInfo& info);
   Napi::Value bytes_per_sample(const Napi::CallbackInfo& info);
+
+private:
+  bool isAudio();
+  std::tuple<gurum::Buffer, int> data(const AVFrame &frame);
 
 private:
   static Napi::FunctionReference constructor;
