@@ -63,24 +63,6 @@ int SdlAudioRenderer::Prepare() {
   }
 
   samplerate_ = obtained_.freq;
-
-#if defined(USE_SWRESAMPLE)
-  swr_ = swr_alloc();
-  assert(swr_);
-  av_opt_set_int(swr_, "in_channel_count", channels_, 0);
-  av_opt_set_int(swr_, "out_channel_count", channels_, 0);
-  av_opt_set_int(swr_, "in_channel_layout", channel_layout_, 0);
-  av_opt_set_int(swr_, "out_channel_layout", channel_layout_, 0);
-  av_opt_set_int(swr_, "in_sample_rate", samplerate_, 0);
-  av_opt_set_int(swr_, "out_sample_rate", samplerate_, 0);
-  av_opt_set_sample_fmt(swr_, "in_sample_fmt", (AVSampleFormat)fmt_, 0);
-  av_opt_set_sample_fmt(swr_, "out_sample_fmt", AV_SAMPLE_FMT_S16,  0);
-  int err = swr_init(swr_);
-  if(err) {
-    LOG(FATAL) << " failed to swr_init";
-  }
-#endif
-
   SDL_PauseAudioDevice(audio_device_, 0);
   return 0;
 }
@@ -88,9 +70,8 @@ int SdlAudioRenderer::Prepare() {
 int SdlAudioRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
   std::lock_guard<std::mutex> lk(lck_);
 
-  int err;
+  int err{0};
 
-#if defined(USE_SWRESAMPLE)
   gurum::Buffer resampled{};
   int size;
   std::tie(resampled, size) = Resample(*frame);
@@ -108,22 +89,6 @@ int SdlAudioRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
   }
   
   if(on_raw_data) on_raw_data(resampled.get(), size);
-#else
-  int data_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
-
-  for (int i=0; i<frame->nb_samples; i++) {
-    for (int ch=0; ch<channels_; ch++) {
-      uint8_t buf[4];
-      AdjustVolume(buf, (frame->data[ch] + data_size*i), data_size);
-      // H((char *)buf, data_size);
-      err = SDL_QueueAudio(audio_device_, (const void *)buf, data_size);
-      if(err) {
-        LOG(WARNING) << " failed to SDL_QueueAudio():" << err;
-      }
-      if(on_raw_data) on_raw_data((uint8_t *)buf, data_size);
-    }
-  }
- #endif
   return 0;
 }
 
