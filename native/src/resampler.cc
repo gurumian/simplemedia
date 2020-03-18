@@ -4,7 +4,7 @@
 
 namespace gurum {
   
-Resampler::Resampler(AVSampleFormat fmt, int channels, int samplerate, int64_t channel_layout)
+Resampler::Resampler(AVSampleFormat fmt, int channels, int64_t samplerate, int64_t channel_layout)
 : fmt_(fmt), channels_(channels), samplerate_(samplerate), channel_layout_(channel_layout) {
 #if defined(USE_SWRESAMPLE)
   swr_ = swr_alloc();

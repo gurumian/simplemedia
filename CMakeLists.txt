@@ -58,6 +58,7 @@ set(simplemedia_source_files
   ${simplemedia_src_dir}/video_decoder_wrap.cc
   ${simplemedia_src_dir}/frame_wrap.cc
   ${simplemedia_src_dir}/source_wrap.cc
+  ${simplemedia_src_dir}/resampler_wrap.cc
 )
 
 if (SDL2_FOUND)
