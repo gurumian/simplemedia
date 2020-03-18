@@ -112,6 +112,7 @@ set(simplemedia_source_files
   ${simplemedia_src_dir}/audio_encoder.cc
   ${simplemedia_src_dir}/video_encoder.cc
   ${simplemedia_src_dir}/codec_param.cc
+  ${simplemedia_src_dir}/audio_renderer.cc
 )
 
 set(simplemedia_header_files

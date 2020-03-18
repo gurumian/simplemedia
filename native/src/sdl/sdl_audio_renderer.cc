@@ -91,35 +91,23 @@ int SdlAudioRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
   int err;
 
 #if defined(USE_SWRESAMPLE)
-  uint8_t *data = nullptr;
-  err = av_samples_alloc(&data, NULL, channels_, frame->nb_samples, AV_SAMPLE_FMT_S16, 0);
-  if( !data || err < 0) {
-    LOG(ERROR) << "failed to av_samples_alloc()";
-    return -1;
-  }
+  gurum::Buffer resampled{};
+  int size;
+  std::tie(resampled, size) = Resample(*frame);
 
-  int resample_count = swr_convert(swr_, &data, frame->nb_samples, (const uint8_t **) frame->extended_data, frame->nb_samples);
-  if(resample_count <= 0) {
-    LOG(ERROR) << "failed to convert" << resample_count;
-    return -1;
-  }
-
-  int size = av_samples_get_buffer_size(NULL, channels_, resample_count, AV_SAMPLE_FMT_S16, 0);
-
-  auto out = std::unique_ptr<uint8_t, std::function<void(void *)>> {
+  std::unique_ptr<uint8_t, std::function<void(void *)>> out{
     (uint8_t *)malloc(size),
     [](void *ptr){ if(ptr) free(ptr);}
   };
 
-  AdjustVolume(out.get(), data, size);
+  AdjustVolume(out.get(), resampled.get(), size);
 
   err = SDL_QueueAudio(audio_device_, (const void *)out.get(), size);
   if(err) {
     LOG(WARNING) << __func__ << "E: SDL_QueueAudio";
   }
   
-  if(on_raw_data) on_raw_data(data, size);
-  av_freep(&data);
+  if(on_raw_data) on_raw_data(resampled.get(), size);
 #else
   int data_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
 

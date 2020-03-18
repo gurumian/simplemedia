@@ -33,8 +33,10 @@ extern "C" {
 #include <string>
 #include <mutex>
 #include <condition_variable>
-
+#include <tuple>
+#include <functional>
 #include "simplemedia/renderer.h"
+#include "simplemedia/types.h"
 
 namespace gurum {
 
@@ -57,6 +59,9 @@ public:
 
   virtual void SetVolume(float volume) { volume_=volume;}
   float volume() { return volume_;}
+
+  std::tuple<gurum::Buffer, int> Resample(const AVFrame &frame);
+
 
 protected:
   AVSampleFormat fmt_{AV_SAMPLE_FMT_NONE};
