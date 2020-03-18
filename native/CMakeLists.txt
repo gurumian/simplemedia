@@ -73,9 +73,9 @@ if (SWRESAMPLE_FOUND)
 add_definitions(${SWRESAMPLE_DEFINITIONS})
 include_directories(${SWRESAMPLE_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${SWRESAMPLE_LIBRARIES})
-#set(USE_SWRESAMPLE 1)
+set(USE_SWRESAMPLE 1)
 
-#option(USE_SWRESAMPLE "Use swresample" ON)
+# option(USE_SWRESAMPLE "Use swresample" ON)
 endif (SWRESAMPLE_FOUND)
 
 if (POSTPROC_FOUND)

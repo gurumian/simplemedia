@@ -47,14 +47,16 @@ int SdlAudioRenderer::Prepare() {
   SDL_memset(&spec, 0, sizeof(spec));
   SDL_memset(&obtained_, 0, sizeof(obtained_));
   spec.freq = samplerate_;
-  spec.format = formatDictionary[(AVSampleFormat)fmt_];//_fmt;
+  spec.format = AUDIO_S16SYS; //formatDictionary[(AVSampleFormat)fmt_];//_fmt;
   spec.channels = channels_;
   spec.silence = 0;
-  spec.samples = 1024; // samplingFrequency * sampleBytes / 60;
+  #define 	SDL_AUDIO_MIN_BUFFER_SIZE   512
+  #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
+  spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC)); // samplingFrequency * sampleBytes / 60;
   spec.callback = (SDL_AudioCallback)nullptr;
   spec.userdata = nullptr;
 
-  audio_device_ = SDL_OpenAudioDevice(nullptr, 0, &spec, &obtained_, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+  audio_device_ = SDL_OpenAudioDevice(nullptr, 0, &spec, &obtained_, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_FORMAT_CHANGE);
   if(! audio_device_) {
     LOG(FATAL) << "SDL_OpenAudioDevice";
     return -1;
@@ -64,8 +66,7 @@ int SdlAudioRenderer::Prepare() {
 
 #if defined(USE_SWRESAMPLE)
   swr_ = swr_alloc();
-  CHECK_NOTNULL(swr_);
-
+  assert(swr_);
   av_opt_set_int(swr_, "in_channel_count", channels_, 0);
   av_opt_set_int(swr_, "out_channel_count", channels_, 0);
   av_opt_set_int(swr_, "in_channel_layout", channel_layout_, 0);
@@ -74,7 +75,7 @@ int SdlAudioRenderer::Prepare() {
   av_opt_set_int(swr_, "out_sample_rate", samplerate_, 0);
   av_opt_set_sample_fmt(swr_, "in_sample_fmt", (AVSampleFormat)fmt_, 0);
   av_opt_set_sample_fmt(swr_, "out_sample_fmt", AV_SAMPLE_FMT_S16,  0);
-  err = swr_init(swr_);
+  int err = swr_init(swr_);
   if(err) {
     LOG(FATAL) << " failed to swr_init";
   }
@@ -105,11 +106,19 @@ int SdlAudioRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
 
   int size = av_samples_get_buffer_size(NULL, channels_, resample_count, AV_SAMPLE_FMT_S16, 0);
 
-  err = SDL_QueueAudio(audio_device_, (const void *)data, size);
-  assert(err==0);
+  auto out = std::unique_ptr<uint8_t, std::function<void(void *)>> {
+    (uint8_t *)malloc(size),
+    [](void *ptr){ if(ptr) free(ptr);}
+  };
 
+  AdjustVolume(out.get(), data, size);
+
+  err = SDL_QueueAudio(audio_device_, (const void *)out.get(), size);
+  if(err) {
+    LOG(WARNING) << __func__ << "E: SDL_QueueAudio";
+  }
+  
   if(on_raw_data) on_raw_data(data, size);
-
   av_freep(&data);
 #else
   int data_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
@@ -159,6 +168,8 @@ void SdlAudioRenderer::SetVolume(float volume) {
 
 void SdlAudioRenderer::AdjustVolume(uint8_t *out, uint8_t *data, size_t data_size) {
   SDL_memset(out, 0, data_size);
+  assert(obtained_.format==AUDIO_S16SYS);
+  //  SDL_MixAudioFormat(stream, (uint8_t *)is->audio_buf + is->audio_buf_index, AUDIO_S16SYS, len1, is->audio_volume);
   SDL_MixAudioFormat(out, data, obtained_.format, data_size, volume_*SDL_MIX_MAXVOLUME);
 }
 
