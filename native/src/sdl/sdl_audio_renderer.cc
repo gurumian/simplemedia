@@ -47,39 +47,22 @@ int SdlAudioRenderer::Prepare() {
   SDL_memset(&spec, 0, sizeof(spec));
   SDL_memset(&obtained_, 0, sizeof(obtained_));
   spec.freq = samplerate_;
-  spec.format = formatDictionary[(AVSampleFormat)fmt_];//_fmt;
+  spec.format = AUDIO_S16SYS; //formatDictionary[(AVSampleFormat)fmt_];//_fmt;
   spec.channels = channels_;
   spec.silence = 0;
-  spec.samples = 1024; // samplingFrequency * sampleBytes / 60;
+  #define 	SDL_AUDIO_MIN_BUFFER_SIZE   512
+  #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
+  spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC)); // samplingFrequency * sampleBytes / 60;
   spec.callback = (SDL_AudioCallback)nullptr;
   spec.userdata = nullptr;
 
-  audio_device_ = SDL_OpenAudioDevice(nullptr, 0, &spec, &obtained_, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+  audio_device_ = SDL_OpenAudioDevice(nullptr, 0, &spec, &obtained_, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_FORMAT_CHANGE);
   if(! audio_device_) {
     LOG(FATAL) << "SDL_OpenAudioDevice";
     return -1;
   }
 
   samplerate_ = obtained_.freq;
-
-#if defined(USE_SWRESAMPLE)
-  swr_ = swr_alloc();
-  CHECK_NOTNULL(swr_);
-
-  av_opt_set_int(swr_, "in_channel_count", channels_, 0);
-  av_opt_set_int(swr_, "out_channel_count", channels_, 0);
-  av_opt_set_int(swr_, "in_channel_layout", channel_layout_, 0);
-  av_opt_set_int(swr_, "out_channel_layout", channel_layout_, 0);
-  av_opt_set_int(swr_, "in_sample_rate", samplerate_, 0);
-  av_opt_set_int(swr_, "out_sample_rate", samplerate_, 0);
-  av_opt_set_sample_fmt(swr_, "in_sample_fmt", (AVSampleFormat)fmt_, 0);
-  av_opt_set_sample_fmt(swr_, "out_sample_fmt", AV_SAMPLE_FMT_S16,  0);
-  err = swr_init(swr_);
-  if(err) {
-    LOG(FATAL) << " failed to swr_init";
-  }
-#endif
-
   SDL_PauseAudioDevice(audio_device_, 0);
   return 0;
 }
@@ -87,46 +70,25 @@ int SdlAudioRenderer::Prepare() {
 int SdlAudioRenderer::Render(const AVFrame *frame, OnRawData on_raw_data) {
   std::lock_guard<std::mutex> lk(lck_);
 
-  int err;
+  int err{0};
 
-#if defined(USE_SWRESAMPLE)
-  uint8_t *data = nullptr;
-  err = av_samples_alloc(&data, NULL, channels_, frame->nb_samples, AV_SAMPLE_FMT_S16, 0);
-  if( !data || err < 0) {
-    LOG(ERROR) << "failed to av_samples_alloc()";
-    return -1;
+  gurum::Buffer resampled{};
+  int size;
+  std::tie(resampled, size) = Resample(*frame);
+
+  std::unique_ptr<uint8_t, std::function<void(void *)>> out{
+    (uint8_t *)malloc(size),
+    [](void *ptr){ if(ptr) free(ptr);}
+  };
+
+  AdjustVolume(out.get(), resampled.get(), size);
+
+  err = SDL_QueueAudio(audio_device_, (const void *)out.get(), size);
+  if(err) {
+    LOG(WARNING) << __func__ << "E: SDL_QueueAudio";
   }
-
-  int resample_count = swr_convert(swr_, &data, frame->nb_samples, (const uint8_t **) frame->extended_data, frame->nb_samples);
-  if(resample_count <= 0) {
-    LOG(ERROR) << "failed to convert" << resample_count;
-    return -1;
-  }
-
-  int size = av_samples_get_buffer_size(NULL, channels_, resample_count, AV_SAMPLE_FMT_S16, 0);
-
-  err = SDL_QueueAudio(audio_device_, (const void *)data, size);
-  assert(err==0);
-
-  if(on_raw_data) on_raw_data(data, size);
-
-  av_freep(&data);
-#else
-  int data_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
-
-  for (int i=0; i<frame->nb_samples; i++) {
-    for (int ch=0; ch<channels_; ch++) {
-      uint8_t buf[4];
-      AdjustVolume(buf, (frame->data[ch] + data_size*i), data_size);
-      // H((char *)buf, data_size);
-      err = SDL_QueueAudio(audio_device_, (const void *)buf, data_size);
-      if(err) {
-        LOG(WARNING) << " failed to SDL_QueueAudio():" << err;
-      }
-      if(on_raw_data) on_raw_data((uint8_t *)buf, data_size);
-    }
-  }
- #endif
+  
+  if(on_raw_data) on_raw_data(resampled.get(), size);
   return 0;
 }
 
@@ -159,6 +121,7 @@ void SdlAudioRenderer::SetVolume(float volume) {
 
 void SdlAudioRenderer::AdjustVolume(uint8_t *out, uint8_t *data, size_t data_size) {
   SDL_memset(out, 0, data_size);
+  assert(obtained_.format==AUDIO_S16SYS);
   SDL_MixAudioFormat(out, data, obtained_.format, data_size, volume_*SDL_MIX_MAXVOLUME);
 }
 

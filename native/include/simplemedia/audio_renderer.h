@@ -18,9 +18,6 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavutil/opt.h>
 #include <libavcodec/avfft.h>
-#if defined(USE_SWRESAMPLE)
-#include <libswresample/swresample.h>
-#endif
 #if CONFIG_AVFILTER
 # include <libavfilter/avfilter.h>
 # include <libavfilter/buffersink.h>
@@ -30,11 +27,14 @@ extern "C" {
 #endif
 }
 
+#include "simplemedia/resampler.h"
 #include <string>
 #include <mutex>
 #include <condition_variable>
-
+#include <tuple>
+#include <functional>
 #include "simplemedia/renderer.h"
+#include "simplemedia/types.h"
 
 namespace gurum {
 
@@ -58,6 +58,9 @@ public:
   virtual void SetVolume(float volume) { volume_=volume;}
   float volume() { return volume_;}
 
+  std::tuple<gurum::Buffer, int> Resample(const AVFrame &frame);
+
+
 protected:
   AVSampleFormat fmt_{AV_SAMPLE_FMT_NONE};
   int channels_{0};
@@ -66,9 +69,7 @@ protected:
 
   std::mutex lck_;
   std::condition_variable cond_;
-#if defined(USE_SWRESAMPLE)
-  struct SwrContext *swr_{nullptr};
-#endif
+  std::unique_ptr<Resampler> resampler_{};
   bool log_enabled_{false};
 
   float volume_{0.5f};

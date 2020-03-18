@@ -73,9 +73,9 @@ if (SWRESAMPLE_FOUND)
 add_definitions(${SWRESAMPLE_DEFINITIONS})
 include_directories(${SWRESAMPLE_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${SWRESAMPLE_LIBRARIES})
-#set(USE_SWRESAMPLE 1)
+set(USE_SWRESAMPLE 1)
 
-#option(USE_SWRESAMPLE "Use swresample" ON)
+# option(USE_SWRESAMPLE "Use swresample" ON)
 endif (SWRESAMPLE_FOUND)
 
 if (POSTPROC_FOUND)
@@ -112,6 +112,8 @@ set(simplemedia_source_files
   ${simplemedia_src_dir}/audio_encoder.cc
   ${simplemedia_src_dir}/video_encoder.cc
   ${simplemedia_src_dir}/codec_param.cc
+  ${simplemedia_src_dir}/audio_renderer.cc
+  ${simplemedia_src_dir}/resampler.cc
 )
 
 set(simplemedia_header_files
@@ -134,6 +136,7 @@ set(simplemedia_header_files
   ${simplemedia_inc_dir}/simplemedia/subtitle_renderer.h
   ${simplemedia_inc_dir}/simplemedia/types.h
   ${simplemedia_inc_dir}/simplemedia/codec_param.h
+  ${simplemedia_inc_dir}/simplemedia/resampler.h
 )
 
 if (USE_SDL2)
