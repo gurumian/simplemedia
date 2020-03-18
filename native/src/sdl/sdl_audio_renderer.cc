@@ -157,7 +157,6 @@ void SdlAudioRenderer::SetVolume(float volume) {
 void SdlAudioRenderer::AdjustVolume(uint8_t *out, uint8_t *data, size_t data_size) {
   SDL_memset(out, 0, data_size);
   assert(obtained_.format==AUDIO_S16SYS);
-  //  SDL_MixAudioFormat(stream, (uint8_t *)is->audio_buf + is->audio_buf_index, AUDIO_S16SYS, len1, is->audio_volume);
   SDL_MixAudioFormat(out, data, obtained_.format, data_size, volume_*SDL_MIX_MAXVOLUME);
 }
 
