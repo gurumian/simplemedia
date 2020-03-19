@@ -1,4 +1,5 @@
 var {_AudioDecoder, _VideoDecoder} = require('bindings')('simplemedia');
+import {Resampler} from './resampler'
 
 export abstract class Decoder {
   decoder: any
@@ -64,6 +65,20 @@ export class AudioDecoder extends Decoder {
 
   get channellayout(): number {
     return this.decoder.channellayout
+  }
+
+  createResampler(arg: {sampleformat: number; samplerate: number; channels: number; channellayout: number}) {
+    let resampler = new Resampler()
+    resampler.prepare({
+      src: {
+        samplerate: this.decoder.samplerate,
+        channels: this.decoder.channels,
+        channellayout: this.decoder.channellayout,
+        sampleformat: this.decoder.sampleformat,
+      },
+      dst: arg,
+    })
+    return resampler
   }
 }
 
