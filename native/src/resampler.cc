@@ -4,27 +4,29 @@
 #include <vector>
 
 namespace gurum {
-  
-Resampler::Resampler(AVSampleFormat fmt, int channels, int64_t samplerate, int64_t channel_layout)
-: fmt_(fmt), channels_(channels), samplerate_(samplerate), channel_layout_(channel_layout) {
+
+Resampler::Resampler(const AudioSettings &in, const AudioSettings &out)
+: in_(in), out_(out) {
 #if defined(USE_SWRESAMPLE)
   swr_ = swr_alloc();
   assert(swr_);
-  av_opt_set_int(swr_, "in_channel_count", channels_, 0);
-  av_opt_set_int(swr_, "out_channel_count", channels_, 0);
-  av_opt_set_int(swr_, "in_channel_layout", channel_layout_, 0);
-  av_opt_set_int(swr_, "out_channel_layout", channel_layout_, 0);
-  av_opt_set_int(swr_, "in_sample_rate", samplerate_, 0);
-  av_opt_set_int(swr_, "out_sample_rate", samplerate_, 0);
-  av_opt_set_sample_fmt(swr_, "in_sample_fmt", (AVSampleFormat)fmt_, 0);
-  av_opt_set_sample_fmt(swr_, "out_sample_fmt", AV_SAMPLE_FMT_S16,  0);
+  av_opt_set_int(swr_, "in_channel_count", in.channels, 0);
+  av_opt_set_int(swr_, "in_channel_layout", in.channellayout, 0);
+  av_opt_set_int(swr_, "in_sample_rate", in.samplerate, 0);
+  av_opt_set_sample_fmt(swr_, "in_sample_fmt", in.sampleformat, 0);
+
+  av_opt_set_int(swr_, "out_channel_count", out.channels, 0);
+  av_opt_set_int(swr_, "out_channel_layout", out.channellayout, 0);
+  av_opt_set_int(swr_, "out_sample_rate", out.samplerate, 0);
+  av_opt_set_sample_fmt(swr_, "out_sample_fmt", out.sampleformat,  0);
+
   int err = swr_init(swr_);
   if(err) {
     LOG(FATAL) << " failed to swr_init";
   }
 #endif
 }
- 
+
 Resampler::~Resampler() {
 #if defined(USE_SWRESAMPLE)
   if(swr_) {
@@ -38,7 +40,7 @@ std::tuple<gurum::Buffer, int> Resampler::Resample(const AVFrame &frame) {
 #if defined(USE_SWRESAMPLE)
   uint8_t *data = nullptr;
 
-  int err = av_samples_alloc(&data, NULL, channels_, frame.nb_samples, AV_SAMPLE_FMT_S16, 0);
+  int err = av_samples_alloc(&data, NULL, out_.channels, frame.nb_samples, AV_SAMPLE_FMT_S16, 0);
   if( !data || err < 0) {
     LOG(ERROR) << "failed to av_samples_alloc()";
     return std::make_tuple(nullptr, 0);
@@ -50,7 +52,7 @@ std::tuple<gurum::Buffer, int> Resampler::Resample(const AVFrame &frame) {
     return std::make_tuple(nullptr, 0);
   }
 
-  int size = av_samples_get_buffer_size(NULL, channels_, resample_count, AV_SAMPLE_FMT_S16, 0);
+  int size = av_samples_get_buffer_size(NULL, out_.channels, resample_count, AV_SAMPLE_FMT_S16, 0);
 
   gurum::Buffer out {
     data,
