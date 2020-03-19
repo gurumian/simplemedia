@@ -52,6 +52,8 @@ public:
   virtual void SetSamplerate(int samplerate){ samplerate_=samplerate;}
   virtual void SetChannelLayout(int64_t channel_layout){channel_layout_=channel_layout;}
 
+  void SetResampler(std::unique_ptr<Resampler> resampler){resampler_=std::move(resampler);}
+
   void EnableLog(bool enable=true) {
     log_enabled_=enable;
   }

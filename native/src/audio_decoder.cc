@@ -25,7 +25,11 @@ int64_t AudioDecoder::channellayout() {
 }
 
 std::unique_ptr<gurum::Resampler> AudioDecoder::CreateResampler(const gurum::AudioSettings &settings) {
-  gurum::AudioSettings in {sampleFormat(), (int64_t)samplerate(), channellayout(), channels()};
+  gurum::AudioSettings in{};
+  in.sampleformat = sampleFormat();
+  in.samplerate = (int64_t)samplerate();
+  in.channellayout = channellayout();
+  in.channels = channels();
   std::unique_ptr<gurum::Resampler> resampler{new gurum::Resampler(in, settings)};
   return resampler;
 }
