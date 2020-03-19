@@ -8,8 +8,6 @@ namespace gurum {
 Resampler::Resampler(const AudioSettings &in, const AudioSettings &out)
 : in_(in), out_(out) {
 
-  LOG(INFO) << __func__ << " " << in_.channellayout << " , " << in_.channels << " ," << in_.sampleformat << " ," << in_.samplerate;
-  LOG(INFO) << __func__ << " " << out_.channellayout << " , " << out_.channels << " ," << out_.sampleformat << " ," << out_.samplerate;
 #if defined(USE_SWRESAMPLE)
   swr_ = swr_alloc();
   assert(swr_);
@@ -63,23 +61,7 @@ std::tuple<gurum::Buffer, int> Resampler::Resample(const AVFrame &frame) {
   };
   return std::make_tuple(std::move(out), size);
 #else
-  std::vector<uint8_t> chunk;
-  int data_size = av_get_bytes_per_sample((AVSampleFormat)frame.format);
-  for(int i = 0; i < frame.nb_samples; i++) {
-    for(int ch = 0; ch < frame.channels; ch++) {
-      uint8_t *ptr = frame.data[ch] + data_size * i;
-      chunk.insert(chunk.end(), ptr, ptr+data_size);
-    }
-  }
-
-  int size = chunk.size();
-  gurum::Buffer out {
-    (uint8_t *)malloc(size),
-    [](void *ptr){ if(ptr) free(ptr);}
-  };
-
-  std::copy(chunk.begin(), chunk.end(), out.get());
-  return std::make_tuple(std::move(out), size);
+  assert(1);
 #endif // USE_SWRESAMPLE
 }
 
