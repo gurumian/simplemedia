@@ -47,7 +47,8 @@ int SdlAudioRenderer::Prepare() {
   SDL_memset(&spec, 0, sizeof(spec));
   SDL_memset(&obtained_, 0, sizeof(obtained_));
   spec.freq = samplerate_;
-  spec.format = formatDictionary[(AVSampleFormat)fmt_];//_fmt;
+  // spec.format = formatDictionary[(AVSampleFormat)fmt_];//_fmt;
+  spec.format = AUDIO_S16; //formatDictionary[(AVSampleFormat)fmt_];//_fmt;
   spec.channels = channels_;
   spec.silence = 0;
   #define 	SDL_AUDIO_MIN_BUFFER_SIZE   512

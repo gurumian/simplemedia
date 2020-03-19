@@ -11,6 +11,10 @@ std::tuple<gurum::Buffer, int> AudioRenderer::Resample(const AVFrame &frame) {
   return resampler_->Resample(frame);
 }
 
+int AudioRenderer::Prepare(const gurum::AudioSettings &settings) {
+  return Prepare(settings.sampleformat, settings.channels, (int)settings.samplerate, settings.channellayout);
+}
+
 } // namespace gurum
 
 

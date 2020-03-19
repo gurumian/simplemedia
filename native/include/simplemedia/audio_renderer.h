@@ -45,6 +45,7 @@ public:
 
   virtual int Prepare()=0;
   virtual int Prepare(AVSampleFormat fmt, int channels, int samplerate, int64_t channellayout)=0;
+  virtual int Prepare(const gurum::AudioSettings &settings);
 
   virtual void SetSampleFormat(AVSampleFormat fmt){ fmt_=fmt;}
   virtual void SetChannels(int channels){ channels_=channels;}

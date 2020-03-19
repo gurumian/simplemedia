@@ -97,11 +97,14 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       );
 
       if(audio_renderer_) {
-        int err = audio_renderer_->Prepare(
-            audio_decoder_->sampleFormat(),
-            audio_decoder_->channels(),
-            audio_decoder_->samplerate(),
-            audio_decoder_->channellayout());
+        gurum::AudioSettings settings{
+          audio_decoder_->sampleFormat(),
+          audio_decoder_->channellayout(),
+          audio_decoder_->samplerate(),
+          audio_decoder_->channels()
+        };
+
+        int err = audio_renderer_->Prepare(settings);
         if(err) {
           LOG(ERROR) << __func__ << " failed to prepare a renderer: " << err;
           return  -1;
