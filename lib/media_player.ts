@@ -128,7 +128,7 @@ export class MediaPlayer {
     });
   }
 
-  _ondecodedAudio(frame: any) {
+  private ondecodedAudio(frame: any) {
     let delay: number = 0;
     let audio: Audio | null = this.audio;
     let video: Video | null = this.video;
@@ -141,7 +141,7 @@ export class MediaPlayer {
           if(this.state == State.started) {
             audio.timer.update();
             audio.pts = pts;
-            this._decode(audio.decoder);
+            this.decode(audio.decoder);
           }
         });
       }
@@ -157,7 +157,7 @@ export class MediaPlayer {
         audio.timer.wait(delay + (synced ? 0 : delayStep)).then(() => {
           if(this.state == State.started) {
             audio.pts = pts;
-            this._decode(audio.decoder);
+            this.decode(audio.decoder);
           }
         });
       }
@@ -173,7 +173,7 @@ export class MediaPlayer {
     }
   }
 
-  _ondecodedVideo(frame: any) {
+  private ondecodedVideo(frame: any) {
     let delay = 0;
     let audio: Audio | null = this.audio;
     let video: Video | null = this.video;
@@ -186,7 +186,7 @@ export class MediaPlayer {
           if(this.state == State.started) {
             video.timer.update();
             video.pts = pts;
-            this._decode(video.decoder);
+            this.decode(video.decoder);
           }
         });
       }
@@ -201,7 +201,7 @@ export class MediaPlayer {
         video.timer.wait(delay + (synced ? 0 : delayStep)).then(() => {
           if(this.state == State.started) {
             video.pts = pts;
-            this._decode(video.decoder);
+            this.decode(video.decoder);
           }
         });
       }
@@ -225,18 +225,18 @@ export class MediaPlayer {
     }
   }
 
-  _ondecode({decoder, frame}) {
+  private ondecode({decoder, frame}) {
     if(this.audio && this.audio.decoder == decoder)
-      this._ondecodedAudio(frame);
+      this.ondecodedAudio(frame);
     else if(this.video && this.video.decoder == decoder)
-      this._ondecodedVideo(frame);
+      this.ondecodedVideo(frame);
   }
 
-  _decode(decoder: any) {
+  private decode(decoder: any) {
     decoder.decode()
     .then((frames: any) => {
       if(!frames) { // eos
-        this._ondecode({
+        this.ondecode({
           decoder: decoder,
           frame: null,
         })
@@ -244,7 +244,7 @@ export class MediaPlayer {
       else {
         if(frames.length > 0) {
           frames.map((frame: any) => {
-            this._ondecode({
+            this.ondecode({
               decoder: decoder,
               frame: frame,
             })
@@ -252,7 +252,7 @@ export class MediaPlayer {
         }
         else {
           // try again
-          setTimeout(() => this._decode(decoder))
+          setTimeout(() => this.decode(decoder))
         }
       }
     })
@@ -274,10 +274,10 @@ export class MediaPlayer {
     this.source.start();
 
     if(this.hasAudioDecoder)
-      this._decode(this.audio.decoder);
+      this.decode(this.audio.decoder);
 
     if(this.hasVideoDecoder)
-      this._decode(this.video.decoder);
+      this.decode(this.video.decoder);
   }
 
   /**
