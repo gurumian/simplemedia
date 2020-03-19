@@ -19,7 +19,7 @@ namespace gurum {
 
 class Resampler {
 public:
-  explicit Resampler(AVSampleFormat fmt, int channels, int64_t samplerate, int64_t channel_layout);
+  explicit Resampler(const AudioSettings &in, const AudioSettings &out);
   ~Resampler();
 
   std::tuple<gurum::Buffer, int> Resample(const AVFrame &frame);
@@ -28,10 +28,8 @@ private:
 #if defined(USE_SWRESAMPLE)
   struct SwrContext *swr_{nullptr};
 #endif
-  AVSampleFormat fmt_{AV_SAMPLE_FMT_NONE};
-  int channels_{0};
-  int64_t samplerate_{0};
-  int64_t channel_layout_{0};
+  AudioSettings in_{};
+  AudioSettings out_{};
 };
 
 }

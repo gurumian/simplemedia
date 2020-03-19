@@ -19,9 +19,6 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavutil/opt.h>
 #include <libavcodec/avfft.h>
-#if defined(USE_SWRESAMPLE)
-#include <libswresample/swresample.h>
-#endif
 #if CONFIG_AVFILTER
 # include <libavfilter/avfilter.h>
 # include <libavfilter/buffersink.h>

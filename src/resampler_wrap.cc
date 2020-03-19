@@ -92,9 +92,12 @@ Resampler::Resampler(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Resample
 
   int64_t channellayout = (int64_t) value.ToNumber();
   
-  resampler_.reset(new gurum::Resampler(
-    (AVSampleFormat) sampleformat, channels, samplerate, channellayout
-  ));
+  gurum::AudioSettings settings{};
+  settings.sampleformat = (AVSampleFormat) sampleformat;
+  settings.channels = channels;
+  settings.samplerate = samplerate;
+  settings.channellayout = channellayout;
+  resampler_.reset(new gurum::Resampler(settings, settings)); // TODO
 }
 
 Napi::Value Resampler::resample(const Napi::CallbackInfo& info) {

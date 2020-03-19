@@ -97,11 +97,21 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
       );
 
       if(audio_renderer_) {
-        int err = audio_renderer_->Prepare(
-            audio_decoder_->sampleFormat(),
-            audio_decoder_->channels(),
-            audio_decoder_->samplerate(),
-            audio_decoder_->channellayout());
+        gurum::AudioSettings in_settings{
+          audio_decoder_->sampleFormat(),
+          audio_decoder_->channellayout(),
+          audio_decoder_->samplerate(),
+          audio_decoder_->channels()
+        };
+
+        gurum::AudioSettings out_settings = in_settings;
+#if defined(USE_SWRESAMPLE)
+        out_settings.sampleformat = AV_SAMPLE_FMT_S16;
+        auto resampler = audio_decoder_->CreateResampler(out_settings);
+        assert(resampler);
+        audio_renderer_->SetResampler(std::move(resampler));
+#endif // USE_SWRESAMPLE
+        int err = audio_renderer_->Prepare(out_settings);
         if(err) {
           LOG(ERROR) << __func__ << " failed to prepare a renderer: " << err;
           return  -1;

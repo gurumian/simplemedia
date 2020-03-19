@@ -2,6 +2,8 @@
 #define GURUM_AUDIO_DECODER_H_
 
 #include "frame_decoder.h"
+#include "simplemedia/types.h"
+#include "simplemedia/resampler.h"
 
 namespace gurum {
 
@@ -13,6 +15,8 @@ public:
   AVSampleFormat sampleFormat();
   int channels();
   int64_t channellayout();
+
+  std::unique_ptr<gurum::Resampler> CreateResampler(const gurum::AudioSettings &settings);
 };
 
 } // namespace gurum
