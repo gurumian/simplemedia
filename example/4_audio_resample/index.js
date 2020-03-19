@@ -3,7 +3,7 @@
 var args = process.argv.slice(2);
 console.log('args: ', args);
 
-const {Source, AudioDecoder, Timer, Resampler} = require('simplemedia');
+const {Source, AudioDecoder, Timer, Resampler, ChannelLayout, SampleFormat} = require('simplemedia');
 
 var uri='https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3';
 if(args.length) {
@@ -41,7 +41,6 @@ function decode() {
 
 let timer = new Timer()
 var source = new Source()
-resampler = new Resampler()
 source.datasource = uri;
 let fmt = source.prepare();
 if(!fmt) {
@@ -65,11 +64,11 @@ decoder.prepare(fmt.streams[pid]);
 decoder.pidchannel = pidchannel;
 channels = fmt.streams[pid]['channels'];
 
-resampler.prepare({
-  samplerate: decoder.samplerate,
-  channels: decoder.channels,
-  channellayout: decoder.channellayout,
-  sampleformat: decoder.sampleformat,
+resampler = decoder.createResampler({
+  samplerate: 44100,
+  channels: 2,
+  channellayout: ChannelLayout.stereo,
+  sampleformat: SampleFormat.s16,
 })
 
 timer.update();
