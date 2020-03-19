@@ -104,14 +104,14 @@ int MediaPlayer::Prepare(OnPrepared on_prepared) {
           audio_decoder_->channels()
         };
 
-#if defined(USE_SWRESAMPLE)
         gurum::AudioSettings out_settings = in_settings;
+#if defined(USE_SWRESAMPLE)
         out_settings.sampleformat = AV_SAMPLE_FMT_S16;
+#endif
         auto resampler = audio_decoder_->CreateResampler(out_settings);
         assert(resampler);
         audio_renderer_->SetResampler(std::move(resampler));
-#endif
-        int err = audio_renderer_->Prepare(in_settings);
+        int err = audio_renderer_->Prepare(out_settings);
         if(err) {
           LOG(ERROR) << __func__ << " failed to prepare a renderer: " << err;
           return  -1;
