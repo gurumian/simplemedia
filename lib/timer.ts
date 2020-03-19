@@ -5,10 +5,10 @@ export class Timer {
   }
 
   async wait(period: number): Promise<() => void> {
-    period = Math.floor(period / 1000) // us -> ms
+    period = Math.round(period / 1000) // us -> ms
     this.time += period
-    let adjust = Date.now() - this.time
-    return new Promise(resolve => setTimeout(resolve, Math.max(period - adjust, 0)))
+    let d = period - this.dt
+    return new Promise(resolve => setTimeout(resolve, Math.max(d, 0)))
   }
 
   update(): void {
