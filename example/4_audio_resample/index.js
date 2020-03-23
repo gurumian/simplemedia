@@ -14,9 +14,15 @@ var count = 0
 var decoder = null
 var channels = 0
 let resampler = null
+const sampleformat = SampleFormat.flt
 
 function dump(resampled) {
-  console.log(resampled)
+  if(sampleformat == SampleFormat.flt) {
+    console.log(new Float32Array(resampled));
+  }
+  else {
+    console.log(resampled)
+  }
 }
 
 function decode() {
@@ -68,7 +74,7 @@ resampler = decoder.createResampler({
   samplerate: 44100,
   channels: 2,
   channellayout: ChannelLayout.stereo,
-  sampleformat: SampleFormat.s16,
+  sampleformat: sampleformat,
 })
 
 timer.update();
