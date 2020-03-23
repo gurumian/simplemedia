@@ -17,12 +17,7 @@ let resampler = null
 const sampleformat = SampleFormat.flt
 
 function dump(resampled) {
-  if(sampleformat == SampleFormat.flt) {
-    console.log(new Float32Array(resampled));
-  }
-  else {
-    console.log(resampled)
-  }
+  console.log(resampled)
 }
 
 function decode() {
