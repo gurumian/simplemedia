@@ -132,6 +132,7 @@ Resampler::Resampler(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Resample
       return;
     }
     dst = ObjectToAudioSetting(env, value.ToObject());
+    sampleformt_ = dst.sampleformat;
   }
 
   resampler_.reset(new gurum::Resampler(src, dst));
@@ -151,6 +152,33 @@ Napi::Value Resampler::resample(const Napi::CallbackInfo& info) {
   int size;
   std::tie(resampled, size) = resampler_->Resample(*frame);
 
-  auto data = Napi::Array::New(env, size);
-  return Napi::ArrayBuffer::New(env, resampled.get(), size);
+  auto buffer = Napi::ArrayBuffer::New(env, resampled.get(), size);
+
+  switch(sampleformt_) {
+  case AV_SAMPLE_FMT_U8:
+  case AV_SAMPLE_FMT_U8P:
+    return buffer;
+
+  case AV_SAMPLE_FMT_S16:
+  case AV_SAMPLE_FMT_S16P:
+    return Napi::Int16Array::New(env, size / 4, buffer, 0);
+
+  case AV_SAMPLE_FMT_S32:
+  case AV_SAMPLE_FMT_S32P:
+    return Napi::Int32Array::New(env, size / 4, buffer, 0);
+
+  case AV_SAMPLE_FMT_FLT:
+  case AV_SAMPLE_FMT_FLTP:
+    return Napi::Float32Array::New(env, size / 4, buffer, 0);
+
+  case AV_SAMPLE_FMT_DBL:
+  case AV_SAMPLE_FMT_DBLP:
+    return Napi::Float64Array::New(env, size / 4, buffer, 0);
+
+  case AV_SAMPLE_FMT_S64:
+  case AV_SAMPLE_FMT_S64P:
+  default:
+    Napi::TypeError::New(env, "unhandled types").ThrowAsJavaScriptException();
+    return env.Undefined();
+  }
 }

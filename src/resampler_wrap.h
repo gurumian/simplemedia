@@ -24,6 +24,8 @@ private:
   std::unique_ptr<gurum::Resampler> resampler_{};
 
   bool log_enabled_{false};
+  AVSampleFormat sampleformt_{};
+
 };
 
 #endif // GURUM_RESAMPLER_WRAP_H
