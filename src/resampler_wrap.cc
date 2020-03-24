@@ -157,11 +157,11 @@ Napi::Value Resampler::resample(const Napi::CallbackInfo& info) {
   switch(sampleformt_) {
   case AV_SAMPLE_FMT_U8:
   case AV_SAMPLE_FMT_U8P:
-    return buffer;
+    return Napi::Uint8Array::New(env, size, buffer, 0);
 
   case AV_SAMPLE_FMT_S16:
   case AV_SAMPLE_FMT_S16P:
-    return Napi::Int16Array::New(env, size / 4, buffer, 0);
+    return Napi::Int16Array::New(env, size / 2, buffer, 0);
 
   case AV_SAMPLE_FMT_S32:
   case AV_SAMPLE_FMT_S32P:
@@ -173,7 +173,7 @@ Napi::Value Resampler::resample(const Napi::CallbackInfo& info) {
 
   case AV_SAMPLE_FMT_DBL:
   case AV_SAMPLE_FMT_DBLP:
-    return Napi::Float64Array::New(env, size / 4, buffer, 0);
+    return Napi::Float64Array::New(env, size / 8, buffer, 0);
 
   case AV_SAMPLE_FMT_S64:
   case AV_SAMPLE_FMT_S64P:
